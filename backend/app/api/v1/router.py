@@ -4,9 +4,10 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
-from app.api.v1.endpoints import market, registry, system
+from app.api.v1.endpoints import indicators, market, registry, system
 
 api_router = APIRouter(prefix="/api/v1")
 api_router.include_router(system.router)
 api_router.include_router(registry.router)
 api_router.include_router(market.router)
+api_router.include_router(indicators.router)

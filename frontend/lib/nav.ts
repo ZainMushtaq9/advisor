@@ -24,6 +24,11 @@ export const NAV_ITEMS: NavItem[] = [
     description: "Daily OHLCV for snapshot securities, from validated observations only.",
   },
   {
+    href: "/indicators",
+    label: "Indicators",
+    description: "Deterministic indicator coverage; every value explained or marked NOT_CALCULABLE.",
+  },
+  {
     href: "/research",
     label: "Research",
     description: "Research workspace shell — no data yet.",
