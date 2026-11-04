@@ -261,9 +261,12 @@ def registry_quality(session: Session = Depends(get_session)) -> dict:  # noqa: 
         "partially_verified_companies": company_status.get("PARTIALLY_VERIFIED", 0),
         "evidence_rows": session.query(RegistryEvidence).count(),
         "interpretation": (
-            "VERIFIED means at least one evidence row from an official source "
-            "(psx_official or secp) agrees with the stored record. "
-            "PARTIALLY_VERIFIED means at least two distinct sources agree. "
+            "VERIFIED (rule H1) means at least two distinct sources agree "
+            "and at least one of them is official (psx_official or secp); "
+            "a lone official source never verifies a record. "
+            "PARTIALLY_VERIFIED means at least two distinct sources agree "
+            "without an official source among them. "
+            "UNVERIFIED means only one source is known. "
             "An import succeeding never, by itself, verifies a record."
         ),
     }
