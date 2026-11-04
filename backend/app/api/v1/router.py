@@ -19,6 +19,7 @@ from app.api.v1.endpoints import (
     rag,
     registry,
     risk,
+    screener,
     system,
     valuations,
 )
@@ -40,3 +41,4 @@ api_router.include_router(portfolios.router)
 api_router.include_router(backtesting.router)
 api_router.include_router(orchestration.router)
 api_router.include_router(rag.router)
+api_router.include_router(screener.router)
