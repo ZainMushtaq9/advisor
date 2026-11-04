@@ -10,6 +10,7 @@ from app.api.v1.endpoints import (
     macro,
     market,
     news,
+    ownership,
     registry,
     system,
     valuations,
@@ -24,3 +25,4 @@ api_router.include_router(fundamentals.router)
 api_router.include_router(valuations.router)
 api_router.include_router(macro.router)
 api_router.include_router(news.router)
+api_router.include_router(ownership.router)

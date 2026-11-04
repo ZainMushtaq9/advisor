@@ -18,6 +18,7 @@ from app.models import (  # noqa: F401
     macro,
     market,
     news_events,
+    ownership_actions,
     reference,
     registry,
 )
@@ -30,6 +31,7 @@ __all__ = [
     "macro",
     "market",
     "news_events",
+    "ownership_actions",
     "reference",
     "registry",
 ]
