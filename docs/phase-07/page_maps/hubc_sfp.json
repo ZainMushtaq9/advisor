@@ -1,0 +1,184 @@
+{
+  "company_symbol": "HUBC",
+  "statement_type": "balance_sheet",
+  "method": "embedded_text",
+  "pdf": "storage/financial_reports/HUBC_Integrated_Annual_Report_2026.pdf",
+  "pages": [
+    277
+  ],
+  "unit_scale": "thousands",
+  "currency": "PKR",
+  "reporting_frequency": "annual",
+  "consolidated_status": "consolidated",
+  "audited_status": "audited",
+  "columns": [
+    {
+      "period_start": "2025-07-01",
+      "period_end": "2026-06-30",
+      "label": "2026"
+    },
+    {
+      "period_start": "2024-07-01",
+      "period_end": "2025-06-30",
+      "label": "2025"
+    }
+  ],
+  "specs": [
+    {
+      "label": "Property, plant and equipment",
+      "key": "property_plant_equipment"
+    },
+    {
+      "label": "Intangibles",
+      "key": "intangibles"
+    },
+    {
+      "label": "Long term investments",
+      "key": "long_term_investments"
+    },
+    {
+      "label": "Long term deposits",
+      "key": "long_term_deposits"
+    },
+    {
+      "label": null,
+      "key": "non_current_assets_total",
+      "original_label": "(section subtotal, label not printed)"
+    },
+    {
+      "label": "Stores, spares and consumables",
+      "key": "stores_spares_consumables"
+    },
+    {
+      "label": "Stock-in-trade",
+      "key": "stock_in_trade"
+    },
+    {
+      "label": "Trade debts",
+      "key": "trade_debts"
+    },
+    {
+      "label": "Loans and advances",
+      "key": "loans_and_advances"
+    },
+    {
+      "label": "Deposits, prepayments and other receivables",
+      "key": "deposits_prepayments_other_receivables"
+    },
+    {
+      "label": "Short term investments",
+      "key": "short_term_investments"
+    },
+    {
+      "label": "Cash and bank balances",
+      "key": "cash_and_bank_balances"
+    },
+    {
+      "label": null,
+      "key": "current_assets_total",
+      "original_label": "(section subtotal, label not printed)"
+    },
+    {
+      "label": "TOTAL ASSETS",
+      "key": "total_assets"
+    },
+    {
+      "label": "Issued, subscribed and paid-up",
+      "key": "share_capital",
+      "original_label": "Issued, subscribed and paid-up share capital"
+    },
+    {
+      "label": "Share premium",
+      "key": "share_premium"
+    },
+    {
+      "label": "Operation and maintenance reserve",
+      "key": "operation_maintenance_reserve"
+    },
+    {
+      "label": "Unappropriated profit",
+      "key": "unappropriated_profit"
+    },
+    {
+      "label": null,
+      "key": "equity_attributable_to_owners",
+      "original_label": "(section subtotal, label not printed)"
+    },
+    {
+      "label": "Non-controlling interests",
+      "key": "non_controlling_interests"
+    },
+    {
+      "label": null,
+      "key": "total_equity",
+      "original_label": "(section subtotal, label not printed)"
+    },
+    {
+      "label": "Long term loans",
+      "key": "long_term_loans"
+    },
+    {
+      "label": "Long term lease liabilities",
+      "key": "long_term_lease_liabilities"
+    },
+    {
+      "label": "Deferred taxation",
+      "key": "deferred_taxation"
+    },
+    {
+      "label": null,
+      "key": "non_current_liabilities_total",
+      "original_label": "(section subtotal, label not printed)"
+    },
+    {
+      "label": "Trade and other payables",
+      "key": "trade_and_other_payables"
+    },
+    {
+      "label": "Provision for taxation",
+      "key": "provision_for_taxation"
+    },
+    {
+      "label": "Unclaimed dividend",
+      "key": "unclaimed_dividend"
+    },
+    {
+      "label": "Unpaid dividend",
+      "key": "unpaid_dividend"
+    },
+    {
+      "label": "Interest / mark-up accrued",
+      "key": "interest_markup_accrued"
+    },
+    {
+      "label": "Refund liability",
+      "key": "refund_liability"
+    },
+    {
+      "label": "Short term borrowings",
+      "key": "short_term_borrowings"
+    },
+    {
+      "label": "Current maturity of long term loans",
+      "key": "current_maturity_long_term_loans"
+    },
+    {
+      "label": "Current maturity of long term lease liabilities",
+      "key": "current_maturity_long_term_lease_liabilities"
+    },
+    {
+      "label": null,
+      "key": "current_liabilities_total",
+      "original_label": "(section subtotal, label not printed)"
+    },
+    {
+      "label": "TOTAL EQUITY AND LIABILITIES",
+      "key": "total_equity_and_liabilities"
+    }
+  ],
+  "document_type": "annual_report",
+  "title": "HUBCO Integrated Annual Report 2026",
+  "source_url": "https://hubpower.com/wp-content/uploads/2026/09/HUBCO-Integrated-Annual-Report-2026.pdf",
+  "publication_date": "2026-09-21",
+  "publication_date_note": "Consolidated auditor report date (PDF p.274, printed p.273)."
+}

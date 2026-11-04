@@ -1,0 +1,84 @@
+{
+  "company_symbol": "NML",
+  "statement_type": "income",
+  "method": "embedded_text",
+  "pdf": "storage/financial_reports/NML_3rd_Quarter_Report_2025.pdf",
+  "pages": [
+    37
+  ],
+  "unit_scale": "thousands",
+  "currency": "PKR",
+  "consolidated_status": "consolidated",
+  "audited_status": "unaudited",
+  "columns": [
+    {
+      "group": "nine_month",
+      "reporting_frequency": "nine_month",
+      "period_start": "2024-07-01",
+      "period_end": "2025-03-31",
+      "label": "Period ended 31 March 2025"
+    },
+    {
+      "group": "nine_month",
+      "reporting_frequency": "nine_month",
+      "period_start": "2023-07-01",
+      "period_end": "2024-03-31",
+      "label": "Period ended 31 March 2024"
+    },
+    {
+      "group": "quarter",
+      "reporting_frequency": "quarterly",
+      "period_start": "2025-01-01",
+      "period_end": "2025-03-31",
+      "label": "Quarter ended 31 March 2025"
+    },
+    {
+      "group": "quarter",
+      "reporting_frequency": "quarterly",
+      "period_start": "2024-01-01",
+      "period_end": "2024-03-31",
+      "label": "Quarter ended 31 March 2024"
+    }
+  ],
+  "specs": [
+    {
+      "label": "REVENUE",
+      "key": "revenue"
+    },
+    {
+      "label": "COST OF SALES",
+      "key": "cost_of_sales"
+    },
+    {
+      "label": "GROSS PROFIT",
+      "key": "gross_profit"
+    },
+    {
+      "label": "PROFIT FROM OPERATIONS",
+      "key": "profit_from_operations"
+    },
+    {
+      "label": "FINANCE COST",
+      "key": "finance_cost"
+    },
+    {
+      "label": "PROFIT BEFORE TAXATION",
+      "key": "profit_before_taxation"
+    },
+    {
+      "label": "TAXATION",
+      "key": "taxation"
+    },
+    {
+      "label": "PROFIT / (LOSS) AFTER TAXATION",
+      "key": "profit_after_taxation"
+    },
+    {
+      "label": "EARNINGS / (LOSS) PER SHARE - BASIC AND DILUTED",
+      "key": "eps_basic"
+    }
+  ],
+  "document_type": "quarterly_report",
+  "title": "Nishat Mills 3rd Quarter Report 2025",
+  "source_url": "https://nishatmillsltd.com/wp-content/uploads/2026/09/3rd-Quarter-Report-2025.pdf"
+}

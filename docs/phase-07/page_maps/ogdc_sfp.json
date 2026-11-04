@@ -1,0 +1,393 @@
+{
+  "company_symbol": "OGDC",
+  "statement_type": "balance_sheet",
+  "method": "embedded_text",
+  "pdf": "storage/financial_reports/OGDC_Interim_Dec2025.pdf",
+  "pages": [
+    7
+  ],
+  "unit_scale": "thousands",
+  "currency": "PKR",
+  "reporting_frequency": "half_yearly",
+  "consolidated_status": "consolidated",
+  "audited_status": "unaudited",
+  "columns": [
+    {
+      "period_start": "2025-07-01",
+      "period_end": "2025-12-31",
+      "label": "31 December 2025"
+    },
+    {
+      "period_start": "2024-07-01",
+      "period_end": "2025-06-30",
+      "label": "30 June 2025"
+    }
+  ],
+  "left_specs": [
+    {
+      "label": "Share capital",
+      "key": "share_capital"
+    },
+    {
+      "label": "Reserves",
+      "key": "reserves"
+    },
+    {
+      "label": "Unappropriated profit",
+      "key": "unappropriated_profit"
+    },
+    {
+      "label": null,
+      "key": "total_equity",
+      "original_label": "(section subtotal, label not printed)"
+    },
+    {
+      "label": "Deferred taxation",
+      "key": "deferred_taxation"
+    },
+    {
+      "label": "Deferred employee benefits",
+      "key": "deferred_employee_benefits"
+    },
+    {
+      "label": "Provision for decommissioning cost",
+      "key": "provision_decommissioning_cost"
+    },
+    {
+      "label": "Long term lease liability",
+      "key": "long_term_lease_liability"
+    },
+    {
+      "label": null,
+      "key": "non_current_liabilities_total",
+      "original_label": "(section subtotal, label not printed)"
+    },
+    {
+      "label": "Short term lease liability",
+      "key": "short_term_lease_liability"
+    },
+    {
+      "label": "Trade and other payables",
+      "key": "trade_and_other_payables"
+    },
+    {
+      "label": "Unpaid dividend",
+      "key": "unpaid_dividend"
+    },
+    {
+      "label": "Unclaimed dividend",
+      "key": "unclaimed_dividend"
+    },
+    {
+      "label": null,
+      "key": "current_liabilities_total",
+      "original_label": "(section subtotal, label not printed)"
+    },
+    {
+      "label": "TOTAL LIABILITIES",
+      "key": "total_liabilities"
+    },
+    {
+      "label": null,
+      "key": "total_equity_and_liabilities",
+      "original_label": "(section subtotal, label not printed)"
+    }
+  ],
+  "right_specs": [
+    {
+      "label": "Property, plant and equipment",
+      "key": "property_plant_equipment"
+    },
+    {
+      "label": "Development and production assets",
+      "key": "development_production_assets"
+    },
+    {
+      "label": "Exploration and evaluation assets",
+      "key": "exploration_evaluation_assets"
+    },
+    {
+      "label": null,
+      "key": "operating_non_current_subtotal",
+      "original_label": "(section subtotal, label not printed)"
+    },
+    {
+      "label": "Long term Investments in subsidiary and associates",
+      "key": "long_term_investments_subsidiary_associates"
+    },
+    {
+      "label": "Long term Investments at amortized cost",
+      "key": "long_term_investments_amortized_cost"
+    },
+    {
+      "label": "Long term loans",
+      "key": "long_term_loans_asset",
+      "original_label": "Long term loans - secured (asset side)"
+    },
+    {
+      "label": "Long term advances",
+      "key": "long_term_advances_prepayments",
+      "original_label": "Long term advances, prepayments and other receivables"
+    },
+    {
+      "label": "Lease receivables",
+      "key": "lease_receivables"
+    },
+    {
+      "label": null,
+      "key": "non_current_assets_total",
+      "original_label": "(section subtotal, label not printed)"
+    },
+    {
+      "label": "Stores, spare parts and loose tools",
+      "key": "stores_spare_parts"
+    },
+    {
+      "label": "Stock in trade",
+      "key": "stock_in_trade"
+    },
+    {
+      "label": "Trade debts",
+      "key": "trade_debts"
+    },
+    {
+      "label": "Loans and advances",
+      "key": "loans_and_advances"
+    },
+    {
+      "label": "Deposits and short term prepayments",
+      "key": "deposits_short_term_prepayments"
+    },
+    {
+      "label": "Other receivables",
+      "key": "other_receivables"
+    },
+    {
+      "label": "Income tax",
+      "key": "income_tax_advance",
+      "original_label": "Income tax - advance"
+    },
+    {
+      "label": "Current portion of long term investments",
+      "key": "current_portion_long_term_investments"
+    },
+    {
+      "label": "Current portion of lease receivables",
+      "key": "current_portion_lease_receivables"
+    },
+    {
+      "label": "Other financial assets",
+      "key": "other_financial_assets"
+    },
+    {
+      "label": "Cash and bank balances",
+      "key": "cash_and_bank_balances"
+    },
+    {
+      "label": null,
+      "key": "current_assets_total",
+      "original_label": "(section subtotal, label not printed)"
+    },
+    {
+      "label": null,
+      "key": "total_assets",
+      "original_label": "(section subtotal, label not printed)"
+    }
+  ],
+  "right_labels": [
+    "Property, plant and equipment",
+    "Development and production assets",
+    "Exploration and evaluation assets",
+    "Long term Investments in subsidiary and associates",
+    "Long term Investments at amortized cost",
+    "Long term loans",
+    "Long term advances",
+    "Lease receivables",
+    "Stores, spare parts and loose tools",
+    "Stock in trade",
+    "Trade debts",
+    "Loans and advances",
+    "Deposits and short term prepayments",
+    "Other receivables",
+    "Income tax",
+    "Current portion of long term investments",
+    "Current portion of lease receivables",
+    "Other financial assets",
+    "Cash and bank balances"
+  ],
+  "document_type": "interim_filing",
+  "title": "OGDC Condensed Interim Consolidated Statements - six months ended 31 December 2025",
+  "source_url": "http://www.rns-pdf.londonstockexchange.com/rns/9937T_1-2026-2-23.pdf",
+  "publication_date": "2026-02-23",
+  "publication_date_note": "RNS transmission date (annexure CS-04-08, 23 Feb 2026).",
+  "page_match_method": "two_panel",
+  "specs": [
+    {
+      "label": "Share capital",
+      "key": "share_capital"
+    },
+    {
+      "label": "Property, plant and equipment",
+      "key": "property_plant_equipment"
+    },
+    {
+      "label": "Development and production assets",
+      "key": "development_production_assets"
+    },
+    {
+      "label": "Reserves",
+      "key": "reserves"
+    },
+    {
+      "label": "Exploration and evaluation assets",
+      "key": "exploration_evaluation_assets"
+    },
+    {
+      "label": null,
+      "key": "operating_non_current_subtotal",
+      "original_label": "(section subtotal, label not printed)"
+    },
+    {
+      "label": "Unappropriated profit",
+      "key": "unappropriated_profit"
+    },
+    {
+      "label": null,
+      "key": "total_equity",
+      "original_label": "(section subtotal, label not printed)"
+    },
+    {
+      "label": "Long term Investments in subsidiary and associates",
+      "key": "long_term_investments_subsidiary_associates"
+    },
+    {
+      "label": "Long term Investments at amortized cost",
+      "key": "long_term_investments_amortized_cost"
+    },
+    {
+      "label": "Long term loans",
+      "key": "long_term_loans_asset",
+      "original_label": "Long term loans - secured (asset side)"
+    },
+    {
+      "label": "Long term advances",
+      "key": "long_term_advances_prepayments",
+      "original_label": "Long term advances, prepayments and other receivables"
+    },
+    {
+      "label": "Lease receivables",
+      "key": "lease_receivables"
+    },
+    {
+      "label": null,
+      "key": "non_current_assets_total",
+      "original_label": "(section subtotal, label not printed)"
+    },
+    {
+      "label": "Deferred taxation",
+      "key": "deferred_taxation"
+    },
+    {
+      "label": "Stores, spare parts and loose tools",
+      "key": "stores_spare_parts"
+    },
+    {
+      "label": "Deferred employee benefits",
+      "key": "deferred_employee_benefits"
+    },
+    {
+      "label": "Stock in trade",
+      "key": "stock_in_trade"
+    },
+    {
+      "label": "Provision for decommissioning cost",
+      "key": "provision_decommissioning_cost"
+    },
+    {
+      "label": "Trade debts",
+      "key": "trade_debts"
+    },
+    {
+      "label": "Long term lease liability",
+      "key": "long_term_lease_liability"
+    },
+    {
+      "label": "Loans and advances",
+      "key": "loans_and_advances"
+    },
+    {
+      "label": null,
+      "key": "non_current_liabilities_total",
+      "original_label": "(section subtotal, label not printed)"
+    },
+    {
+      "label": "Deposits and short term prepayments",
+      "key": "deposits_short_term_prepayments"
+    },
+    {
+      "label": "Other receivables",
+      "key": "other_receivables"
+    },
+    {
+      "label": "Short term lease liability",
+      "key": "short_term_lease_liability"
+    },
+    {
+      "label": "Income tax",
+      "key": "income_tax_advance",
+      "original_label": "Income tax - advance"
+    },
+    {
+      "label": "Trade and other payables",
+      "key": "trade_and_other_payables"
+    },
+    {
+      "label": "Current portion of long term investments",
+      "key": "current_portion_long_term_investments"
+    },
+    {
+      "label": "Unpaid dividend",
+      "key": "unpaid_dividend"
+    },
+    {
+      "label": "Current portion of lease receivables",
+      "key": "current_portion_lease_receivables"
+    },
+    {
+      "label": "Unclaimed dividend",
+      "key": "unclaimed_dividend"
+    },
+    {
+      "label": "Other financial assets",
+      "key": "other_financial_assets"
+    },
+    {
+      "label": null,
+      "key": "current_liabilities_total",
+      "original_label": "(section subtotal, label not printed)"
+    },
+    {
+      "label": "Cash and bank balances",
+      "key": "cash_and_bank_balances"
+    },
+    {
+      "label": "TOTAL LIABILITIES",
+      "key": "total_liabilities"
+    },
+    {
+      "label": null,
+      "key": "current_assets_total",
+      "original_label": "(section subtotal, label not printed)"
+    },
+    {
+      "label": null,
+      "key": "total_equity_and_liabilities",
+      "original_label": "(section subtotal, label not printed)"
+    },
+    {
+      "label": null,
+      "key": "total_assets",
+      "original_label": "(section subtotal, label not printed)"
+    }
+  ]
+}

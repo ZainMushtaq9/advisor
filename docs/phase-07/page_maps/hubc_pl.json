@@ -1,0 +1,94 @@
+{
+  "company_symbol": "HUBC",
+  "statement_type": "income",
+  "method": "embedded_text",
+  "pdf": "storage/financial_reports/HUBC_Integrated_Annual_Report_2026.pdf",
+  "pages": [
+    275
+  ],
+  "unit_scale": "thousands",
+  "currency": "PKR",
+  "reporting_frequency": "annual",
+  "consolidated_status": "consolidated",
+  "audited_status": "audited",
+  "columns": [
+    {
+      "period_start": "2025-07-01",
+      "period_end": "2026-06-30",
+      "label": "2026"
+    },
+    {
+      "period_start": "2024-07-01",
+      "period_end": "2025-06-30",
+      "label": "2025"
+    }
+  ],
+  "specs": [
+    {
+      "label": "Revenue from contracts with customers - net",
+      "key": "revenue"
+    },
+    {
+      "label": "Cost of revenue",
+      "key": "cost_of_revenue"
+    },
+    {
+      "label": "GROSS PROFIT",
+      "key": "gross_profit"
+    },
+    {
+      "label": "PROFIT FROM OPERATIONS",
+      "key": "profit_from_operations"
+    },
+    {
+      "label": "Finance costs",
+      "key": "finance_costs"
+    },
+    {
+      "label": "Share of profit from associates and joint ventures - net",
+      "key": "share_of_profit_associates"
+    },
+    {
+      "label": "PROFIT BEFORE LEVY AND TAXATION FROM CONTINUING OPERATIONS",
+      "key": "profit_before_levy_and_tax"
+    },
+    {
+      "label": "Levy - final tax",
+      "key": "levy_final_tax"
+    },
+    {
+      "label": "PROFIT BEFORE TAXATION FROM CONTINUING OPERATIONS",
+      "key": "profit_before_tax_continuing"
+    },
+    {
+      "label": "Taxation",
+      "key": "taxation"
+    },
+    {
+      "label": "PROFIT FOR THE YEAR FROM CONTINUING OPERATIONS",
+      "key": "profit_for_year_continuing"
+    },
+    {
+      "label": "NET PROFIT FOR THE YEAR",
+      "key": "net_profit_for_year"
+    },
+    {
+      "label": "Continuing operations",
+      "key": "eps_continuing"
+    },
+    {
+      "label": "Discontinued operations",
+      "key": "eps_discontinued"
+    },
+    {
+      "label": "Basic and diluted earnings per share attributable to owners of the holding company",
+      "key": "eps_total",
+      "original_label": "Basic and diluted earnings per share attributable to owners of the holding company"
+    }
+  ],
+  "document_type": "annual_report",
+  "title": "HUBCO Integrated Annual Report 2026",
+  "source_url": "https://hubpower.com/wp-content/uploads/2026/09/HUBCO-Integrated-Annual-Report-2026.pdf",
+  "publication_date": "2026-09-21",
+  "publication_date_note": "Consolidated auditor report date (PDF p.274, printed p.273)."
+}

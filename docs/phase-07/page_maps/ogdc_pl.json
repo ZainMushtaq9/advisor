@@ -1,0 +1,76 @@
+{
+  "company_symbol": "OGDC",
+  "statement_type": "income",
+  "method": "embedded_text",
+  "pdf": "storage/financial_reports/OGDC_Interim_Dec2025.pdf",
+  "pages": [
+    8
+  ],
+  "unit_scale": "thousands",
+  "currency": "PKR",
+  "consolidated_status": "consolidated",
+  "audited_status": "unaudited",
+  "columns": [
+    {
+      "group": "quarter",
+      "reporting_frequency": "quarterly",
+      "period_start": "2025-10-01",
+      "period_end": "2025-12-31",
+      "label": "Three months 2025"
+    },
+    {
+      "group": "quarter",
+      "reporting_frequency": "quarterly",
+      "period_start": "2024-10-01",
+      "period_end": "2024-12-31",
+      "label": "Three months 2024"
+    },
+    {
+      "group": "half_year",
+      "reporting_frequency": "half_yearly",
+      "period_start": "2025-07-01",
+      "period_end": "2025-12-31",
+      "label": "Six months 2025"
+    },
+    {
+      "group": "half_year",
+      "reporting_frequency": "half_yearly",
+      "period_start": "2024-07-01",
+      "period_end": "2024-12-31",
+      "label": "Six months 2024"
+    }
+  ],
+  "specs": [
+    {
+      "label": "Sales",
+      "key": "sales_net",
+      "original_label": "Sales - net"
+    },
+    {
+      "label": "Gross profit",
+      "key": "gross_profit"
+    },
+    {
+      "label": "Profit before taxation",
+      "key": "profit_before_taxation"
+    },
+    {
+      "label": "Profit before income tax",
+      "key": "profit_before_income_tax"
+    },
+    {
+      "label": "Profit for the period",
+      "key": "profit_for_period"
+    },
+    {
+      "label": "Earnings per share",
+      "key": "eps_basic",
+      "original_label": "Earnings per share - basic and diluted (Rupees)"
+    }
+  ],
+  "document_type": "interim_filing",
+  "title": "OGDC Condensed Interim Consolidated Statements - six months ended 31 December 2025",
+  "source_url": "http://www.rns-pdf.londonstockexchange.com/rns/9937T_1-2026-2-23.pdf",
+  "publication_date": "2026-02-23",
+  "publication_date_note": "RNS transmission date (annexure CS-04-08, 23 Feb 2026)."
+}

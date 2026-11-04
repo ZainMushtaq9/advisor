@@ -1,0 +1,190 @@
+{
+  "company_symbol": "NML",
+  "statement_type": "balance_sheet",
+  "method": "embedded_text",
+  "pdf": "storage/financial_reports/NML_3rd_Quarter_Report_2025.pdf",
+  "pages": [
+    35,
+    36
+  ],
+  "unit_scale": "thousands",
+  "currency": "PKR",
+  "reporting_frequency": "nine_month",
+  "consolidated_status": "consolidated",
+  "audited_status": "unaudited",
+  "columns": [
+    {
+      "period_start": "2024-07-01",
+      "period_end": "2025-03-31",
+      "label": "31 March 2025"
+    },
+    {
+      "period_start": "2023-07-01",
+      "period_end": "2024-06-30",
+      "label": "30 June 2024"
+    }
+  ],
+  "specs": [
+    {
+      "label": "Issued, subscribed and paid-up share capital",
+      "key": "share_capital"
+    },
+    {
+      "label": "Reserves",
+      "key": "reserves"
+    },
+    {
+      "label": null,
+      "key": "equity_attributable_to_owners",
+      "original_label": "(section subtotal, label not printed)"
+    },
+    {
+      "label": "Non-controlling interest",
+      "key": "non_controlling_interest"
+    },
+    {
+      "label": "Total equity",
+      "key": "total_equity"
+    },
+    {
+      "label": "Long term financing - secured",
+      "key": "long_term_financing"
+    },
+    {
+      "label": "Lease liabilities",
+      "key": "lease_liabilities"
+    },
+    {
+      "label": "Security deposits",
+      "key": "security_deposits"
+    },
+    {
+      "label": "Retirement benefit obligation",
+      "key": "retirement_benefit_obligation"
+    },
+    {
+      "label": "Deferred liabilities",
+      "key": "deferred_liabilities"
+    },
+    {
+      "label": null,
+      "key": "non_current_liabilities_total",
+      "original_label": "(section subtotal, label not printed)"
+    },
+    {
+      "label": "Trade and other payables",
+      "key": "trade_and_other_payables"
+    },
+    {
+      "label": "Accrued mark-up",
+      "key": "accrued_markup"
+    },
+    {
+      "label": "Short term borrowings",
+      "key": "short_term_borrowings"
+    },
+    {
+      "label": "Current portion of non-current liabilities",
+      "key": "current_portion_non_current_liabilities"
+    },
+    {
+      "label": "Unclaimed dividend",
+      "key": "unclaimed_dividend"
+    },
+    {
+      "label": "Provision for taxation and levy - net",
+      "key": "provision_taxation_levy"
+    },
+    {
+      "label": null,
+      "key": "current_liabilities_total",
+      "original_label": "(section subtotal, label not printed)"
+    },
+    {
+      "label": "TOTAL LIABILITIES",
+      "key": "total_liabilities"
+    },
+    {
+      "label": "TOTAL EQUITY AND LIABILITIES",
+      "key": "total_equity_and_liabilities"
+    },
+    {
+      "label": "Property, plant and equipment",
+      "key": "property_plant_equipment"
+    },
+    {
+      "label": "Intangible Assets",
+      "key": "intangible_assets"
+    },
+    {
+      "label": "Right-of-use assets",
+      "key": "right_of_use_assets"
+    },
+    {
+      "label": "Long term investments",
+      "key": "long_term_investments"
+    },
+    {
+      "label": "Long term loans",
+      "key": "long_term_loans_asset",
+      "original_label": "Long term loans (asset side)"
+    },
+    {
+      "label": "Long term deposits",
+      "key": "long_term_deposits"
+    },
+    {
+      "label": null,
+      "key": "non_current_assets_total",
+      "original_label": "(section subtotal, label not printed)"
+    },
+    {
+      "label": "Stores, spare parts and loose tools",
+      "key": "stores_spare_parts"
+    },
+    {
+      "label": "Stock-in-trade",
+      "key": "stock_in_trade"
+    },
+    {
+      "label": "Trade debts",
+      "key": "trade_debts"
+    },
+    {
+      "label": "Loans and advances",
+      "key": "loans_and_advances"
+    },
+    {
+      "label": "Short term deposits and prepayments",
+      "key": "short_term_deposits_prepayments"
+    },
+    {
+      "label": "Other receivables",
+      "key": "other_receivables"
+    },
+    {
+      "label": "Accrued interest",
+      "key": "accrued_interest"
+    },
+    {
+      "label": "Short term investments",
+      "key": "short_term_investments"
+    },
+    {
+      "label": "Cash and bank balances",
+      "key": "cash_and_bank_balances"
+    },
+    {
+      "label": null,
+      "key": "current_assets_total",
+      "original_label": "(section subtotal, label not printed)"
+    },
+    {
+      "label": "TOTAL ASSETS",
+      "key": "total_assets"
+    }
+  ],
+  "document_type": "quarterly_report",
+  "title": "Nishat Mills 3rd Quarter Report 2025",
+  "source_url": "https://nishatmillsltd.com/wp-content/uploads/2026/09/3rd-Quarter-Report-2025.pdf"
+}
