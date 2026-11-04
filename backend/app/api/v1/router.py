@@ -5,6 +5,7 @@ from __future__ import annotations
 from fastapi import APIRouter
 
 from app.api.v1.endpoints import (
+    alerts,
     backtesting,
     decisions,
     forecasting,
@@ -42,3 +43,4 @@ api_router.include_router(backtesting.router)
 api_router.include_router(orchestration.router)
 api_router.include_router(rag.router)
 api_router.include_router(screener.router)
+api_router.include_router(alerts.router)
