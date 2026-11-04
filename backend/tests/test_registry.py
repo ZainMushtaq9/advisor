@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import pytest
 
-from app.models.reference import Company, CompanyIdentifier, Security
+from app.models.reference import Company, CompanyIdentifier, Sector, Security
 from app.models.registry import RegistryEvidence
 from app.services.registry import matching, normalization
 from app.services.registry.importer import SourceRecord, import_records
@@ -70,6 +70,17 @@ def test_normalize_ticker_upper_and_strips_spaces() -> None:
 def test_normalize_ticker_rejects_empty() -> None:
     with pytest.raises(ValueError):
         normalization.normalize_ticker("   ")
+
+
+def test_normalize_ticker_accepts_digit_and_alphanumeric_symbols() -> None:
+    """Regression: no letters-only ticker validator may ever reject the
+    digit/alphanumeric PSX symbols. normalize_ticker only upper-cases
+    and strips whitespace; it must pass these four symbols unchanged
+    apart from case."""
+    assert normalization.normalize_ticker("786") == "786"
+    assert normalization.normalize_ticker("baplr1") == "BAPLR1"
+    assert normalization.normalize_ticker("spac2") == "SPAC2"
+    assert normalization.normalize_ticker("tplrf1") == "TPLRF1"
 
 
 def test_normalize_name_strips_suffix_only_for_key() -> None:
@@ -358,3 +369,43 @@ def test_reconcile_reports_missing_and_extra() -> None:
     assert report.missing_from_registry == ["MISSING"]
     assert report.extra_in_registry == ["EXTRA"]
     assert report.coverage_ratio == 0.5
+
+
+# ---------------------------------------------------------------- universe endpoint
+def test_data_universe_returns_summary_only() -> None:
+    """Phase 4 brief: GET /api/v1/data/universe returns metadata,
+    provenance, freshness, validation counts and scope limitations —
+    never a ticker list, never a CSV dump."""
+    from datetime import datetime, timezone
+
+    from app.api.v1.endpoints.universe import data_universe
+
+    session = FakeSession()
+    session.add(Company(legal_name="Test Company", status="UNVERIFIED"))
+    session.add(Security(company_id=1, ticker="TEST", status="UNVERIFIED"))
+    session.add(
+        Sector(name="Test Sector", source_sector_name="Test Sector", source="test")
+    )
+    session.add(
+        RegistryEvidence(
+            entity_type="company",
+            entity_id=1,
+            source_key="test_source",
+            source_record_key="1",
+            collected_at=datetime(2026, 11, 4, tzinfo=timezone.utc),
+        )
+    )
+    body = data_universe(session)
+    assert body["scope"] == "Main Board / Normal Counter only"
+    assert body["companies"] == 1
+    assert body["securities"] == 1
+    assert body["sectors"] == 1
+    assert body["companies_by_status"] == {"UNVERIFIED": 1}
+    assert body["evidence_rows"] == 1
+    assert body["sources"] == ["test_source"]
+    assert (
+        body["freshness"]["evidence_collected_latest"] == "2026-11-04T00:00:00+00:00"
+    )
+    assert body["scope_limitations"]
+    assert "tickers" not in body
+    assert "csv" not in " ".join(body.keys()).lower()

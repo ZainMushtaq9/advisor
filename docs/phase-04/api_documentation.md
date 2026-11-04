@@ -18,6 +18,7 @@ truthful reason, never a fake empty registry.
 | GET /registry/statistics | Live totals + by-status counts + evidence rows | — |
 | GET /registry/quality | By-status counts, pending/conflicted/verified counts, interpretation note | — |
 | GET /registry/sources | data_sources rows + sync configs (manual-only note) | — |
+| GET /data/universe | Central-universe summary: counts, provenance, freshness, validation counts, scope limitations — never a ticker list, never a CSV dump | — |
 
 ## Pagination and validation
 
@@ -43,3 +44,12 @@ truthful reason, never a fake empty registry.
 All 9 endpoints returned 200 on the live (empty) database;
 unknown ids returned 404; limit=999 returned 422; statistics
 returned companies=0, securities=0. See test_report.md.
+
+## Completion addendum (2026-11-04, phase-04-completion branch)
+
+GET /data/universe was added on the completion branch and
+live-verified against the populated registry: 200 with
+companies=470, securities=470, sectors=37, evidence_rows=940,
+sources=[dps_listing_status_2026-11-04_main_board_normal_counter],
+companies_by_status={UNVERIFIED: 470}, no ticker list in the
+response. See phase_04_completion_2026-11-04.md.
