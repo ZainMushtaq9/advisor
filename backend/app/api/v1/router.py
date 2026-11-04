@@ -5,6 +5,7 @@ from __future__ import annotations
 from fastapi import APIRouter
 
 from app.api.v1.endpoints import (
+    backtesting,
     decisions,
     forecasting,
     fundamentals,
@@ -34,3 +35,4 @@ api_router.include_router(forecasting.router)
 api_router.include_router(risk.router)
 api_router.include_router(decisions.router)
 api_router.include_router(portfolios.router)
+api_router.include_router(backtesting.router)
