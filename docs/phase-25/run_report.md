@@ -8,8 +8,9 @@ consolidates).
 
 - **Branch:** `phase-25-automation`, new branch from
   `phase-24-security` (`f648bd5`).
-- **Commit:** (filled at push time — see parent
-  verification note).
+- **Commit:** `d269b3e` (implementation) + the
+  follow-up commit recording this SHA in this file
+  (see git log on `phase-25-automation`).
 - **Bases untouched:** remote `phase-24-security` still
   `f648bd5`, remote `main` still `eb6025b`. No merge to
   main, no force-push, no history rewrite, no cross-push,
