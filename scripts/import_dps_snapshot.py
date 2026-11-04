@@ -43,7 +43,8 @@ import argparse
 import csv
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "backend"))
 
@@ -58,9 +59,9 @@ SOURCE_DISPLAY = (
     "page header Nov 4, 2026 1:17 PM (live browser page-by-page)"
 )
 # Page header time on the DPS portal during the parent browser read.
-COLLECTED_AT = datetime(2026, 11, 4, 13, 17, tzinfo=timezone.utc).astimezone(
-    timezone.utc
-)
+# The header "Nov 4, 2026 1:17 PM" is portal local time (Asia/Karachi);
+# it is stored timezone-aware, not relabelled as UTC.
+COLLECTED_AT = datetime(2026, 11, 4, 13, 17, tzinfo=ZoneInfo("Asia/Karachi"))
 
 
 def load_snapshot_csv(path: str) -> list[dict]:
@@ -107,7 +108,7 @@ def load_snapshot_csv(path: str) -> list[dict]:
     return rows
 
 
-def db_counts(session, Company, Sector, Security, RegistryEvidence,  # noqa: N803
+def db_counts(session, Company, Sector, Security, RegistryEvidence,
               CompanyIdentifier, SymbolHistory, DataQualityReport) -> dict:
     from sqlalchemy import func
 
@@ -149,7 +150,11 @@ def main() -> int:
     from app.main import create_app
     from app.models.governance import DataQualityReport
     from app.models.reference import (
-        Company, CompanyIdentifier, Sector, Security, SymbolHistory,
+        Company,
+        CompanyIdentifier,
+        Sector,
+        Security,
+        SymbolHistory,
     )
     from app.models.registry import RegistryEvidence
     from app.services.registry.importer import SourceRecord, import_records
