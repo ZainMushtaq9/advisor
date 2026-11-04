@@ -22,6 +22,7 @@ from app.models import (  # noqa: F401
     ownership_actions,
     reference,
     registry,
+    risk,
 )
 
 __all__ = [
@@ -36,4 +37,5 @@ __all__ = [
     "ownership_actions",
     "reference",
     "registry",
+    "risk",
 ]
