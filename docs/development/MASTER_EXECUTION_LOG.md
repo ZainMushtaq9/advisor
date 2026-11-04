@@ -64,3 +64,10 @@
 - Gate check passed; 54-table schema + storage engine built; 26 docs in docs/phase-03/.
 - Audit PASS WITH LIMITATIONS (0 CRITICAL, 3 HIGH, 9 MEDIUM, 10 LOW); fixes applied (migrations 0004); first verification FAILED cycle (D-49 unnamed FK), fixed, second verification VERIFIED.
 - 53 tests passed; backup/restore verified; commit on phase-03-database-storage; push result in GITHUB_PUSH_LOG.md.
+
+## 2026-11-04 — Phase 4 execution (coordinator)
+- Gate check passed (Phase 2/3 reports, tables, Alembic head, 0 live rows).
+- Branch phase-04-company-registry from b22281a; migration a909e8449cdd applied (registry_evidence).
+- Services, 9 registry APIs, /companies frontend page, 18 new backend tests, PG check script (rolled back), 11 Phase 4 docs written (audit + completion + acceptance pending).
+- Independent audit 2026-11-04: PASS WITH LIMITATIONS (0 CRITICAL, 1 HIGH, 5 MEDIUM, 6 LOW; file docs/phase-04/independent_audit.md). Fix pass completed and re-tested: backend 44 passed (26 Phase 4 + 18 Phase 2), ruff clean, PG check PHASE4_PG_CHECK_OK with adversarial paths, frontend typecheck/lint/build + Vitest 11 passed. Completion + acceptance reports written; 14 docs in docs/phase-04/. Final Phase 4 status PARTIALLY COMPLETE (population blocked on a dated official snapshot). Defects D-54 to D-65 appended. Commit + push attempt follow; no merge to main. Phase 5 NOT started by this coordinator (parent starts it after acceptance).
+- Population blocked (D-51/D-52); independent audit spawned; no fixes applied after audit yet; no commit/push yet.

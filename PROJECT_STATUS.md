@@ -1,3 +1,14 @@
+# PSX Intelligence AI — Project Status (Phase 4 complete as PARTIALLY COMPLETE; Phase 5 next, parent starts it)
+
+## Phase 4 status (coordinator, 2026-11-04 — see docs/phase-04/phase_04_completion_report.md)
+
+- **Phase:** Phase 4 of 30 — PSX Company & Security Registry Discovery, Verification and Population — implemented, independently audited (PASS WITH LIMITATIONS), audit fixes applied and re-tested.
+- **Final status: PARTIALLY COMPLETE.** Registry engine verified (44 backend tests passed — 26 Phase 4 + 18 Phase 2 re-run, ruff clean, live-PG check with adversarial paths rolled back clean, frontend typecheck/lint/build + Vitest 11 passed). Independent audit: 0 CRITICAL, 1 HIGH (H1 VERIFIED trust model), 5 MEDIUM, 6 LOW — all fixed except ISIN check-digit recomputation (accepted as a documented Phase 5 concern) and the pytest fake-session limitation (mitigated by the live-PG adversarial check). Production population is BLOCKED: no usable official registry source obtainable on this VM (DPS Listing Status yields 0 rows via text fetch; DPS direct access fails; DPS market-watch text copy is a stale 2026-01-25 cache with no company names; PSX homepage gives 26 partial scrip rows with no names/sectors/statuses). Live production counts are therefore 0 companies, 0 securities, 0 sectors — by honest design, not by omission. No data was invented to fill the gap. 14 docs in docs/phase-04/.
+- **What Phase 4 does NOT contain:** no live DPS/PSX collection, no scheduler, no canonical sector mapping, no merge to main, no production registry rows, no Phase 5 work (parent starts Phase 5 after acceptance).
+- **Git:** branch phase-04-company-registry (from Phase 3 tip b22281a); migration head a909e8449cdd; 57 public tables.
+- **Accounts:** no external account created in Phase 4 (see docs/development/ACCOUNT_REGISTER.md).
+
+
 # PSX Intelligence AI — Project Status (Phase 3 update on top of Phase 2)
 
 ## Phase 3 status (coordinator, 2026-11-04 — see docs/phase-03/phase_03_completion_report.md)
