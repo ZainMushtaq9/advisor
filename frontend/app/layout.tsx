@@ -16,9 +16,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PSX Intelligence AI — Foundation",
+  title: "PSX Intelligence AI",
   description:
-    "Phase 2 foundation shell for PSX Intelligence AI. No market data is shown yet.",
+    "PSX research workspace: stored market, statement, macro and risk data with explicit coverage limits. Descriptive analysis only — not investment advice, not forecasts, not recommendations.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

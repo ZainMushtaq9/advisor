@@ -31,7 +31,18 @@ export class ApiClient {
     this.timeoutMs = options.timeoutMs ?? 10_000;
   }
 
+  /**
+   * GET one product endpoint. The backend mounts every product router under
+   * /api/v1, so that prefix is added here — callers pass the short path
+   * ("/companies", "/market/prices", ...). Only /health lives outside the
+   * versioned prefix; see health(), which uses getRaw().
+   */
   async get<T>(path: string): Promise<T> {
+    return this.getRaw<T>(`/api/v1${path}`);
+  }
+
+  /** GET an unprefixed path (used only for /health). */
+  async getRaw<T>(path: string): Promise<T> {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), this.timeoutMs);
     try {
@@ -64,7 +75,7 @@ export class ApiClient {
   /** Probe backend health. Returns null (not an exception) when unreachable. */
   async health(): Promise<ApiHealth | null> {
     try {
-      return await this.get<ApiHealth>("/health");
+      return await this.getRaw<ApiHealth>("/health");
     } catch {
       return null;
     }
