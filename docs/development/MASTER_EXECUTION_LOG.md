@@ -71,3 +71,7 @@
 - Services, 9 registry APIs, /companies frontend page, 18 new backend tests, PG check script (rolled back), 11 Phase 4 docs written (audit + completion + acceptance pending).
 - Independent audit 2026-11-04: PASS WITH LIMITATIONS (0 CRITICAL, 1 HIGH, 5 MEDIUM, 6 LOW; file docs/phase-04/independent_audit.md). Fix pass completed and re-tested: backend 44 passed (26 Phase 4 + 18 Phase 2), ruff clean, PG check PHASE4_PG_CHECK_OK with adversarial paths, frontend typecheck/lint/build + Vitest 11 passed. Completion + acceptance reports written; 14 docs in docs/phase-04/. Final Phase 4 status PARTIALLY COMPLETE (population blocked on a dated official snapshot). Defects D-54 to D-65 appended. Commit + push attempt follow; no merge to main. Phase 5 NOT started by this coordinator (parent starts it after acceptance).
 - Population blocked (D-51/D-52); independent audit spawned; no fixes applied after audit yet; no commit/push yet.
+
+## 2026-11-04 — Phase 5 gate check (BLOCKED)
+- Verified actual DB counts: companies 0, securities 0, sectors 0, registry_evidence 0, market_prices 0; 57 tables; head a909e8449cdd.
+- Gate FAILED per Phase 5 Section 2. No implementation, no ingestion, no invented company list. Gate report: docs/phase-05/phase_05_gate_report.md. Phase 6 NOT started.

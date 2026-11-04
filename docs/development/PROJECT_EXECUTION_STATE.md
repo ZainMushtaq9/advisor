@@ -61,3 +61,12 @@ See DEFECT_REGISTER.md. No defect in this file is marked resolved unless its ret
 - Audit: PASS WITH LIMITATIONS → all HIGH fixed; M9 closed by second independent verification (cycle downgrade 0 / upgrade 0).
 - Paid services: ZERO. No external account created. No PSX data collected. No merge to main.
 - Next: Phase 4 only on separate instruction + gate check.
+
+## Phase 5 — BLOCKED at gate (2026-11-04)
+
+- Branch phase-05-market-data-engine, created from Phase 4 tip 0f4342f.
+- Gate FAILED, verified in the actual database by the Phase 5 coordinator: companies 0, securities 0, sectors 0, registry_evidence 0, company_identifiers 0, symbol_history 0, market_prices 0; 57 public tables; Alembic head a909e8449cdd.
+- No collector implementation, no backfill, no ingestion was performed. No replacement company list was invented; psx-dps/psxdata README claims were not used as a population base; test/fixture records were not promoted to production.
+- Unblocker: a dated official snapshot (e.g. live-browser extraction of the DPS Listing Status table on a stated date, or a documented machine-readable official list), imported through the Phase 4 engine with the >=2-source VERIFIED rule and source_key provenance control, licensing resolved in writing, reconciliation re-run with a real coverage result. No scraper against psx.com.pk/dps.psx.com.pk (PSX Terms of Use restrict automated navigation without prior written permission).
+- Documents: docs/phase-05/phase_05_gate_report.md (gate report, not a completion claim) and docs/phase-05/source_research_preparation.md (preparation only, not collection). Phase 6 NOT started.
+- Push: NOT attempted for this gate-report-only branch (no verified implementation to push; standing GitHub credential blocker already blocks Phases 2-4 branches). No push to main, no merge to main.
