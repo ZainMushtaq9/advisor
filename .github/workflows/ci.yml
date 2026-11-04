@@ -1,0 +1,27 @@
+# PSX Intelligence AI — minimal CI (Phase 2, Team A)
+# Runs ONLY checks that exist today: the environment audit script and a
+# secrets-sanity check (no .env, key, or credential file may be tracked).
+# Backend test jobs (pytest) and frontend jobs (lint/build/Playwright) are
+# added by those teams when their suites exist — they are NOT claimed here.
+# CI runs within GitHub Free limits; if free-tier terms change, the fallback
+# is local git + local test runs, never a paid tier (PKR 0).
+name: ci
+on:
+  push:
+    branches: [main, development]
+  pull_request:
+    branches: [main, development]
+jobs:
+  env-and-hygiene:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Environment audit (report only, no installs)
+        run: bash scripts/check_env.sh || true
+      - name: Secrets sanity — fail if a secret file is tracked
+        run: |
+          if git ls-files | grep -Eq '(^\.env$|\.env\.|credentials|id_rsa|\.pem$|\.key$)'; then
+            echo "ERROR: a secret/credential file appears to be tracked. Remove it and report it." >&2
+            exit 1
+          fi
+          echo "No tracked secret files found."

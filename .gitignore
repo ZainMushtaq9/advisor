@@ -1,0 +1,70 @@
+# PSX Intelligence AI — .gitignore (Phase 2, Team A)
+# Rule: never commit secrets, credentials, .env files, personal info,
+# or large generated datasets. If in doubt, do not commit it.
+
+# --- Secrets & environment (NEVER commit) ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+id_rsa*
+credentials*.json
+*secret*
+*token*
+secrets/
+
+# --- Python ---
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# --- Node / frontend ---
+node_modules/
+.next/
+out/
+dist/
+build/
+*.tsbuildinfo
+frontend/node_modules/
+frontend/.next/
+
+# --- Data & datasets (NEVER commit real or large data) ---
+data/
+*.csv
+*.parquet
+*.db
+*.sqlite
+*.sqlite3
+dev.db
+storage/raw/*
+storage/processed/*
+storage/financial_reports/*
+storage/parquet/*
+storage/research_reports/*
+storage/backups/*
+!storage/raw/README.md
+!storage/processed/README.md
+!storage/financial_reports/README.md
+!storage/parquet/README.md
+!storage/research_reports/README.md
+!storage/backups/README.md
+
+# --- Services / local state ---
+*.pid
+celerybeat-schedule
+dump.rdb
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
