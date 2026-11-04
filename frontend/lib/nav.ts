@@ -7,21 +7,28 @@ export interface NavItem {
 
 /** Single source of truth for primary navigation (Phase 23 product IA). */
 export const NAV_ITEMS: NavItem[] = [
-  { href: "/", label: "Home", description: "Project overview and live status." },
+  {
+    href: "/",
+    label: "Home",
+    description: "Project overview and live status.",
+  },
   {
     href: "/dashboard",
     label: "Dashboard",
-    description: "Market overview, macro regime, alerts and decisions at a glance.",
+    description:
+      "Market overview, macro regime, alerts and decisions at a glance.",
   },
   {
     href: "/companies",
     label: "Companies",
-    description: "Registry of 470 Main Board / Normal Counter companies, searchable.",
+    description:
+      "Registry of 470 Main Board / Normal Counter companies, searchable.",
   },
   {
     href: "/market",
     label: "Market",
-    description: "Daily OHLCV snapshot for 2026-11-03, plus breadth and liquidity.",
+    description:
+      "Daily OHLCV snapshot for 2026-11-03, plus breadth and liquidity.",
   },
   {
     href: "/securities",
@@ -31,7 +38,8 @@ export const NAV_ITEMS: NavItem[] = [
   {
     href: "/news",
     label: "News",
-    description: "Seed events from stored rows only; live collection is Terms-gated.",
+    description:
+      "Seed events from stored rows only; live collection is Terms-gated.",
   },
   {
     href: "/fundamentals",
@@ -41,7 +49,8 @@ export const NAV_ITEMS: NavItem[] = [
   {
     href: "/valuation",
     label: "Valuation",
-    description: "Seventeen valuation methods; only computable ones carry values.",
+    description:
+      "Seventeen valuation methods; only computable ones carry values.",
   },
   {
     href: "/macro",
@@ -51,27 +60,32 @@ export const NAV_ITEMS: NavItem[] = [
   {
     href: "/indicators",
     label: "Technical",
-    description: "Deterministic indicator coverage; every value explained or marked NOT_CALCULABLE.",
+    description:
+      "Deterministic indicator coverage; every value explained or marked NOT_CALCULABLE.",
   },
   {
     href: "/forecasts",
     label: "Forecasts",
-    description: "Forecast assessments — all abstained on the current single-date series.",
+    description:
+      "Forecast assessments — all abstained on the current single-date series.",
   },
   {
     href: "/risk",
     label: "Risk",
-    description: "Risk metrics, controls, stress results and review-only flags.",
+    description:
+      "Risk metrics, controls, stress results and review-only flags.",
   },
   {
     href: "/portfolio",
     label: "Portfolio",
-    description: "SIMULATED portfolios on hypothetical capital — never real holdings.",
+    description:
+      "SIMULATED portfolios on hypothetical capital — never real holdings.",
   },
   {
     href: "/screener",
     label: "Screener",
-    description: "Filter results over stored rows — not opportunities or recommendations.",
+    description:
+      "Filter results over stored rows — not opportunities or recommendations.",
   },
   {
     href: "/alerts",
@@ -86,17 +100,25 @@ export const NAV_ITEMS: NavItem[] = [
   {
     href: "/research",
     label: "Research",
-    description: "Decisions, backtests, orchestration and grounded document search.",
+    description:
+      "Decisions, backtests, orchestration and grounded document search.",
   },
   {
     href: "/admin",
     label: "Admin",
-    description: "Backend health and endpoint status. No credentials are shown.",
+    description:
+      "Backend health and endpoint status. No credentials are shown.",
   },
   {
     href: "/admin/jobs",
     label: "Jobs",
     description:
       "Job automation: registry, runs, checkpoints and dead letters. Read-only; actions run through the CLI.",
+  },
+  {
+    href: "/admin/evaluation",
+    label: "Evaluation",
+    description:
+      "Model evaluation, forecast monitoring and research quality benchmarking. Read-only; runs execute through the CLI.",
   },
 ];

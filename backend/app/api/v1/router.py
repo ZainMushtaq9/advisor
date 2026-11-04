@@ -9,6 +9,7 @@ from app.api.v1.endpoints import (
     auth,
     backtesting,
     decisions,
+    evaluation,
     forecasting,
     fundamentals,
     indicators,
@@ -50,3 +51,4 @@ api_router.include_router(screener.router)
 api_router.include_router(alerts.router)
 api_router.include_router(reports.router)
 api_router.include_router(jobs.router)
+api_router.include_router(evaluation.router)

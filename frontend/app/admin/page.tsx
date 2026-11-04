@@ -22,16 +22,26 @@ export default function AdminPage() {
   const statuses = useApi<Record<string, unknown>>("/reports/status");
 
   const rows: EndpointStatus[] = [
-    { endpoint: "Backend /health", status: health.state === "ready" ? "ok" : health.state },
+    {
+      endpoint: "Backend /health",
+      status: health.state === "ready" ? "ok" : health.state,
+    },
     { endpoint: "Registry", status: "see Companies" },
     { endpoint: "Market", status: "see Market" },
-    { endpoint: "Fundamentals / Valuation", status: "see Fundamentals, Valuation" },
+    {
+      endpoint: "Fundamentals / Valuation",
+      status: "see Fundamentals, Valuation",
+    },
     { endpoint: "Macro", status: "see Macro" },
     { endpoint: "Forecasting", status: "see Forecasts" },
     { endpoint: "Risk / Decisions", status: "see Risk, Research" },
     { endpoint: "Portfolio / Backtesting", status: "see Portfolio, Research" },
-    { endpoint: "Screener / Alerts / Reports", status: "see Screener, Alerts, Reports" },
+    {
+      endpoint: "Screener / Alerts / Reports",
+      status: "see Screener, Alerts, Reports",
+    },
     { endpoint: "Jobs / automation", status: "see Jobs" },
+    { endpoint: "Evaluation", status: "see Evaluation" },
   ];
 
   return (
@@ -43,7 +53,9 @@ export default function AdminPage() {
       <div className="mx-auto grid w-full max-w-6xl gap-4 px-4 pt-6">
         <Card title="Backend health">
           {health.state === "loading" && <p className="text-sm">Loading…</p>}
-          {health.state === "error" && <StateNotice kind="error" message={health.error} />}
+          {health.state === "error" && (
+            <StateNotice kind="error" message={health.error} />
+          )}
           {health.state === "ready" && (
             <p className="text-sm">
               Status: <strong>{health.data.status}</strong> · Service:{" "}
@@ -71,15 +83,18 @@ export default function AdminPage() {
         </Card>
         <Card title="Reports status (live)">
           {statuses.state === "loading" && <p className="text-sm">Loading…</p>}
-          {statuses.state === "error" && <StateNotice kind="error" message={statuses.error} />}
+          {statuses.state === "error" && (
+            <StateNotice kind="error" message={statuses.error} />
+          )}
           {statuses.state === "ready" && (
             <p className="text-sm">
               Total reports: {String(statuses.data.total ?? "—")} · DRAFT:{" "}
               {String(
-                (statuses.data.by_status as Record<string, number> | undefined)?.DRAFT ??
-                  "—",
+                (statuses.data.by_status as Record<string, number> | undefined)
+                  ?.DRAFT ?? "—",
               )}{" "}
-              · Published externally: {String(statuses.data.published_externally ?? "—")}
+              · Published externally:{" "}
+              {String(statuses.data.published_externally ?? "—")}
             </p>
           )}
         </Card>
