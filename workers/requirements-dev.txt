@@ -1,0 +1,9 @@
+# Worker test dependencies (Phase 2, coordinator fix 2026-11-04).
+# workers/requirements.txt intentionally contains runtime deps only.
+# The worker tests import `workers.*`, so they must be run from the
+# REPO ROOT, not from workers/:
+#   workers/.venv/bin/python -m pytest workers/tests/ -q
+# Coordinator finding: workers/.venv initially had no pytest installed,
+# so the tests could not be reproduced until pytest was installed here.
+# Pin matches the backend test dependency (pytest 9.2.0, MIT).
+pytest==9.2.0

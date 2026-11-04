@@ -1,0 +1,21 @@
+# Repo-root .dockerignore — coordinator fix for Team E defect D-04 (Phase 2).
+# Without this, `docker build` from the repo root sent a ~1 GB context
+# (node_modules, .venv, .next). With it, the first real build context
+# should be a few MB. Docker itself is still NOT verified running on
+# this VM (see docs/phase-02/DOCKER_SETUP.md blocker D-05) — this file
+# does not claim Docker verification.
+node_modules
+.venv
+.next
+.git
+storage/
+*.db
+deployment/.env
+.env
+__pycache__
+*.pyc
+frontend/node_modules
+frontend/.next
+backend/.venv
+database/.venv
+workers/.venv

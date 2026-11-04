@@ -1,0 +1,104 @@
+flowchart TB
+    subgraph EXT["External sources - outside system boundary"]
+        direction TB
+        PSXPORTAL["PSX Data Portal<br/>dps.psx.com.pk<br/>VERIFIED portal exists; endpoints undocumented"]
+        PSXDPS["psx-dps library (MIT, no API key)<br/>~496 trading vs ~1029 listed; ~5y EOD;<br/>today's ticks only; 38 sectors; 224k+ announcements"]
+        PSXDATA["psxdata library (MIT, PyPI, alpha 0.1.0a1)<br/>daily OHLCV + live snapshots ONLY;<br/>no historical intraday archive; 1000+ tickers; 37 sectors"]
+        EULER["Eulerpool - VENDOR ONLY<br/>NO PSX coverage verified<br/>No paid API approved - PKR 0 budget"]
+        IR["Listed-company investor-relations sites<br/>UNVERIFIED per-company machine coverage"]
+        ECON["SECP / SBP / PBS / Finance Division /<br/>World Bank / IMF / FRED<br/>UNVERIFIED interfaces - no endpoints asserted"]
+        NEWS["News sources<br/>UNVERIFIED - no source specified in Phase 1"]
+    end
+    subgraph L1["LAYER 1 - Data Acquisition (only layer touching external sources)"]
+        direction LR
+        C_MKT["Market collectors<br/>(snapshot, quote)"]
+        C_HIST["Historical collector<br/>(EOD only)"]
+        C_FIN["Financial-report collector<br/>(coverage UNVERIFIED)"]
+        C_ANN["Announcement collector<br/>(PDF URLs; extraction UNVERIFIED)"]
+        C_ECO["Economic collector<br/>(UNVERIFIED slot)"]
+        C_NEWS["News collector<br/>(UNVERIFIED slot)"]
+    end
+    subgraph L2["LAYER 2 - Data Validation"]
+        V["Source/timestamp validation<br/>Duplicate detection<br/>Missing-data detection<br/>Financial validation<br/>Conflict reconciliation<br/>(NEVER silently merge)"]
+    end
+    subgraph L3["LAYER 3 - Storage - zero-cost stack<br/>PostgreSQL / SQLAlchemy / Alembic (production design)<br/>Local FS + Apache Parquet + optional self-hosted MinIO"]
+        direction LR
+        RAW["Raw store<br/>(immutable payloads)"]
+        VAL["Validated store<br/>(records, flags, conflicts)"]
+        DER["Derived store<br/>(analysis, forecasts, decisions)"]
+        AUD["Audit log<br/>(append-only)"]
+    end
+    subgraph L4["LAYER 4 - Financial Analysis<br/>Python / FastAPI / Pydantic (API design)"]
+        A["Fundamental - Technical - Sector<br/>Macro (UNVERIFIED inputs) - Health scoring - Valuation<br/>Deterministic functions only"]
+    end
+    subgraph L5["LAYER 5 - Forecasting<br/>Ollama local inference ONLY for AI assistance"]
+        F["Statistical - Quantitative<br/>AI-assisted research (no LLM numbers)<br/>Scenarios - Validation<br/>Probabilistic, never guaranteed"]
+    end
+    subgraph L6["LAYER 6 - Investment Decisions<br/>NO real trades - decision support only"]
+        direction LR
+        RISK["Risk assessment"]
+        REC["Recommendation engine<br/>(candidates only)"]
+        PORT["Portfolio optimisation<br/>(proposed, not executed)"]
+        AUDIT["Independent audit<br/>VETO path"]
+    end
+    subgraph L7["LAYER 7 - Agent Orchestration<br/>Redis (design target, NOT installed locally)"]
+        O["Registry use - Task manager<br/>Communication - Scheduling<br/>Retries (bounded) - Monitoring - Cost control"]
+    end
+    subgraph L8["LAYER 8 - User Interface<br/>Next.js / React / TypeScript / Tailwind / shadcn (design)"]
+        direction LR
+        PUB["Public site - Dashboard<br/>Company pages - Forecasting views"]
+        ADV["Portfolio advisor<br/>(audit-passed only) - Reports"]
+        ADM["Admin<br/>(monitoring, gates, config)"]
+    end
+    USER["Public user"]
+    ADMIN["Administrator / operator"]
+    HUMAN["Human gate reviewer<br/>(recommendation approval)"]
+    PSXPORTAL -->|"portal data via library"| C_MKT
+    PSXDPS -->|"primary market snapshot / EOD / ticks / announcements"| C_MKT
+    PSXDPS -->|"EOD history; today's ticks"| C_HIST
+    PSXDPS -->|"announcement list + PDF URLs"| C_ANN
+    PSXDATA -->|"backup daily OHLCV / live snapshots"| C_MKT
+    PSXDATA -->|"backup EOD history"| C_HIST
+    EULER -.->|"NOT USED in Phase 1<br/>no PSX coverage verified"| C_MKT
+    IR -->|"reports/statements (per-company, UNVERIFIED)"| C_FIN
+    ECON -.->|"UNVERIFIED - gated slot, no live claim"| C_ECO
+    NEWS -.->|"UNVERIFIED - no source specified"| C_NEWS
+    C_MKT -->|"raw payloads + provenance"| V
+    C_HIST -->|"raw payloads + provenance"| V
+    C_FIN -->|"raw payloads + provenance"| V
+    C_ANN -->|"raw payloads + provenance"| V
+    C_ECO -->|"raw payloads + provenance (if ever verified)"| V
+    C_NEWS -->|"raw payloads + provenance (if ever verified)"| V
+    V -->|"validated / flagged / conflict records"| VAL
+    V -->|"raw payloads (intake-checked)"| RAW
+    VAL -->|"validated records only"| A
+    A -->|"analysis outputs + input linkage"| DER
+    DER -->|"analysis as forecast inputs"| F
+    F -->|"forecast outputs + validation"| DER
+    DER -->|"analysis + forecasts"| RISK
+    DER -->|"analysis + forecasts"| REC
+    RISK -->|"risk outputs"| REC
+    RISK -->|"risk outputs"| PORT
+    REC -->|"recommendation candidates"| AUDIT
+    PORT -->|"proposed allocations"| AUDIT
+    AUDIT -->|"passed / flagged / vetoed + reasons"| AUD
+    AUDIT -->|"passed outputs only"| DER
+    DER -->|"audit-passed views"| PUB
+    DER -->|"audit-passed recommendations"| ADV
+    AUD -->|"audit evidence for reports"| ADV
+    O -->|"collection tasks"| C_MKT
+    O -->|"collection tasks"| C_HIST
+    O -->|"validation tasks; failure alerts back"| V
+    O -->|"analysis / forecast / decision tasks (in dependency order)"| A
+    O -->|"analysis / forecast / decision tasks"| F
+    O -->|"decision tasks; veto/flag alerts back"| REC
+    O -->|"monitoring + human-gate tasks"| ADM
+    O -->|"human-gate requests"| HUMAN
+    HUMAN -->|"gate decisions (recorded)"| O
+    HUMAN -->|"gate decisions (recorded)"| AUD
+    USER -->|"browse (read-only)"| PUB
+    USER -->|"browse (read-only)"| ADV
+    ADMIN -->|"operate (via Layer 7 tasks, never direct DB edits)"| ADM
+    ADM -->|"task requests"| O
+    VAL -.->|"read (validated only)"| F
+    VAL -.->|"read (validated only)"| RISK

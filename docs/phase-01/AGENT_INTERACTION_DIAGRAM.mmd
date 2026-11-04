@@ -1,0 +1,60 @@
+flowchart TB
+    subgraph L7["LAYER 7 - Orchestrator (control plane, computes NO financial numbers)"]
+        ORCH["Orchestrator<br/>task manager, scheduler, bounded retries,<br/>monitoring, cost control (PKR 0 budget)"]
+        REG["Agent registry (OTHER TEAM OWNS)<br/>looked up, never redefined here"]
+    end
+    subgraph AGENTS["Agents (roles via registry)"]
+        COL["Collection agent<br/>Layer 1"]
+        VALA["Validation agent<br/>Layer 2"]
+        ANA["Analysis agent<br/>Layer 4"]
+        FCA["Forecasting agent<br/>Layer 5"]
+        DECA["Decision agent<br/>Layer 6: risk, candidates, optimisation"]
+        AUDITA["Independent audit agent<br/>Layer 6: separate path, VETO power"]
+    end
+    subgraph DET["Deterministic calculation functions<br/>Python - the ONLY source of financial numbers"]
+        FN_AN["Analysis functions<br/>versioned"]
+        FN_FC["Forecast functions<br/>versioned"]
+        FN_RISK["Risk / optimisation functions<br/>versioned"]
+    end
+    subgraph L3["LAYER 3 - Storage"]
+        RAW["Raw store (immutable)"]
+        VAL["Validated store"]
+        DER["Derived store"]
+        AUDLOG["Audit log (append-only)"]
+    end
+    HUMAN["Human-in-the-loop gate<br/>recommendation approval"]
+    UI["Layer 8 UI<br/>audit-passed views only"]
+    ORCH -->|"lookup role"| REG
+    REG -->|"agent binding (or fail loudly if missing)"| ORCH
+    ORCH -->|"task: collect (idempotency key)"| COL
+    COL -->|"raw payload + provenance"| VALA
+    VALA -->|"validated / flagged / conflict records"| VAL
+    VALA -->|"intake-checked raw"| RAW
+    VALA -->|"validation failure alert (permanent: no retry loop)"| ORCH
+    ORCH -->|"task: analyse (only after validation)"| ANA
+    ANA -->|"call with input_record_ids"| FN_AN
+    FN_AN -->|"numbers + function_version"| ANA
+    ANA -->|"analysis + input linkage"| DER
+    ORCH -->|"task: forecast (only after analysis)"| FCA
+    FCA -->|"call with input_record_ids"| FN_FC
+    FN_FC -->|"numbers + function_version"| FCA
+    FCA -->|"forecasts + validation"| DER
+    ORCH -->|"task: decide (only after forecast)"| DECA
+    DECA -->|"call with input_record_ids"| FN_RISK
+    FN_RISK -->|"numbers + function_version"| DECA
+    DECA -->|"recommendation CANDIDATE (not publishable yet)"| AUDITA
+    DECA -->|"proposed allocation (not executed, NO real trades)"| AUDITA
+    AUDITA -->|"read inputs, versions, conflicts, validation status"| DER
+    AUDITA -->|"read validated records"| VAL
+    AUDITA -->|"verdict: passed / flagged / vetoed + reasons"| AUDLOG
+    AUDITA -->|"passed only"| DER
+    AUDITA -.->|"VETO: candidate blocked, never reaches UI, alert to orchestrator"| ORCH
+    AUDITA -->|"flagged: needs human gate"| HUMAN
+    AUDITA -->|"passed + gate-required: needs human gate"| HUMAN
+    HUMAN -->|"approve (recorded)"| ORCH
+    HUMAN -->|"approve / reject (recorded)"| AUDLOG
+    HUMAN -.->|"reject: output stays unpublished"| AUDLOG
+    ORCH -->|"publish task (passed + gated only)"| UI
+    DER -->|"audit-passed views only"| UI
+    ORCH -.->|"bounded retry: transient failures ONLY (network, temp storage)"| COL
+    ORCH -.->|"NO retry: validation failure, audit veto, missing registry role"| AUDITA

@@ -1,0 +1,61 @@
+flowchart TB
+    subgraph DEV["Local developer machine - VERIFIED 2026-11-04<br/>Python 3.12.3, Node v24.22.1<br/>Docker / psql / redis-cli NOT installed"]
+        subgraph FE["Frontend (design)"]
+            NEXT["Next.js / React / TypeScript<br/>Tailwind / shadcn"]
+        end
+        subgraph BE["Backend (design)"]
+            FAST["Python / FastAPI / Pydantic<br/>deterministic calculation functions"]
+        end
+        subgraph DATA["Data (design vs local-dev reality)"]
+            PG["PostgreSQL / SQLAlchemy / Alembic<br/>DESIGN TARGET - NOT installed"]
+            SQLITE["SQLite (local-dev ONLY)<br/>same logical schema + provenance"]
+            PARQ["Local filesystem + Apache Parquet<br/>raw / export store"]
+            MINIO["Optional self-hosted MinIO<br/>OPTIONAL, self-hosted only, NOT required"]
+            REDIS["Redis (design target)<br/>NOT installed; local-dev: no Redis"]
+            OLLAMA["Ollama local inference ONLY<br/>no cloud AI subscription (PKR 0)"]
+        end
+        subgraph TOOL["Tooling"]
+            TEST["Pytest / Playwright<br/>strategy defined, NOT claimed passed"]
+            GIT["Git / GitHub Free<br/>free tier, permanence NOT assumed"]
+        end
+    end
+    subgraph CONFIGS["Three zero-cost configurations (PKR 0 - no paid service in any config)"]
+        C1["Config A - Zero-cost local<br/>single machine, venv, SQLite, Parquet,<br/>no Docker required"]
+        C2["Config B - Zero-cost self-hosted<br/>local network / spare hardware,<br/>Docker Engine when installed, self-hosted only"]
+        C3["Config C - Zero-cost scalable design<br/>same self-hosted stack, containerised,<br/>PostgreSQL + Redis when installed;<br/>NO paid cloud assumed"]
+    end
+    subgraph OPS["Operations - all configs"]
+        LOG["Logging / monitoring<br/>self-hosted logs only, no paid monitoring"]
+        BACKUP["Backup: DB dump + Parquet + raw store copies<br/>local / self-hosted only"]
+        ROLL["Rollback: previous container / code version<br/>+ Alembic downgrade plan (tested, not assumed)"]
+        NOTRADE["NO real trades - decision support only<br/>no broker connection in any config"]
+    end
+    NEXT -->|"API calls (design)"| FAST
+    FAST -->|"ORM (design)"| PG
+    FAST -->|"local-dev ORM (same schema)"| SQLITE
+    FAST -->|"file / Parquet I/O"| PARQ
+    FAST -.->|"optional object storage"| MINIO
+    FAST -.->|"queue/cache (design only)"| REDIS
+    FAST -.->|"local inference only"| OLLAMA
+    TEST -.->|"tests backend + frontend"| FAST
+    TEST -.->|"tests UI"| NEXT
+    GIT -->|"version control"| NEXT
+    GIT -->|"version control"| FAST
+    C1 -->|"uses"| SQLITE
+    C1 -->|"uses"| PARQ
+    C2 -->|"uses when installed"| PG
+    C2 -->|"uses when installed"| REDIS
+    C3 -->|"scales"| PG
+    C3 -->|"scales"| REDIS
+    LOG -->|"covers"| C1
+    LOG -->|"covers"| C2
+    LOG -->|"covers"| C3
+    BACKUP -->|"protects"| PG
+    BACKUP -->|"protects"| SQLITE
+    BACKUP -->|"protects"| PARQ
+    ROLL -->|"restores"| C1
+    ROLL -->|"restores"| C2
+    ROLL -->|"restores"| C3
+    NOTRADE -.->|"applies to"| C1
+    NOTRADE -.->|"applies to"| C2
+    NOTRADE -.->|"applies to"| C3

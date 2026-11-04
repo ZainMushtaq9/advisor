@@ -1,0 +1,5 @@
+# Runtime artefacts only — never commit these.
+dev_queue.db
+.venv/
+__pycache__/
+*.pyc

@@ -1,0 +1,67 @@
+# PSX Intelligence AI — worker CI (Phase 2, Team E).
+# GitHub Free, within free limits; every step is also runnable locally.
+# NOT yet run in CI (no push is made by Team E — see repo policy):
+# the coordinator runs it after the Phase 2 push and records the result.
+# Job 1 needs no services (eager mode). Job 2 needs the redis service
+# and proves the real broker path with a live worker + task round-trip.
+name: workers
+
+on:
+  push:
+    paths:
+      - "workers/**"
+      - ".github/workflows/workers.yml"
+  pull_request:
+    paths:
+      - "workers/**"
+
+jobs:
+  unit-eager:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install worker deps + pytest
+        run: |
+          python -m pip install -q -r workers/requirements.txt pytest==9.2.0
+      - name: Eager + dev-fallback tests (no Redis needed)
+        run: python -m pytest workers/tests -q
+
+  live-broker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      redis:
+        image: redis:7.0-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install worker deps
+        run: python -m pip install -q -r workers/requirements.txt
+      - name: Start worker in background
+        run: |
+          nohup celery -A workers.celery_app worker --loglevel=info > /tmp/worker.log 2>&1 &
+          sleep 10
+          grep -q "ready" /tmp/worker.log
+      - name: Live task round-trip (add + health_probe)
+        run: |
+          python -c "
+          from workers.tasks import add, health_probe
+          r = add.delay(2, 3); assert r.get(timeout=30) == 5, r.state
+          p = health_probe.delay(); assert p.get(timeout=30)['status'] == 'ok', p.state
+          print('LIVE BROKER PROOF OK')
+          "
+      - name: Worker health check
+        run: python workers/healthcheck.py

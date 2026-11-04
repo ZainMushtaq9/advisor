@@ -20,9 +20,15 @@ research, and audited decision support — built on deterministic calculations.
 comes from a deterministic function run over stored, provenance-tagged data.
 
 Phase 1 (specification) is accepted as a checkpoint — see
-`docs/phase-01/PHASE_1_ACCEPTANCE_REPORT.md`. Phase 2 (this skeleton) sets up
-the repository and development environment only. No data ingestion, no model
-download, and no live collection happens in this skeleton.
+`docs/phase-01/PHASE_1_ACCEPTANCE_REPORT.md`. Phase 2 (this foundation)
+is implemented and independently audited — see
+`docs/phase-02/PHASE_2_ACCEPTANCE_REPORT.md`. It provides a working
+frontend shell, backend API, PostgreSQL + Alembic infrastructure,
+local storage with integrity checks, Redis + Celery workers, and a
+verified no-Docker local execution path. No data ingestion, no model
+download, no Phase 3 schema, and no live PSX collection happens in
+Phase 2. Docker is definition-only on this VM (see DOCKER_SETUP.md);
+Playwright E2E is a documented follow-up (see PHASE_2_TEST_REPORT.md).
 
 ## Fixed stack (Phase 1 decisions, unchanged)
 
@@ -46,27 +52,25 @@ Full decisions: `docs/phase-01/TECH_STACK_DECISIONS.md` and the ADRs in
 `docs/phase-01/ADR/`. Licence status for every planned dependency:
 `docs/phase-02/LICENSE_REGISTER.md`.
 
-## Repository layout (Phase 2 skeleton)
+## Repository layout (Phase 2 foundation)
 
 ```text
-frontend/    Next.js app (scaffold present; see frontend/README.md)
-backend/     FastAPI app (app/ owned by the backend team)
-database/    Migrations, seeds, schemas (SQLAlchemy/Alembic in Phase 2)
-storage/     Local data tiers: raw, processed, financial_reports, parquet,
-             research_reports, backups — READMEs only; NO data committed
-workers/     Celery tasks, schedulers, monitoring
-shared/      Cross-service schemas and contracts
-scripts/     Developer utilities (e.g. scripts/check_env.sh)
-tests/       Cross-cutting tests (backend tests live in backend/tests)
-deployment/  Deployment definitions (Phase 2; no Compose file yet)
-monitoring/  Health/monitoring definitions (Phase 2)
+frontend/    Next.js 16.4.5 app — 7 foundation-shell routes, no fabricated data
+backend/     FastAPI app — 4 /api/v1 endpoints, config redaction, Alembic baseline
+database/    PostgreSQL 16.15 infrastructure — probe migration only, backup/restore
+storage/     Local storage + SHA-256 integrity helper, verified backups (gitignored)
+workers/     Celery 5.6.3 + Redis 7.0.15 — live proof OK, no scheduler yet
+shared/      Cross-service schemas (provenance contract)
+scripts/     check_env.sh, dev.sh, healthcheck.sh, stop_dev.sh, run_celery_proof.sh
+tests/       Cross-cutting placeholder; team tests live with their components
+deployment/  Compose + Dockerfiles — DEFINITION ONLY (Docker not verified running)
+monitoring/  Health/monitoring placeholders
 docs/phase-01/  Accepted Phase 1 specification (do not rewrite)
-docs/phase-02/  Phase 2 setup docs (this team's deliverables)
-.github/     CI workflows
+docs/phase-02/  Phase 2 setup, test, audit, and acceptance docs
+docs/development/  Execution state, log, defect register, push log,
+                   live test report, technical debt, account register
+.github/     CI workflows (env + secrets-sanity; workers eager/live-broker, not run in CI yet)
 ```
-
-Every directory carries a README explaining its purpose and status. No file in
-this skeleton is a placeholder for future functionality without saying so.
 
 ## Quick start for a new developer
 
@@ -82,20 +86,32 @@ bash scripts/check_env.sh
 cp .env.example .env
 #    Edit .env with your own local values. See the config contract in
 #    docs/phase-02/LOCAL_DEVELOPMENT_GUIDE.md.
+#    NOTE: DATABASE_URL is optional in the backend config. Without it the
+#    backend starts and truthfully reports database unavailable. To connect
+#    the local PostgreSQL, set DATABASE_URL from gitignored database/.env.
 
-# 4. Backend (once the backend team lands requirements — not in this skeleton)
-python3 -m venv .venv && source .venv/bin/activate
-#    pip install -r backend/requirements.txt   # file owned by backend team
+# 4. Backend
+cd backend && python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+.venv/bin/python -m pytest -q
+.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000
 
-# 5. Frontend (scaffold present; install is the frontend team's step)
-cd frontend && npm install && npm run dev
+# 5. Frontend
+cd frontend && npm install && npm run dev   # http://localhost:3000
+
+# 6. Full local stack (no Docker — Docker is definition-only on this VM)
+bash scripts/dev.sh
+bash scripts/healthcheck.sh
+bash scripts/stop_dev.sh
 ```
 
-**Services you may still need to install (NOT done by Team A):** Docker Engine,
-PostgreSQL, Redis, Ollama — see `docs/phase-02/ENVIRONMENT_AUDIT.md` for the
-free installation method for each, and `docs/phase-02/COMPATIBILITY_REPORT.md`
-for what works without them. Local dev works without Docker, PostgreSQL, and
-Redis (SQLite dev database; workers disabled until Redis exists).
+**Services installed in Phase 2 on this VM (free, apt/npm):** PostgreSQL
+16.15, Redis 7.0.15, Docker Engine 29.1.3 (daemon runs; registry pulls
+fail with a TLS handshake timeout, so no container has run — see
+`docs/phase-02/DOCKER_SETUP.md`). Ollama is NOT installed and no model
+was downloaded (local AI inference is severely limited on this VM:
+no GPU, ~0.8–1.1 GiB RAM available with the stack up). After a VM
+reboot, run `pg_ctlcluster 16 main start` before DB work.
 
 ## Gates carried forward from Phase 1 — do not silently resolve these
 
@@ -120,8 +136,10 @@ Redis (SQLite dev database; workers disabled until Redis exists).
 ## Verified environment (2026-11-04, re-verified by running commands)
 
 Python 3.12.3, Node v24.22.1, npm 10.9.4, Git 2.43.0, Ubuntu 24.04.5 LTS,
-x86_64, 4 CPUs, 7.7 GiB RAM. Docker, `psql`, and `redis-cli` NOT installed.
-Full evidence: `docs/phase-02/ENVIRONMENT_AUDIT.md`.
+x86_64, 4 CPUs, 7.7 GiB RAM, PostgreSQL 16.15, Redis 7.0.15,
+Docker Engine 29.1.3 (daemon only, pulls blocked). Full evidence:
+`docs/phase-02/ENVIRONMENT_AUDIT.md` and
+`docs/phase-02/PHASE_2_TEST_REPORT.md`.
 
 ## Contributing
 

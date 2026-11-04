@@ -1,0 +1,29 @@
+# PSX Intelligence AI — frontend image (Phase 2, Team E).
+# Build context is the REPO ROOT (see docker-compose.yml).
+#   docker build -f deployment/Dockerfile.frontend -t psx-frontend .
+# Deps come from frontend/package.json + package-lock.json (Team B) via
+# `npm ci` — no version is invented here. Node 24 matches the local
+# toolchain (Node v24.22.1, verified 2026-11-04).
+# Base image is UNVERIFIED until a first successful pull: Docker Hub pulls
+# were blocked on this VM on 2026-11-04 (see docs/phase-02/DOCKER_SETUP.md).
+FROM node:24-slim
+
+ENV NODE_ENV=production \
+    NEXT_TELEMETRY_DISABLED=1
+
+WORKDIR /app
+
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+
+COPY frontend/ ./
+RUN npm run build
+
+USER node
+EXPOSE 3000
+
+# Health probe uses only Node's stdlib (no curl/wget in node:24-slim).
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+    CMD node -e "require('http').get('http://127.0.0.1:3000/', r => process.exit(r.statusCode < 500 ? 0 : 1)).on('error', () => process.exit(1))"
+
+CMD ["npm", "start"]

@@ -1,0 +1,162 @@
+# PSX Intelligence AI — Compose stack (Phase 2, Team E).
+#
+# STATUS 2026-11-04: definition only, NOT verified running. The Docker
+# daemon runs on this VM, but Docker Hub image pulls fail with a TLS
+# handshake timeout (see docs/phase-02/DOCKER_SETUP.md), so no image has
+# been pulled, built, or started from this file yet. The verified path
+# today is scripts/dev.sh (no Docker). Do not claim Compose "works"
+# until `docker compose up` has actually started healthy services.
+#
+# Run (from deployment/, after copying .env.example to .env and editing):
+#   docker compose up -d --build
+#   docker compose ps
+#   docker compose logs -f backend worker
+#
+# Conventions (wired to the other teams' actual files, 2026-11-04):
+#   backend  : FastAPI, HOST/PORT 127.0.0.1:8000 in dev, /health endpoint,
+#              DATABASE_URL env name, CORS origins for :3000 (backend/.env.example)
+#   frontend : Next.js, `npm run dev` -> :3000 in dev, `npm start` in prod
+#   database : PostgreSQL 16, port 5432, database `psx_intelligence`
+#              (database/schemas/phase2-scope.md); Compose uses postgres:16
+#              to match that major version.
+#   worker   : Celery + Redis, broker/result redis://redis:6379/0 in Compose
+#              (loopback redis://127.0.0.1:6379/0 outside Compose).
+#   MinIO is deliberately ABSENT: Phase 1 gate G-07, OPTIONAL/NOT ADOPTED.
+#   No secret is in this file: passwords come from .env (see .env.example),
+#   which is never committed. Defaults below are dev-only placeholders.
+#
+# Networks — separation by design:
+#   app_net  : frontend, backend, worker (HTTP + task dispatch surface)
+#   data_net : postgres, redis, backend, worker (data plane only)
+# Frontend can never reach postgres/redis directly: it is not on data_net.
+# Published ports are loopback-only in dev; remove them for any
+# network-exposed deployment.
+
+name: psx-intelligence-ai
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: psx-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-psx_intelligence}
+      POSTGRES_USER: ${POSTGRES_USER:-psx}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme-dev-only}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - data_net
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-psx} -d $${POSTGRES_DB:-psx_intelligence}"]
+      interval: 10s
+      timeout: 5s
+      start_period: 20s
+      retries: 5
+
+  redis:
+    image: redis:7.0-alpine
+    container_name: psx-redis
+    restart: unless-stopped
+    # No password in dev (loopback + private data_net only). If a password
+    # is ever added, it must come from .env and be set in both redis and
+    # the CELERY_* URLs — never hardcoded here.
+    command: ["redis-server", "--appendonly", "yes", "--bind", "0.0.0.0"]
+    volumes:
+      - redisdata:/data
+    networks:
+      - data_net
+    ports:
+      - "127.0.0.1:${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+
+  backend:
+    build:
+      context: ..
+      dockerfile: deployment/Dockerfile.backend
+    container_name: psx-backend
+    restart: unless-stopped
+    environment:
+      APP_NAME: psx-intelligence-ai
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+      DEBUG: "false"
+      HOST: 0.0.0.0
+      PORT: 8000
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-psx}:${POSTGRES_PASSWORD:-changeme-dev-only}@postgres:5432/${POSTGRES_DB:-psx_intelligence}
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      CORS_ORIGINS: http://localhost:3000,http://127.0.0.1:3000
+    networks:
+      - app_net
+      - data_net
+    ports:
+      - "127.0.0.1:${BACKEND_PORT:-8000}:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      # Reserved for future Parquet/raw storage use by the backend team.
+      # The Phase 2 backend does not yet read this path; mounting it now
+      # only reserves the location, it does not claim an integration.
+      - psx_storage:/data
+
+  worker:
+    build:
+      context: ..
+      dockerfile: deployment/Dockerfile.worker
+    container_name: psx-worker
+    restart: unless-stopped
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+    networks:
+      - app_net
+      - data_net
+    depends_on:
+      redis:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    volumes:
+      - psx_storage:/data
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: deployment/Dockerfile.frontend
+    container_name: psx-frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    networks:
+      - app_net
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-3000}:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+networks:
+  app_net:
+    name: psx-app-net
+  data_net:
+    name: psx-data-net
+
+volumes:
+  pgdata:
+    name: psx-pgdata
+  redisdata:
+    name: psx-redisdata
+  psx_storage:
+    name: psx-storage

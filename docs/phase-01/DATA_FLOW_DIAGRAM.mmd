@@ -1,0 +1,64 @@
+flowchart TB
+    subgraph SRC["External sources"]
+        PSXDPS["psx-dps (primary)<br/>snapshot / EOD / today's ticks / announcements"]
+        PSXDATA["psxdata (backup)<br/>daily OHLCV / live snapshots ONLY"]
+        IR["Company IR sites<br/>UNVERIFIED per-company coverage"]
+        ECON["SECP / SBP / PBS / Finance Division /<br/>World Bank / IMF / FRED<br/>UNVERIFIED interfaces"]
+        NEWS["News sources<br/>UNVERIFIED - no source specified"]
+    end
+    subgraph L1["LAYER 1 - Acquisition (read-only inspection in Phase 1)"]
+        ACQ["Collectors<br/>respect rate limits, cache, backoff<br/>NO full-scale live collection in Phase 1"]
+    end
+    subgraph L2["LAYER 2 - Validation"]
+        V_SRC["1. Source / timestamp check"]
+        V_DUP["2. Duplicate detection"]
+        V_MISS["3. Missing-data detection"]
+        V_FIN["4. Financial validation"]
+        V_CONF["5. Conflict reconciliation<br/>NEVER silently merge"]
+    end
+    subgraph L3RAW["LAYER 3 - Raw store (immutable)"]
+        RAW["Raw payloads exactly as received<br/>+ source, source_timestamp,<br/>collected_at_pkt, freshness"]
+    end
+    subgraph L3VAL["LAYER 3 - Validated store"]
+        VAL["Validated records + flags<br/>stale / missing / invalid / conflict<br/>+ revisions + missing entries"]
+    end
+    subgraph L34["LAYERS 4-6 - Analysis, Forecasting, Decisions"]
+        AN["Layer 4 Analysis<br/>deterministic functions only"]
+        FC["Layer 5 Forecasting<br/>scenarios + validation<br/>probabilistic, never guaranteed"]
+        DEC["Layer 6 Decisions<br/>risk, candidates, optimisation<br/>+ independent audit veto"]
+    end
+    subgraph L3DER["LAYER 3 - Derived store + Audit log"]
+        DER["Derived outputs<br/>+ input_record_ids + function_version"]
+        AUD["Audit log (append-only)<br/>inputs, versions, verdicts, gates"]
+    end
+    subgraph L8["LAYER 8 - UI / Reports"]
+        UI["Dashboard, company pages,<br/>forecasting views, portfolio advisor<br/>(audit-passed only), reports"]
+    end
+    PSXDPS -->|"raw payload + provenance"| ACQ
+    PSXDATA -->|"raw payload + provenance"| ACQ
+    IR -->|"raw payload + provenance (if verified)"| ACQ
+    ECON -.->|"UNVERIFIED - gated, no live claim"| ACQ
+    NEWS -.->|"UNVERIFIED - gated, no live claim"| ACQ
+    ACQ -->|"raw payload + provenance"| V_SRC
+    V_SRC -->|"timestamp/source OK or flagged stale/unknown"| V_DUP
+    V_SRC -.->|"invalid source/timestamp: flagged invalid, stored flagged, not used as fact"| VAL
+    V_DUP -->|"new observation, or revision linked to original"| V_MISS
+    V_DUP -.->|"exact duplicate: dropped as new observation, counted, not stored twice"| VAL
+    V_MISS -->|"present fields pass on; gaps recorded as missing entries"| V_FIN
+    V_MISS -.->|"missing session/symbol/field: missing entry, NEVER filled with estimate"| VAL
+    V_FIN -->|"internally consistent record"| V_CONF
+    V_FIN -.->|"failed check (e.g. high < low): flagged invalid, value NOT corrected"| VAL
+    V_CONF -->|"no conflict, or primary-source rule recorded"| VAL
+    V_CONF -.->|"CONFLICT PATH: both values kept with provenance + conflict record; downstream must record source used or surface conflict"| VAL
+    ACQ -->|"intake-checked raw payload"| RAW
+    RAW -.->|"trace-back only: derived outputs link to raw via validated records; raw never overwritten"| VAL
+    VAL -->|"validated records only"| AN
+    AN -->|"analysis + input linkage"| DER
+    DER -->|"analysis as inputs"| FC
+    FC -->|"forecasts + validation"| DER
+    DER -->|"analysis + forecasts"| DEC
+    DEC -->|"passed outputs only"| DER
+    DEC -->|"every verdict + reasons"| AUD
+    DER -->|"audit-passed views only"| UI
+    AUD -->|"evidence cited by id/version"| UI
+    UI -.->|"stale/missing labels shown; vetoed candidates never shown"| UI

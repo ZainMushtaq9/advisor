@@ -1,0 +1,35 @@
+# PSX Intelligence AI — backend image (Phase 2, Team E).
+# Build context is the REPO ROOT (see docker-compose.yml); this file lives
+# in deployment/ only so Team E owns it without touching backend/.
+#   docker build -f deployment/Dockerfile.backend -t psx-backend .
+# Runtime deps are installed from backend/requirements.txt itself (Team C's
+# verified pins, 2026-11-04) — never a second, drifted pin list here.
+# Base image is UNVERIFIED until a first successful pull: Docker Hub pulls
+# were blocked on this VM on 2026-11-04 (TLS handshake timeout, see
+# docs/phase-02/DOCKER_SETUP.md). Do not claim this image built until it has.
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+WORKDIR /code
+
+# Install runtime deps first (layer cache) from the backend team's own file.
+COPY backend/requirements.txt ./backend-requirements.txt
+RUN pip install --no-cache-dir -r backend-requirements.txt
+
+COPY backend/ ./backend/
+
+RUN useradd --create-home --uid 10001 appuser \
+    && chown -R appuser:appuser /code
+USER appuser
+
+WORKDIR /code/backend
+EXPOSE 8000
+
+# Health probe uses only the stdlib (no curl in python:3.12-slim).
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=4)" || exit 1
+
+CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

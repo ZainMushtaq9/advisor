@@ -1,0 +1,14 @@
+# PSX Intelligence AI — backend, Phase 2 foundation (Team C).
+# Exact pins (Phase 1 gate G-04), installed and verified 2026-11-04 on Python 3.12.3.
+# All packages are free/open-source; none required payment (see LICENCES.md).
+# Install:  .venv/bin/pip install -r requirements.txt
+fastapi==0.162.0
+uvicorn==0.54.0
+pydantic==2.14.2
+pydantic-settings==2.16.2
+SQLAlchemy==2.1.8
+alembic==1.20.1
+psycopg[binary]==3.3.7
+httpx==0.28.1
+pytest==9.2.0
+ruff==0.17.3

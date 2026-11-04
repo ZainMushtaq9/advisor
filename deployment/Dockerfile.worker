@@ -1,0 +1,32 @@
+# PSX Intelligence AI — Celery worker image (Phase 2, Team E).
+# Build context is the REPO ROOT (see docker-compose.yml).
+#   docker build -f deployment/Dockerfile.worker -t psx-worker .
+# Deps are workers/requirements.txt (Team E's verified pins: celery 5.6.3,
+# redis 8.1.0). This image runs test/probe tasks only in Phase 2; it
+# contains NO agent scheduler and NO market-data jobs.
+# Base image is UNVERIFIED until a first successful pull: Docker Hub pulls
+# were blocked on this VM on 2026-11-04 (see docs/phase-02/DOCKER_SETUP.md).
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+WORKDIR /code
+
+COPY workers/requirements.txt ./worker-requirements.txt
+RUN pip install --no-cache-dir -r worker-requirements.txt
+
+COPY workers/ ./workers/
+
+RUN useradd --create-home --uid 10001 appuser \
+    && chown -R appuser:appuser /code
+USER appuser
+
+# Worker liveness via the broker: inspect ping must get a pong from a
+# worker on the same broker. Broker URL comes from the environment
+# (Compose sets CELERY_BROKER_URL to redis://redis:6379/0).
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD celery -A workers.celery_app inspect ping || exit 1
+
+CMD ["celery", "-A", "workers.celery_app", "worker", "--loglevel=info"]
