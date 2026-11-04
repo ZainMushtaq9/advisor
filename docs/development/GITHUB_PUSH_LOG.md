@@ -64,3 +64,30 @@
 ## Phase 5 gate-report branch — push NOT attempted (2026-11-04)
 - Branch: phase-05-market-data-engine (from Phase 4 tip 0f4342f); commit to be recorded below.
 - Reason: the branch contains only a gate report and a preparation-only source note — no verified implementation to push. The standing credential blocker (fatal: could not read Username for 'https://github.com': terminal prompts disabled; no credential helper/token in this environment) already blocks the Phase 2, 3 and 4 branches. No remote branch created for Phase 5, no PR, main untouched. Push may be retried by the parent via the authorised GitHub authentication route if desired; it must not be presented as pushed or merged.
+
+## Phase 5 snapshot import branch — push BLOCKED (2026-11-04)
+
+- Branch: phase-05-snapshot-import (from Phase 5 gate tip c960937).
+  Work commit 92ebf3f ("Phase 5 snapshot import: import script +
+  provenance + gate re-check (import BLOCKED, row data not
+  delivered)"), fix commit 996d700 (ruff clean + collected_at PKT
+  timezone). Branch tip to push: 996d700. Git status clean at
+  commit; staging check showed no .env, .venv, node_modules,
+  backup dumps, or secrets.
+- Command: GIT_TERMINAL_PROMPT=0 git push -u origin
+  phase-05-snapshot-import (prompts disabled deliberately so it
+  could not hang waiting for interactive credentials).
+- Result: fatal: could not read Username for 'https://github.com':
+  terminal prompts disabled. No remote branch created
+  (git ls-remote origin phase-05-snapshot-import returned empty),
+  no remote commit, no PR, main untouched. Same standing blocker
+  as the Phase 2, 3 and 4 branches. No token invented, no password
+  asked for in chat, no security control bypassed, no force-push,
+  no push to main, no merge to main.
+- Note: this branch contains preparation only (import script,
+  provenance README, import attempt record, gate re-check
+  section) — the snapshot CSV itself does not exist yet and no
+  production import was executed, so there is no imported data
+  to push. Parent push via the authorised GitHub authentication
+  route may still be done if desired; verify the remote SHA
+  against tip 996d700.
