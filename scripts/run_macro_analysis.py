@@ -1,0 +1,72 @@
+"""Phase 10 macro/sector CLI.
+
+Seeds macro observations (SBP/PBS, read directly), company exposures
+(issuer-disclosure evidence only), sector profiles, the regime
+assessment and the event calendar. Writes nothing by default
+(--dry-run); --commit writes idempotently (a second --commit writes 0
+new rows).
+
+Usage (DATABASE_URL must be set, e.g. from database/.env):
+  python scripts/run_macro_analysis.py --dry-run
+  python scripts/run_macro_analysis.py --commit
+
+Exit codes: 0 ok; 1 operational failure; 2 bad arguments / missing
+DATABASE_URL. The report is JSON on stdout; the summary line goes
+to stderr so the JSON stays parseable.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "backend"))
+
+from sqlalchemy.orm import sessionmaker
+
+from app.database import build_engine
+from app.services.macro_analysis import runner
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument(
+        "--dry-run", action="store_true", help="Report only; write nothing (default)."
+    )
+    mode.add_argument("--commit", action="store_true", help="Actually write macro rows.")
+    args = parser.parse_args()
+    database_url = os.environ.get("DATABASE_URL")
+    if not database_url:
+        print("DATABASE_URL is not set; refusing to run.", file=sys.stderr)
+        return 2
+    engine = build_engine(database_url)
+    if engine is None:
+        print("Could not build a database engine.", file=sys.stderr)
+        return 1
+    session = sessionmaker(bind=engine)()
+    try:
+        report = runner.run_macro(session, commit=bool(args.commit))
+    except Exception as exc:  # noqa: BLE001 - CLI reports and exits non-zero
+        print(f"Macro run failed: {exc}", file=sys.stderr)
+        return 1
+    finally:
+        session.close()
+    report["mode"] = "commit" if args.commit else "dry-run"
+    print(json.dumps(report, indent=2, default=str))
+    print(
+        f"Macro Phase 10 [{report['mode']}]: "
+        f"{report['observations_written']} observations, "
+        f"{report['exposures_written']} exposures, "
+        f"{report['profiles_written']} sector profiles, "
+        f"{report['regimes_written']} regimes, "
+        f"{report['events_written']} events.",
+        file=sys.stderr,
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
