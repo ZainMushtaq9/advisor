@@ -1,11 +1,31 @@
 # PSX Intelligence AI — Project Execution State
 
-Date: 2026-11-04 (Phase 2 audit complete — see docs/phase-02/PHASE_2_ACCEPTANCE_REPORT.md for the verdict; push step pending at last update of this file)
+Date: 2026-11-04 (evening catch-up — see "2026-11-04 — Register
+catch-up (evening)" at the end of this file; earlier sections below
+are preserved history, not rewritten)
 
 ## Current phase
-- Current phase: Phase 2 of 30 — Repository, Development Environment and Project Foundation.
-- Completed phases: Phase 1 only, accepted as a specification checkpoint (67 files, 0 empty, docs/phase-01/PHASE_1_ACCEPTANCE_REPORT.md). Phase 1 gates G-01 to G-08 remain open as limitations (see Phase 1 audit report §4).
-- Phases 3 and 4: QUEUED behind Phase 2 acceptance. Not started. Do not start them from this file.
+- Current phase: Phase 7 first run DONE (PARTIALLY COMPLETE); active
+  work is the Phase 4 revisit (sampled SECP LEAP verification
+  preparation) on branch `phase-04-sampled-verification`, from
+  `phase-04-completion` tip `c078c0b`.
+- Completed phases: Phase 1 (specification checkpoint), Phase 2
+  (amended criteria), Phase 3. Partially complete: Phases 4, 5, 6, 7.
+  Phases 8–30: NOT STARTED.
+- Next, in order: (1) parent-routed live-browser run of the 61 LEAP
+  queries in `docs/phase-04/sampled_verification_plan_2026-11-04.md`,
+  then load via `scripts/load_leap_evidence.py`; (2) Phase 5 and
+  Phase 6 revisit (both Terms-gated, plus trading days for Phase 6);
+  (3) Phase 7 completion (cash-flow + changes-in-equity faces,
+  auditor-opinion table, KSE-100 expansion); (4) Phase 8.
+- Consolidated verdicts and evidence: see
+  `docs/development/PHASE_COMPLETION_REGISTER.md` (created in the
+  Phase 4 revisit). Dated execution entries: see
+  `docs/development/MASTER_EXECUTION_LOG.md`.
+- Standing blockers (unchanged): written PSX permission evidence
+  (user owns the permission side; the 2026-11-04 reply was deleted by
+  the user and is unverifiable); no merge to main without separate
+  approval (`main` untouched at `eb6025b`); no Docker anywhere.
 
 ## Current / pending tasks (Phase 2)
 - DONE (team reports received): Team A — environment audit, Git foundation, monorepo structure, config (skeleton commit only). Team C — backend foundation (FastAPI, 4 endpoints, 18/18 pytest, ruff pass — see its report; coordinator has not yet independently re-run these tests). Team B — frontend foundation (Next.js 16.4.5, React 19.3.0, TypeScript 5.9.3, Tailwind 4.3.4; 7 routes as labelled foundation shells with empty states only, no fabricated PSX data; team-reported typecheck, lint, Vitest 11 tests, Prettier, build, and dev-server curl 200 for all 7 routes — coordinator has not yet independently re-run these checks).
@@ -62,95 +82,63 @@ See DEFECT_REGISTER.md. No defect in this file is marked resolved unless its ret
 - Paid services: ZERO. No external account created. No PSX data collected. No merge to main.
 - Next: Phase 4 only on separate instruction + gate check.
 
-## Phase 5 — BLOCKED at gate (2026-11-04)
+## 2026-11-04 — Register catch-up (evening, parent-verified state)
 
-- Branch phase-05-market-data-engine, created from Phase 4 tip 0f4342f.
-- Gate FAILED, verified in the actual database by the Phase 5 coordinator: companies 0, securities 0, sectors 0, registry_evidence 0, company_identifiers 0, symbol_history 0, market_prices 0; 57 public tables; Alembic head a909e8449cdd.
-- No collector implementation, no backfill, no ingestion was performed. No replacement company list was invented; psx-dps/psxdata README claims were not used as a population base; test/fixture records were not promoted to production.
-- Unblocker: a dated official snapshot (e.g. live-browser extraction of the DPS Listing Status table on a stated date, or a documented machine-readable official list), imported through the Phase 4 engine with the >=2-source VERIFIED rule and source_key provenance control, licensing resolved in writing, reconciliation re-run with a real coverage result. No scraper against psx.com.pk/dps.psx.com.pk (PSX Terms of Use restrict automated navigation without prior written permission).
-- Documents: docs/phase-05/phase_05_gate_report.md (gate report, not a completion claim) and docs/phase-05/source_research_preparation.md (preparation only, not collection). Phase 6 NOT started.
-- Push: NOT attempted for this gate-report-only branch (no verified implementation to push; standing GitHub credential blocker already blocks Phases 2-4 branches). No push to main, no merge to main.
+This section brings the file current without rewriting the sections
+above. Full per-phase evidence: PHASE_COMPLETION_REGISTER.md.
 
-## Phase 5 snapshot import attempt — STILL BLOCKED (2026-11-04)
+- Phase 1: COMPLETE as specification checkpoint; gates G-01–G-08
+  remain open.
+- Phase 2: COMPLETE under amended criteria; branch
+  `phase-02-repository-foundation` `016f3c8`; Docker gap closed by
+  user decision (NOT verified); Playwright E2E 2/2 passed with files
+  deliberately untracked; CI-in-CI unverified.
+- Phase 3: COMPLETE; branch `phase-03-database-storage` `b22281a`;
+  54 model tables; backend suite 114 passed (evening re-run).
+- Phase 4: PARTIALLY COMPLETE, scoped Main Board / Normal Counter
+  view 17/17 PASS; branch `phase-04-completion` `c078c0b`; registry
+  470 companies / 470 securities / 37 sectors / 940 evidence rows,
+  all UNVERIFIED; GEM (5) + Non-Compliant (93) counted, not stored;
+  VERIFIED route is field-scoped SECP LEAP only; Terms basis open.
+- Phase 5: PARTIALLY COMPLETE; branch `phase-05-completion`
+  `f4b703d`; market_prices 444 rows, exactly one trading date
+  2026-11-03, all UNVERIFIED; sole blocker is written PSX Terms
+  resolution.
+- Phase 6: PARTIALLY COMPLETE; branch `phase-06-completion`
+  `e556806`; all 62 indicators NOT_CALCULABLE, 0 value rows,
+  0 signal events, 124 error rows, 1 coverage run; needs ≥4 more
+  trading days + Terms resolution.
+- Phase 7: PARTIALLY COMPLETE (first run); branch
+  `phase-07-financial-statements` `366ed32`; 3 documents,
+  16 statements, 316 line items, all UNVERIFIED; HUBC/NML/OGDC
+  balance-sheet identities pass; remaining: cash-flow +
+  changes-in-equity faces, structured auditor-opinion table,
+  KSE-100 expansion.
+- Phases 8–30: NOT STARTED.
+- Git: `main` untouched at `eb6025b`; canonical repo
+  ZainMushtaq9/advisor; no merge to main without separate approval.
+- Database: PostgreSQL 16.15, cluster 16/main; live DB recovered
+  after VM replacements (backup 2026-11-04T1230-PKT restored,
+  migrated to head `20261104_0005`, registry + price commits re-run
+  to the recorded state). Role password lives ONLY in
+  `database/.env` (gitignored, mode 0600).
+- Active work: Phase 4 revisit on branch
+  `phase-04-sampled-verification` (procedure + 61-company sample
+  plan + LEAP evidence loader + tests; live LEAP queries pending a
+  parent-routed live-browser task). Verdict unchanged:
+  PARTIALLY COMPLETE.
 
-- Branch phase-05-snapshot-import (from Phase 5 gate tip c960937).
-- Parent reported a live-browser DPS Listing Status read (Main
-  Board / Normal Counter, 470 rows, page header Nov 4, 2026
-  1:17 PM), but the row tables did not reach this coordinator as
-  a file or row text; no snapshot CSV exists in the repository.
-  No import was executed and no CSV was written — no rows
-  fabricated. Fresh text fetch returned 0 rows (D-52); 24 browser
-  screenshots on disk are viewports, not a row record, and were
-  not transcribed.
-- Coordinator's own DB counts: companies 0, securities 0, sectors
-  0, registry_evidence 0, company_identifiers 0, symbol_history
-  0, 57 public tables, Alembic head a909e8449cdd. Gate evidence
-  unchanged; Phase 5 gate still BLOCKED; Phase 6 NOT started.
-- Prepared and tested: scripts/import_dps_snapshot.py (strict
-  validation, Phase 4 engine import, reconcile(), dry-run/commit;
-  3-row synthetic dry-run passed with all UNVERIFIED and
-  VERIFIED = 0, rolled back). Provenance README + import attempt
-  record: docs/phase-04/source_research_raw/dps_listing_status_2026-11-04_main_board_normal_counter.README.md
-  and docs/phase-04/snapshot_import_2026-11-04.md. Gate report
-  re-check section appended to
-  docs/phase-05/phase_05_gate_report.md (original BLOCKED record
-  preserved).
-- Single unblocker: parent delivers the 470-row CSV (or row text)
-  at the path above; then dry-run → verify → commit → 20-row
-  spot-check → reconcile → fresh gate judgement. D-54-gate stays
-  OPEN; D-51/D-52 stay OPEN (see DEFECT_REGISTER note on the
-  D-54 numbering collision). Push result in GITHUB_PUSH_LOG.md.
+## Parent consolidation — 2026-11-04 evening
 
-## Phase 5 snapshot import — COMMITTED, gate PARTIALLY PASSED (2026-11-04, second run)
-
-- Branch phase-05-snapshot-import (same branch; first-run
-  preparation reused). Canonical snapshot CSV delivered on disk
-  by the parent and re-verified independently: 470 rows, row_no
-  1–470 continuous, 470 unique symbols, clearing NC 453 /
-  blank 17, no empty fields.
-- Import via scripts/import_dps_snapshot.py: dry-run clean
-  (rolled back), then COMMITTED — 470 companies, 470 securities,
-  37 sectors, 940 evidence rows (source_key
-  dps_listing_status_2026-11-04_main_board_normal_counter),
-  re-import skips 470 (idempotent), reconciliation matched 470 /
-  missing 0 / extra 0 / coverage 1.0 for the Main Board /
-  Normal Counter view. All records UNVERIFIED (single DPS
-  source, audit H1); VERIFIED 0, pending 0, conflicts 0.
-- Independent checks: direct PostgreSQL counts match the script;
-  24-row field-by-field spot-check vs CSV 24/24 pass (incl.
-  blank-Clearing-Type rows and rights/preference variants);
-  registry APIs live (statistics 470/470/37, /companies total
-  470, quality verified 0) then stopped. market_prices 0,
-  company_identifiers 0, symbol_history 0, 57 tables, head
-  a909e8449cdd.
-- Gate judgement (phase_05_gate_report.md §12): PARTIALLY
-  PASSED — population, ticker mappings, provenance and
-  reconciliation now exist for one view; UNVERIFIED status,
-  GEM (5) + Non-Compliant (93) views, KSE-100 completeness,
-  identifier coverage and the PSX Terms internal-use note
-  remain open. Phase 5 implementation may proceed scoped to
-  the 470 snapshot securities under quality-status controls;
-  it may NOT claim a VERIFIED registry, full-market or
-  KSE-100 completeness, or any market price. Phase 6 NOT
-  started; parent decides the Phase 5 implementation start.
-- D-54 gate entry stays OPEN but narrowed (population resolved;
-  verification + full-universe remain). D-51/D-52 stay OPEN.
-  Push result in GITHUB_PUSH_LOG.md.
-
-- Phase 5 implementation run (2026-11-04, branch
-  phase-05-snapshot-import): PARTIALLY COMPLETE. Gate
-  re-verified first (470/470/37, all UNVERIFIED,
-  market_prices 0, 57 tables, head a909e8449cdd, matching
-  §12). Built: deterministic daily-OHLCV validation, quality
-  assignment, idempotent validated-file ingestion with safe
-  catch-up, GET-only /api/v1/market/… endpoints, CLI
-  (dry-run default), /market page + nav entry, source
-  research + comparison matrix (live adapters BLOCKED,
-  intraday OUT OF SCOPE). Tests: full backend suite 85
-  passed (41 new + 44 pre-existing, corrected split); Ruff
-  clean; frontend typecheck/lint clean. Audit PASS WITH
-  LIMITATIONS. Production market_prices remains 0 (no
-  verified dated price file; no live route legally
-  available). Gate still PARTIALLY PASSED (§13); D-54 gate
-  entry OPEN (narrowed); D-51/D-52 OPEN; PSX Terms
-  internal-use note UNRESOLVED. Phase 6 NOT started.
+- Current verified tips: phase-04-sampled-verification 9204632, phase-05-revisit
+  e281c73, phase-06-revisit 85f4a72, phase-07-remainders f990e7e. Main untouched
+  at eb6025b. Canonical repo ZainMushtaq9/advisor. No merge to main without
+  separate approval.
+- Phase 4: PARTIALLY COMPLETE (sampled LEAP procedure + 61-company plan + loader
+  ready; live browser queries in progress, attempt 1 page-blocked with 0
+  observations). Phase 5: PARTIALLY COMPLETE (Terms blocker only). Phase 6:
+  PARTIALLY COMPLETE (bookkeeping restored; needs trading days + Terms).
+  Phase 7: PARTIALLY COMPLETE (SFP + P&L + cash-flow + changes-in-equity faces
+  and opinion module done for HUBC/NML/OGDC; KSE-100 expansion blocks COMPLETE).
+- Next: HBL follow-up extraction pass (issuer-hosted link, allowed), then
+  Phase 8 from the HBL tip; LEAP observations load when attempt 2 reports.
