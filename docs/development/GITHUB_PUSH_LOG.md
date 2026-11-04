@@ -91,3 +91,32 @@
   to push. Parent push via the authorised GitHub authentication
   route may still be done if desired; verify the remote SHA
   against tip 996d700.
+
+## Push attempt — phase-05-snapshot-import, second run (2026-11-04)
+
+- Branch tip to push: 696958a ("Phase 5 snapshot import:
+  470-row DPS snapshot COMMITTED, gate PARTIALLY PASSED
+  (UNVERIFIED, Main Board view only)"). Git status clean at
+  commit; staging check showed no .env, .venv, node_modules,
+  backup dumps, or secrets.
+- Command: GIT_TERMINAL_PROMPT=0 git push -u origin
+  phase-05-snapshot-import (prompts disabled deliberately so it
+  could not hang waiting for interactive credentials).
+- Result: fatal: could not read Username for 'https://github.com':
+  terminal prompts disabled (exit 128). No remote branch created
+  (git ls-remote origin phase-05-snapshot-import returned empty),
+  no remote commit, no PR, main untouched. Same standing blocker
+  as the Phase 2, 3 and 4 branches. No token invented, no password
+  asked for in chat, no security control bypassed, no force-push,
+  no push to main, no merge to main.
+- IMPORTANT — snapshot CSV is NOT in this commit: the CSV at
+  docs/phase-04/source_research_raw/dps_listing_status_2026-11-04_main_board_normal_counter.csv
+  is excluded by .gitignore line 40 (*.csv), so it stays local-only
+  and would NOT be published by a future push of this branch.
+  That is the safe outcome for the PSX redistribution question
+  (internal use, not republication), but it also means a remote
+  checkout of this branch cannot reproduce the import — the CSV
+  must be transferred separately through an authorised route, and
+  the branch must not be pushed to the public repo with the CSV
+  force-added unless the PSX redistribution question is resolved
+  in writing first.
