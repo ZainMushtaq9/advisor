@@ -13,6 +13,7 @@ exists, by design — see docs/phase-03/entity_catalog.md.
 from app.database import Base  # noqa: F401  (re-exported for Alembic / tests)
 from app.models import (  # noqa: F401
     analysis,
+    decision,
     financial,
     forecasting,
     governance,
@@ -28,6 +29,7 @@ from app.models import (  # noqa: F401
 __all__ = [
     "Base",
     "analysis",
+    "decision",
     "financial",
     "forecasting",
     "governance",

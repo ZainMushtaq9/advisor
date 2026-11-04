@@ -5,6 +5,7 @@ from __future__ import annotations
 from fastapi import APIRouter
 
 from app.api.v1.endpoints import (
+    decisions,
     forecasting,
     fundamentals,
     indicators,
@@ -30,3 +31,4 @@ api_router.include_router(news.router)
 api_router.include_router(ownership.router)
 api_router.include_router(forecasting.router)
 api_router.include_router(risk.router)
+api_router.include_router(decisions.router)
