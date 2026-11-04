@@ -1,0 +1,1450 @@
+{
+  "collected_date": "2026-11-04",
+  "observations": [
+    {
+      "company_id": 90,
+      "incorporated_row": {
+        "cro_city": "Karachi",
+        "cuin": "0000010",
+        "incorporation_date": "18-09-1990",
+        "name": "786 INVESTMENTS LIMITED"
+      },
+      "notes": "Verbatim wording rejected by the search box validation (must not end with LIMITED). '786 Investments' was first read before the table settled (showing 0) and was re-run after settling, when it found 2 results: the organization and INCORPORATED rows above.",
+      "organization_row": {
+        "displayed_date": "09-18-3990",
+        "name": "786 INVESTMENTS LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "786 Investments",
+      "query_wordings": [
+        "786 Investments Limited",
+        "786 Investments",
+        "786",
+        "Investments"
+      ],
+      "registry_legal_name": "786 Investments Limited",
+      "ticker": "786"
+    },
+    {
+      "company_id": 94,
+      "incorporated_row": {
+        "cro_city": "Karachi",
+        "cuin": "0000192",
+        "incorporation_date": "02-07-1948",
+        "name": "ABBOTT LABORATORIES PAKISTAN LIMITED"
+      },
+      "notes": "Verbatim wording rejected by validation (ends with LIMITED). 'Abbott Laboratories (Pakistan)' once showed an INCORPORATED row dated 07-02-1948, but later searches on that wording showed only the organization row (1 result). The screenshot-verified INCORPORATED row on 'Abbott Laboratories Pakistan' showed 02-07-1948, CUIN 0000192, CRO Karachi; that date is reported here, with the earlier conflicting reading flagged. Name agrees after normalization either way.",
+      "organization_row": {
+        "displayed_date": "07-02-3948",
+        "name": "ABBOTT LABORATORIES PAKISTAN LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Abbott Laboratories Pakistan",
+      "query_wordings": [
+        "Abbott Laboratories (Pakistan) Limited",
+        "Abbott Laboratories (Pakistan)",
+        "Abbott",
+        "Abbott Laboratories Pakistan"
+      ],
+      "registry_legal_name": "Abbott Laboratories (Pakistan) Limited",
+      "ticker": "ABOT"
+    },
+    {
+      "company_id": 99,
+      "incorporated_row": {
+        "cro_city": "Karachi",
+        "cuin": "0085815",
+        "incorporation_date": "19-11-2013",
+        "name": "AGHA STEEL INDUSTRIES LIMITED"
+      },
+      "notes": "Normalized registry AGHA STEEL IND vs normalized LEAP AGHA STEEL INDUSTRIES; IND is not expanded to INDUSTRIES by normalization, so DISAGREE. Full LEAP shown incorporation datetime: 19-11-2013 16:46:33 (date part stored; time component is a LEAP display timestamp, not part of the incorporation date).",
+      "organization_row": {
+        "displayed_date": "11-19-2013",
+        "name": "AGHA STEEL INDUSTRIES LIMITED"
+      },
+      "other_candidates": [
+        "AGHA STEEL",
+        "AGHA STEEL INDUSTRIES (PVT.) LIMITED"
+      ],
+      "outcome": "DISAGREE",
+      "query_that_found": "Agha Steel",
+      "query_wordings": [
+        "Agha Steel Ind.Ltd",
+        "Agha Steel Ind",
+        "Agha Steel"
+      ],
+      "registry_legal_name": "Agha Steel Ind.Ltd",
+      "ticker": "AGHA"
+    },
+    {
+      "company_id": 109,
+      "incorporated_row": {
+        "cro_city": "Multan",
+        "cuin": "0020650",
+        "incorporation_date": "03-12-1989",
+        "name": "AHMAD HASSAN TEXTILE MILLS LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "12-03-3989",
+        "name": "AHMAD HASSAN TEXTILE MILLS LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Ahmad Hassan Textile Mills",
+      "query_wordings": [
+        "Ahmad Hassan Textile Mills Limited",
+        "Ahmad Hassan Textile Mills"
+      ],
+      "registry_legal_name": "Ahmad Hassan Textile Mills Limited",
+      "ticker": "AHTM"
+    },
+    {
+      "company_id": 119,
+      "incorporated_row": {
+        "cro_city": "Lahore",
+        "cuin": "0034081",
+        "incorporation_date": "17-01-1995",
+        "name": "ALTERN ENERGY LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "01-17-3995",
+        "name": "ALTERN ENERGY LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Altern Energy",
+      "query_wordings": [
+        "Altern Energy Limited",
+        "Altern Energy"
+      ],
+      "registry_legal_name": "Altern Energy Limited",
+      "ticker": "ALTN"
+    },
+    {
+      "company_id": 126,
+      "incorporated_row": {
+        "cro_city": "Islamabad",
+        "cuin": "0035831",
+        "incorporation_date": "03-12-1995",
+        "name": "ATTOCK PETROLEUM LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "12-03-3995",
+        "name": "ATTOCK PETROLEUM LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Attock Petroleum",
+      "query_wordings": [
+        "Attock Petroleum Limited",
+        "Attock Petroleum"
+      ],
+      "registry_legal_name": "Attock Petroleum Limited",
+      "ticker": "APL"
+    },
+    {
+      "company_id": 129,
+      "incorporated_row": {
+        "cro_city": "Islamabad",
+        "cuin": "0005840",
+        "incorporation_date": "26-07-1977",
+        "name": "ARPAK INTERNATIONAL INVESTMENT LIMITED"
+      },
+      "notes": "'Arpak International Investments' returned only the organization row (1 result); the substring 'Arpak' returned both rows. Normalized registry ARPAK INTERNATIONAL INVESTMENTS vs normalized LEAP ARPAK INTERNATIONAL INVESTMENT (singular), so DISAGREE.",
+      "organization_row": {
+        "displayed_date": "07-26-3977",
+        "name": "ARPAK INTERNATIONAL INVESTMENT LIMITED"
+      },
+      "other_candidates": [
+        "KARPAK (PVT.) LIMITED",
+        "STARPAK MARTIAL ARTS (PVT) LTD",
+        "SHAJARPAK FABRICS LIMITED",
+        "SHAJARPAK SECURITIES (PVT.) LIMITED",
+        "DAWR DARPAKHEL CONSTRUCTION COMPANY (SMC-PRIVATE) LIMITED"
+      ],
+      "outcome": "DISAGREE",
+      "query_that_found": "Arpak",
+      "query_wordings": [
+        "Arpak International Investments Ltd.",
+        "Arpak International Investments",
+        "Arpak"
+      ],
+      "registry_legal_name": "Arpak International Investments Ltd.",
+      "ticker": "ARPAK"
+    },
+    {
+      "company_id": 131,
+      "incorporated_row": {
+        "cro_city": "Faisalabad",
+        "cuin": "0017331",
+        "incorporation_date": "14-01-1988",
+        "name": "ASHFAQ TEXTILE MILLS LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "01-14-3988",
+        "name": "ASHFAQ TEXTILE MILLS LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Ashfaq Textile Mills",
+      "query_wordings": [
+        "Ashfaq Textile Mills Limited",
+        "Ashfaq Textile Mills"
+      ],
+      "registry_legal_name": "Ashfaq Textile Mills Limited",
+      "ticker": "ASHT"
+    },
+    {
+      "company_id": 139,
+      "incorporated_row": {
+        "cro_city": "Lahore",
+        "cuin": "0000021",
+        "incorporation_date": "01-01-1934",
+        "name": "ATLAS INSURANCE LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "01-01-3934",
+        "name": "ATLAS INSURANCE LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Atlas Insurance",
+      "query_wordings": [
+        "Atlas Insurance Limited",
+        "Atlas Insurance"
+      ],
+      "registry_legal_name": "Atlas Insurance Limited",
+      "ticker": "ATIL"
+    },
+    {
+      "company_id": 141,
+      "incorporated_row": {
+        "cro_city": "Islamabad",
+        "cuin": "0006538",
+        "incorporation_date": "08-11-1978",
+        "name": "ATTOCK REFINERY LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "11-08-3978",
+        "name": "ATTOCK REFINERY LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Attock Refinery",
+      "query_wordings": [
+        "Attock Refinery Limited",
+        "Attock Refinery"
+      ],
+      "registry_legal_name": "Attock Refinery Limited",
+      "ticker": "ATRL"
+    },
+    {
+      "company_id": 149,
+      "incorporated_row": {
+        "cro_city": "Lahore",
+        "cuin": "0000500",
+        "incorporation_date": "26-12-1951",
+        "name": "BATA PAKISTAN LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "12-26-3951",
+        "name": "BATA PAKISTAN LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Bata Pakistan",
+      "query_wordings": [
+        "Bata Pakistan Limited",
+        "Bata Pakistan"
+      ],
+      "registry_legal_name": "Bata Pakistan Limited",
+      "ticker": "BATA"
+    },
+    {
+      "company_id": 157,
+      "incorporated_row": {
+        "cro_city": "Quetta",
+        "cuin": "0007820",
+        "incorporation_date": "17-06-1980",
+        "name": "BALUCHISTAN GLASS LIMITED"
+      },
+      "notes": "Other candidate BALOCHISTAN GLASS LIMITED was shown as Reserved, with a different spelling (Balochistan vs Baluchistan), and is not the target.",
+      "organization_row": {
+        "displayed_date": "06-17-3980",
+        "name": "BALUCHISTAN GLASS LIMITED"
+      },
+      "other_candidates": [
+        "BALOCHISTAN GLASS LIMITED"
+      ],
+      "outcome": "AGREE",
+      "query_that_found": "Baluchistan Glass",
+      "query_wordings": [
+        "Baluchistan Glass Limited",
+        "Baluchistan Glass"
+      ],
+      "registry_legal_name": "Baluchistan Glass Limited",
+      "ticker": "BGL"
+    },
+    {
+      "company_id": 159,
+      "incorporated_row": {
+        "cro_city": "Islamabad",
+        "cuin": "0018520",
+        "incorporation_date": "07-09-1988",
+        "name": "BIAFO INDUSTRIES LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "09-07-3988",
+        "name": "BIAFO INDUSTRIES LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Biafo Industries",
+      "query_wordings": [
+        "Biafo Industries Limited",
+        "Biafo Industries"
+      ],
+      "registry_legal_name": "Biafo Industries Limited",
+      "ticker": "BIFO"
+    },
+    {
+      "company_id": 161,
+      "incorporated_row": {
+        "cro_city": "Karachi",
+        "cuin": "0053292",
+        "incorporation_date": "12-12-2005",
+        "name": "BLUE-EX LIMITED"
+      },
+      "notes": "Organization displayed date is not garbled for this row (12-12-2005, same as the INCORPORATED row). Other-candidates note (moved from other_candidates_note field): A further row for BLUE-EX LIMITED shown as RESERVED FOR CHANGE OF NAME, same CUIN and date, is also present but is the target name, not a different candidate.",
+      "organization_row": {
+        "displayed_date": "12-12-2005",
+        "name": "BLUE-EX LIMITED"
+      },
+      "other_candidates": [
+        "BLUREX VENTURES (PRIVATE) LIMITED"
+      ],
+      "outcome": "AGREE",
+      "query_that_found": "Blue-Ex",
+      "query_wordings": [
+        "Blue-Ex Limited",
+        "Blue-Ex"
+      ],
+      "registry_legal_name": "Blue-Ex Limited",
+      "ticker": "BLUEX"
+    },
+    {
+      "company_id": 164,
+      "incorporated_row": {
+        "cro_city": "Peshawar",
+        "cuin": "0001080",
+        "incorporation_date": "20-01-1960",
+        "name": "BANNU WOOLLEN MILLS LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "01-20-3960",
+        "name": "BANNU WOOLLEN MILLS LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Bannu Woollen Mills",
+      "query_wordings": [
+        "Bannu Woollen Mills Limited",
+        "Bannu Woollen Mills"
+      ],
+      "registry_legal_name": "Bannu Woollen Mills Limited",
+      "ticker": "BNWM"
+    },
+    {
+      "company_id": 169,
+      "incorporated_row": {
+        "cro_city": "Karachi",
+        "cuin": "0016807",
+        "incorporation_date": "29-09-1987",
+        "name": "BLESSED TEXTILES LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "09-29-3987",
+        "name": "BLESSED TEXTILES LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Blessed Textiles",
+      "query_wordings": [
+        "Blessed Textiles Limited",
+        "Blessed Textiles"
+      ],
+      "registry_legal_name": "Blessed Textiles Limited",
+      "ticker": "BTL"
+    },
+    {
+      "company_id": 179,
+      "incorporated_row": {
+        "cro_city": "Peshawar",
+        "cuin": "0008617",
+        "incorporation_date": "25-05-1981",
+        "name": "CHERAT CEMENT COMPANY LIMITED"
+      },
+      "notes": "Trailing COMPANY and LIMITED are both stripped by normalization on both sides.",
+      "organization_row": {
+        "displayed_date": "05-25-3981",
+        "name": "CHERAT CEMENT COMPANY LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Cherat Cement Company",
+      "query_wordings": [
+        "Cherat Cement Company Limited",
+        "Cherat Cement Company"
+      ],
+      "registry_legal_name": "Cherat Cement Company Limited",
+      "ticker": "CHCC"
+    },
+    {
+      "company_id": 189,
+      "incorporated_row": {
+        "cro_city": "Karachi",
+        "cuin": "0000870",
+        "incorporation_date": "08-05-1957",
+        "name": "CRESCENT STAR INSURANCE LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "05-08-3957",
+        "name": "CRESCENT STAR INSURANCE LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Crescent Star Insurance",
+      "query_wordings": [
+        "Crescent Star Insurance Limited",
+        "Crescent Star Insurance"
+      ],
+      "registry_legal_name": "Crescent Star Insurance Limited",
+      "ticker": "CSIL"
+    },
+    {
+      "company_id": 199,
+      "incorporated_row": {
+        "cro_city": "Lahore",
+        "cuin": "0006469",
+        "incorporation_date": "27-09-1978",
+        "name": "D. G. KHAN CEMENT COMPANY LIMITED"
+      },
+      "notes": "'D.G. Khan Cement Company' returned 0 results; 'D G Khan Cement' returned only the organization row; 'Khan Cement' returned both rows. D.G. vs D G agrees after punctuation normalization.",
+      "organization_row": {
+        "displayed_date": "09-27-3978",
+        "name": "D. G. KHAN CEMENT COMPANY LIMITED"
+      },
+      "other_candidates": [
+        "KHAN CEMENT TRADERS",
+        "KHAN CEMENT TRADERS LLP"
+      ],
+      "outcome": "AGREE",
+      "query_that_found": "Khan Cement",
+      "query_wordings": [
+        "D.G. Khan Cement Company Limited",
+        "D.G. Khan Cement Company",
+        "D G Khan Cement",
+        "Khan Cement"
+      ],
+      "registry_legal_name": "D.G. Khan Cement Company Limited",
+      "ticker": "DGKC"
+    },
+    {
+      "company_id": 209,
+      "incorporated_row": {
+        "cro_city": "Karachi",
+        "cuin": "0069848",
+        "incorporation_date": "29-06-2009",
+        "name": "ENGRO FERTILIZERS LIMITED"
+      },
+      "notes": "Full LEAP shown incorporation datetime: 29-06-2009 11:08:29 (date part stored; time component is a LEAP display timestamp, not part of the incorporation date).",
+      "organization_row": {
+        "displayed_date": "06-29-2009",
+        "name": "ENGRO FERTILIZERS LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Engro Fertilizers",
+      "query_wordings": [
+        "Engro Fertilizers Limited",
+        "Engro Fertilizers"
+      ],
+      "registry_legal_name": "Engro Fertilizers Limited",
+      "ticker": "EFERT"
+    },
+    {
+      "company_id": 214,
+      "incorporated_row": {
+        "cro_city": "Lahore",
+        "cuin": "0000691",
+        "incorporation_date": "17-08-1954",
+        "name": "EMCO INDUSTRIES LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "08-17-3954",
+        "name": "EMCO INDUSTRIES LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Emco Industries",
+      "query_wordings": [
+        "Emco Industries Limited",
+        "Emco Industries"
+      ],
+      "registry_legal_name": "Emco Industries Limited",
+      "ticker": "EMCO"
+    },
+    {
+      "company_id": 219,
+      "incorporated_row": {
+        "cro_city": "Quetta",
+        "cuin": "0010017",
+        "incorporation_date": "08-01-1983",
+        "name": "EAST WEST INSURANCE CO, LIMITED"
+      },
+      "notes": "'East West Insurance Company' returned 0 results; 'East West Insurance' found the row. Trailing CO and COMPANY are both stripped by normalization.",
+      "organization_row": {
+        "displayed_date": "01-08-3983",
+        "name": "EAST WEST INSURANCE CO, LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "East West Insurance",
+      "query_wordings": [
+        "East West Insurance Company Limited",
+        "East West Insurance Company",
+        "East West Insurance"
+      ],
+      "registry_legal_name": "East West Insurance Company Limited",
+      "ticker": "EWIC"
+    },
+    {
+      "company_id": 229,
+      "incorporated_row": null,
+      "notes": "Verbatim and 'First Constellation' and 'Constellation Modaraba' all returned 0 results. 'Constellation' returned 19 results across 2 pages, none of them First Constellation Modaraba.",
+      "organization_row": null,
+      "other_candidates": [
+        "CONSTELLATION CAPITAL (PVT) LTD",
+        "CONSTELLATION HOLDINGS (PVT.) LIMITED",
+        "CONSTELLATION INNOVATIONS (PRIVATE) LIMITED",
+        "CONSTELLATION REAL ESTATE (SMC-PRIVATE) LIMITED",
+        "CONSTELLATION VENTURES (SMC-PRIVATE) LIMITED",
+        "CONSTELLATION FOODS (PRIVATE) LIMITED",
+        "CONSTELLATION GROUP (SMC-PRIVATE) LIMITED",
+        "CONSTELLATION GLOBAL (PVT) LTD",
+        "CONSTELLATION VENTURES (PRIVATE) LIMITED",
+        "CONSTELLATION MARKETING (PRIVATE) LIMITED",
+        "CONSTELLATION FOODS TRADING (PVT) LTD",
+        "CONSTELLATION ENERGY (PRIVATE) LIMITED",
+        "CONSTELLATION IT (PVT) LTD",
+        "CONSTELLATION ENTERPRISES (PRIVATE) LIMITED",
+        "CONSTELLATION MARKETING (PVT) LTD",
+        "CONSTELLATION PHARMA (PVT) LTD",
+        "CONSTELLATION HOLDINGS (SMC-PRIVATE) LIMITED",
+        "CONSTELLATION VENTURES (SMC-PRIVATE) LIMITED",
+        "CONSTELLATION GLOBAL (SMC-PRIVATE) LIMITED"
+      ],
+      "outcome": "NOT_FOUND",
+      "query_that_found": null,
+      "query_wordings": [
+        "First Constellation Modaraba",
+        "Constellation",
+        "Constellation Modaraba",
+        "First Constellation"
+      ],
+      "registry_legal_name": "First Constellation Modaraba",
+      "ticker": "FCONM"
+    },
+    {
+      "company_id": 239,
+      "incorporated_row": null,
+      "notes": "Verbatim and 'First Habib' returned 0 results. 'Habib Modaraba' returned the 2 candidates listed, neither is First Habib Modaraba.",
+      "organization_row": null,
+      "other_candidates": [
+        "HABIB MODARABA MANAGEMENT (PVT.) LIMITED",
+        "HABIB METRO MODARABA MANAGEMENT (PRIVATE) LIMITED"
+      ],
+      "outcome": "NOT_FOUND",
+      "query_that_found": null,
+      "query_wordings": [
+        "First Habib Modaraba",
+        "Habib Modaraba",
+        "First Habib"
+      ],
+      "registry_legal_name": "First Habib Modaraba",
+      "ticker": "FHAM"
+    },
+    {
+      "company_id": 249,
+      "incorporated_row": null,
+      "notes": "All three wordings returned 0 results.",
+      "organization_row": null,
+      "other_candidates": [],
+      "outcome": "NOT_FOUND",
+      "query_that_found": null,
+      "query_wordings": [
+        "First Treet Manufacturing Modaraba",
+        "Treet Manufacturing",
+        "First Treet"
+      ],
+      "registry_legal_name": "First Treet Manufacturing Modaraba",
+      "ticker": "FTMM"
+    },
+    {
+      "company_id": 254,
+      "incorporated_row": {
+        "cro_city": "Quetta",
+        "cuin": "0007766",
+        "incorporation_date": "28-05-1980",
+        "name": "GATRON (INDUSTRIES) LIMITED"
+      },
+      "notes": "A further row for GATRON (INDUSTRIES) LIMITED shown as RESERVED FOR CHANGE OF NAME, same CUIN and date, is also present.",
+      "organization_row": {
+        "displayed_date": "05-28-3980",
+        "name": "GATRON (INDUSTRIES) LIMITED"
+      },
+      "other_candidates": [
+        "PATRON PAPER INDUSTRIES (PVT) LTD"
+      ],
+      "outcome": "AGREE",
+      "query_that_found": "Gatron (Industries)",
+      "query_wordings": [
+        "Gatron (Industries) Limited",
+        "Gatron (Industries)"
+      ],
+      "registry_legal_name": "Gatron (Industries) Limited",
+      "ticker": "GATI"
+    },
+    {
+      "company_id": 259,
+      "incorporated_row": {
+        "cro_city": "Lahore",
+        "cuin": "0160639",
+        "incorporation_date": "21-10-2020",
+        "name": "GHANI DAIRIES LIMITED"
+      },
+      "notes": "Other candidate shown as Reserved. Full LEAP shown incorporation datetime: 21-10-2020 12:31:38 (date part stored; time component is a LEAP display timestamp, not part of the incorporation date).",
+      "organization_row": {
+        "displayed_date": "10-21-2020",
+        "name": "GHANI DAIRIES LIMITED"
+      },
+      "other_candidates": [
+        "GHANI DAIRIES (PRIVATE) LIMITED"
+      ],
+      "outcome": "AGREE",
+      "query_that_found": "Ghani Dairies",
+      "query_wordings": [
+        "Ghani Dairies Limited",
+        "Ghani Dairies"
+      ],
+      "registry_legal_name": "Ghani Dairies Limited",
+      "ticker": "GDL"
+    },
+    {
+      "company_id": 269,
+      "incorporated_row": {
+        "cro_city": "Lahore",
+        "cuin": "0035396",
+        "incorporation_date": "31-08-1995",
+        "name": "GRAYS LEASING LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "08-31-3995",
+        "name": "GRAYS LEASING LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Grays Leasing",
+      "query_wordings": [
+        "Grays Leasing Limited",
+        "Grays Leasing"
+      ],
+      "registry_legal_name": "Grays Leasing Limited",
+      "ticker": "GRYL"
+    },
+    {
+      "company_id": 279,
+      "incorporated_row": {
+        "cro_city": "Lahore",
+        "cuin": "0028815",
+        "incorporation_date": "04-11-1992",
+        "name": "HONDA ATLAS CARS (PAKISTAN) LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "11-04-3992",
+        "name": "HONDA ATLAS CARS (PAKISTAN) LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Honda Atlas Cars (Pakistan)",
+      "query_wordings": [
+        "Honda Atlas Cars (Pakistan) Limited",
+        "Honda Atlas Cars (Pakistan)"
+      ],
+      "registry_legal_name": "Honda Atlas Cars (Pakistan) Limited",
+      "ticker": "HCAR"
+    },
+    {
+      "company_id": 280,
+      "incorporated_row": null,
+      "notes": "'HBL Growth Fund' and 'HBL Growth' returned 0 results. 'Growth Fund' returned 1 result, the candidate listed, shown as Proposed, which is not HBL Growth Fund.",
+      "organization_row": null,
+      "other_candidates": [
+        "JULLUNDUR INVESTMENT GROWTH FUND LIMITED"
+      ],
+      "outcome": "NOT_FOUND",
+      "query_that_found": null,
+      "query_wordings": [
+        "HBL Growth Fund",
+        "HBL Growth",
+        "Growth Fund"
+      ],
+      "registry_legal_name": "HBL Growth Fund",
+      "ticker": "HGFA"
+    },
+    {
+      "company_id": 289,
+      "incorporated_row": {
+        "cro_city": "Karachi",
+        "cuin": "0024725",
+        "incorporation_date": "01-08-1991",
+        "name": "THE HUB POWER COMPANY LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "08-01-3991",
+        "name": "THE HUB POWER COMPANY LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "The Hub Power Company",
+      "query_wordings": [
+        "The Hub Power Company Limited",
+        "The Hub Power Company"
+      ],
+      "registry_legal_name": "The Hub Power Company Limited",
+      "ticker": "HUBC"
+    },
+    {
+      "company_id": 299,
+      "incorporated_row": {
+        "cro_city": "Karachi",
+        "cuin": "0000885",
+        "incorporation_date": "23-07-1957",
+        "name": "INDUS DYEING & MANUFACTURING COMPANY LIMITED"
+      },
+      "notes": "'Indus Dyeing & Manufacturing Co.' returned 0 results; 'Indus Dyeing' found the row. AND is removed and trailing CO/COMPANY stripped by normalization on both sides.",
+      "organization_row": {
+        "displayed_date": "07-23-3957",
+        "name": "INDUS DYEING & MANUFACTURING COMPANY LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Indus Dyeing",
+      "query_wordings": [
+        "Indus Dyeing & Manufacturing Co. Limited",
+        "Indus Dyeing & Manufacturing Co.",
+        "Indus Dyeing"
+      ],
+      "registry_legal_name": "Indus Dyeing & Manufacturing Co. Limited",
+      "ticker": "IDYM"
+    },
+    {
+      "company_id": 303,
+      "incorporated_row": {
+        "cro_city": "Karachi",
+        "cuin": "0022754",
+        "incorporation_date": "14-11-1990",
+        "name": "IMAGE PAKISTAN LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "11-14-3990",
+        "name": "IMAGE PAKISTAN LIMITED"
+      },
+      "other_candidates": [
+        "PAKISTAN INSTITUTE FOR COUNTRY REPUTATION AND IMAGE MANAGEMENT (PRIVATE) LIMITED"
+      ],
+      "outcome": "AGREE",
+      "query_that_found": "Image Pakistan",
+      "query_wordings": [
+        "Image Pakistan Limited",
+        "Image Pakistan"
+      ],
+      "registry_legal_name": "Image Pakistan Limited",
+      "ticker": "IMAGE"
+    },
+    {
+      "company_id": 309,
+      "incorporated_row": null,
+      "notes": "Verbatim 'Image REIT' returned 0 results. 'REIT' returned 118 results; the first page (10 rows, listed above) contains no Image REIT row, and the verbatim 0 is taken as the NOT_FOUND evidence for this company-name search.",
+      "organization_row": null,
+      "other_candidates": [
+        "CLOVER PAKISTAN REIT (PRIVATE) LIMITED",
+        "PAKISTAN REAL ESTATE INVESTMENT TRUST (PVT) LTD",
+        "DOLMEN CITY REIT",
+        "RAYS PAKISTAN REIT (PRIVATE) LIMITED",
+        "PAKISTAN REAL ESTATE INVESTMENT TRUST MANAGEMENT (PVT) LTD",
+        "RAYS PAKISTAN REIT MANAGEMENT (PRIVATE) LIMITED",
+        "RAYS PAKISTAN REIT MANAGEMENT (PVT) LTD",
+        "INDEPENDENT FINANCIAL CONSULTANTS OF PAKISTAN (PRIVATE) LIMITED",
+        "RAYS PAKISTAN REIT TRUSTEE (PRIVATE) LIMITED",
+        "RAYS PAKISTAN REIT"
+      ],
+      "outcome": "NOT_FOUND",
+      "query_that_found": null,
+      "query_wordings": [
+        "Image REIT",
+        "REIT"
+      ],
+      "registry_legal_name": "Image REIT",
+      "ticker": "IREIT"
+    },
+    {
+      "company_id": 319,
+      "incorporated_row": {
+        "cro_city": "Islamabad",
+        "cuin": "0035121",
+        "incorporation_date": "29-06-1995",
+        "name": "JUBILEE LIFE INSURANCE COMPANY LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "06-29-3995",
+        "name": "JUBILEE LIFE INSURANCE COMPANY LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Jubilee Life Insurance Company",
+      "query_wordings": [
+        "Jubilee Life Insurance Company Limited",
+        "Jubilee Life Insurance Company"
+      ],
+      "registry_legal_name": "Jubilee Life Insurance Company Limited",
+      "ticker": "JLICL"
+    },
+    {
+      "company_id": 329,
+      "incorporated_row": {
+        "cro_city": "Karachi",
+        "cuin": "0001313",
+        "incorporation_date": "08-06-1961",
+        "name": "JAVEDAN CORPORATION LIMITED"
+      },
+      "notes": "Normalized registry JAVEDAN CORPORATION PREF vs normalized LEAP JAVEDAN (CORPORATION stripped as a trailing suffix after LIMITED). The (Pref) qualifier in the registry name is absent from the LEAP name, so DISAGREE.",
+      "organization_row": {
+        "displayed_date": "06-08-3961",
+        "name": "JAVEDAN CORPORATION LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "DISAGREE",
+      "query_that_found": "Javedan Corporation",
+      "query_wordings": [
+        "Javedan Corporation (Pref)",
+        "Javedan Corporation"
+      ],
+      "registry_legal_name": "Javedan Corporation (Pref)",
+      "ticker": "JVDCPS"
+    },
+    {
+      "company_id": 333,
+      "incorporated_row": {
+        "cro_city": "Peshawar",
+        "cuin": "0000695",
+        "incorporation_date": "15-10-1954",
+        "name": "KHYBER TOBACCO COMPANY LIMITED"
+      },
+      "notes": "Organization row name is shown verbatim with LIMITED repeated twice; the INCORPORATED row name is used for the outcome.",
+      "organization_row": {
+        "displayed_date": "10-15-3954",
+        "name": "KHYBER TOBACCO COMPANY LIMITED LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Khyber Tobacco Company",
+      "query_wordings": [
+        "Khyber Tobacco Company Limited",
+        "Khyber Tobacco Company"
+      ],
+      "registry_legal_name": "Khyber Tobacco Company Limited",
+      "ticker": "KHTC"
+    },
+    {
+      "company_id": 339,
+      "incorporated_row": {
+        "cro_city": "Peshawar",
+        "cuin": "0002434",
+        "incorporation_date": "19-01-1967",
+        "name": "KOHAT TEXTILE MILLS LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "01-19-3967",
+        "name": "KOHAT TEXTILE MILLS LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Kohat Textile Mills",
+      "query_wordings": [
+        "Kohat Textile Mills Limited",
+        "Kohat Textile Mills"
+      ],
+      "registry_legal_name": "Kohat Textile Mills Limited",
+      "ticker": "KOHTM"
+    },
+    {
+      "company_id": 349,
+      "incorporated_row": null,
+      "notes": "'Lotte Chemical Pakistan' returned 0 results. 'Lotte Chemical' returned only GELLOTTE CHEMICALS LLP. 'Lotte' returned 11 results across 2 pages, listed above, none of them Lotte Chemical Pakistan Limited.",
+      "organization_row": null,
+      "other_candidates": [
+        "LOTTE KOLSON (PRIVATE) LIMITED",
+        "LOTTE AKHTAR BEVERAGES (PRIVATE) LIMITED",
+        "LOTTE ENGINEERING & CONSTRUCTION PAKISTAN (PRIVATE) LIMITED",
+        "CHARLOTTE CONSULTANCY (SMC-PRIVATE) LIMITED",
+        "GELLOTTE CHEMICALS LLP"
+      ],
+      "outcome": "NOT_FOUND",
+      "query_that_found": null,
+      "query_wordings": [
+        "Lotte Chemical Pakistan Limited",
+        "Lotte Chemical Pakistan",
+        "Lotte Chemical",
+        "Lotte"
+      ],
+      "registry_legal_name": "Lotte Chemical Pakistan Limited",
+      "ticker": "LOTCHEM"
+    },
+    {
+      "company_id": 358,
+      "incorporated_row": {
+        "cro_city": "Islamabad",
+        "cuin": "0012471",
+        "incorporation_date": "04-12-1984",
+        "name": "MARI ENERGIES LIMITED"
+      },
+      "notes": "Organization row name is shown without LIMITED; the INCORPORATED row name is used for the outcome.",
+      "organization_row": {
+        "displayed_date": "12-04-3984",
+        "name": "MARI ENERGIES"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Mari Energies",
+      "query_wordings": [
+        "Mari Energies Limited",
+        "Mari Energies"
+      ],
+      "registry_legal_name": "Mari Energies Limited",
+      "ticker": "MARI"
+    },
+    {
+      "company_id": 359,
+      "incorporated_row": {
+        "cro_city": "Lahore",
+        "cuin": "0000115",
+        "incorporation_date": "09-07-1947",
+        "name": "MCB BANK LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "07-09-3947",
+        "name": "MCB BANK LIMITED"
+      },
+      "other_candidates": [
+        "MCB ISLAMIC BANK LIMITED"
+      ],
+      "outcome": "AGREE",
+      "query_that_found": "MCB Bank",
+      "query_wordings": [
+        "MCB Bank Limited",
+        "MCB Bank"
+      ],
+      "registry_legal_name": "MCB Bank Limited",
+      "ticker": "MCB"
+    },
+    {
+      "company_id": 369,
+      "incorporated_row": {
+        "cro_city": "Lahore",
+        "cuin": "0001107",
+        "incorporation_date": "13-04-1960",
+        "name": "MAPLE LEAF CEMENT FACTORY LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "04-13-3960",
+        "name": "MAPLE LEAF CEMENT FACTORY LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Maple Leaf Cement Factory",
+      "query_wordings": [
+        "Maple Leaf Cement Factory Limited",
+        "Maple Leaf Cement Factory"
+      ],
+      "registry_legal_name": "Maple Leaf Cement Factory Limited",
+      "ticker": "MLCF"
+    },
+    {
+      "company_id": 379,
+      "incorporated_row": {
+        "cro_city": "Karachi",
+        "cuin": "0018069",
+        "incorporation_date": "13-06-1988",
+        "name": "MANDVIWALLA MAUSER PLASTIC INDUSTRIES LIMITED"
+      },
+      "notes": "Verbatim and 'Mandviwala' returned only the organization row. 'Mauser' returned both rows. Normalized registry MANDVIWALA vs normalized LEAP MANDVIWALLA (double L), so DISAGREE.",
+      "organization_row": {
+        "displayed_date": "06-13-3988",
+        "name": "MANDVIWALLA MAUSER PLASTIC INDUSTRIES LIMITED"
+      },
+      "other_candidates": [
+        "KAUSER TRADING COMPANY (PRIVATE) LIMITED",
+        "HAUSER & NORMAN PROJECT SERVICES (PRIVATE) LIMITED"
+      ],
+      "outcome": "DISAGREE",
+      "query_that_found": "Mauser",
+      "query_wordings": [
+        "Mandviwala Mauser Plastic Industries",
+        "Mandviwala",
+        "Mauser"
+      ],
+      "registry_legal_name": "Mandviwala Mauser Plastic Industries",
+      "ticker": "MWMP"
+    },
+    {
+      "company_id": 389,
+      "incorporated_row": {
+        "cro_city": "Lahore",
+        "cuin": "0037024",
+        "incorporation_date": "22-08-1996",
+        "name": "NETSOL TECHNOLOGIES LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "08-22-3996",
+        "name": "NETSOL TECHNOLOGIES LIMITED"
+      },
+      "other_candidates": [
+        "ZETSOL TECHNOLOGIES (PRIVATE) LIMITED",
+        "NEXSOL TECHNOLOGIES (PRIVATE) LIMITED"
+      ],
+      "outcome": "AGREE",
+      "query_that_found": "NetSol Technologies",
+      "query_wordings": [
+        "NetSol Technologies Limited",
+        "NetSol Technologies"
+      ],
+      "registry_legal_name": "NetSol Technologies Limited",
+      "ticker": "NETSOL"
+    },
+    {
+      "company_id": 399,
+      "incorporated_row": {
+        "cro_city": "Lahore",
+        "cuin": "0002005",
+        "incorporation_date": "17-12-1964",
+        "name": "NIMIR RESINS LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "12-17-3964",
+        "name": "NIMIR RESINS LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Nimir Resins",
+      "query_wordings": [
+        "Nimir Resins Limited",
+        "Nimir Resins"
+      ],
+      "registry_legal_name": "Nimir Resins Limited",
+      "ticker": "NRSL"
+    },
+    {
+      "company_id": 409,
+      "incorporated_row": {
+        "cro_city": "Islamabad",
+        "cuin": "0090925",
+        "incorporation_date": "04-12-2014",
+        "name": "PAKISTAN ALUMINIUM BEVERAGE CANS LIMITED"
+      },
+      "notes": "Full LEAP shown incorporation datetime: 04-12-2014 15:35:53 (date part stored; time component is a LEAP display timestamp, not part of the incorporation date).",
+      "organization_row": {
+        "displayed_date": "12-04-2014",
+        "name": "PAKISTAN ALUMINIUM BEVERAGE CANS LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Pakistan Aluminium Beverage Cans",
+      "query_wordings": [
+        "Pakistan Aluminium Beverage Cans Limited",
+        "Pakistan Aluminium Beverage Cans"
+      ],
+      "registry_legal_name": "Pakistan Aluminium Beverage Cans Limited",
+      "ticker": "PABC"
+    },
+    {
+      "company_id": 419,
+      "incorporated_row": {
+        "cro_city": "Karachi",
+        "cuin": "0033936",
+        "incorporation_date": "27-12-1994",
+        "name": "PAK-GULF LEASING COMPANY LIMITED"
+      },
+      "notes": "'Pak-Gulf Leasing Company' returned 0 results; the spaced form 'Pak Gulf Leasing' found the row. Hyphen normalizes to a space.",
+      "organization_row": {
+        "displayed_date": "12-27-3994",
+        "name": "PAK-GULF LEASING COMPANY LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Pak Gulf Leasing",
+      "query_wordings": [
+        "Pak-Gulf Leasing Company Limited",
+        "Pak-Gulf Leasing Company",
+        "Pak Gulf Leasing"
+      ],
+      "registry_legal_name": "Pak-Gulf Leasing Company Limited",
+      "ticker": "PGLC"
+    },
+    {
+      "company_id": 429,
+      "incorporated_row": {
+        "cro_city": "Lahore",
+        "cuin": "0035039",
+        "incorporation_date": "22-06-1995",
+        "name": "PAKGEN LIMITED"
+      },
+      "notes": "'Pakgen Power' returned 0 results; 'Pakgen' returned the PAKGEN row above as the unambiguous Pakgen candidate. Normalized registry PAKGEN POWER vs normalized LEAP PAKGEN (POWER absent), so DISAGREE.",
+      "organization_row": {
+        "displayed_date": "06-22-3995",
+        "name": "PAKGEN LIMITED"
+      },
+      "other_candidates": [
+        "PAKGEO INTERNATIONAL (PVT.) LIMITED",
+        "PAKKEN (PVT) LTD",
+        "PAY-GEN (SMC-PRIVATE) LIMITED",
+        "CMEC-PAKGEN (PVT.) LIMITED"
+      ],
+      "outcome": "DISAGREE",
+      "query_that_found": "Pakgen",
+      "query_wordings": [
+        "Pakgen Power Limited",
+        "Pakgen Power",
+        "Pakgen"
+      ],
+      "registry_legal_name": "Pakgen Power Limited",
+      "ticker": "PKGP"
+    },
+    {
+      "company_id": 439,
+      "incorporated_row": {
+        "cro_city": "Karachi",
+        "cuin": "0054339",
+        "incorporation_date": "15-03-2006",
+        "name": "PAK QATAR GENERAL TAKAFUL LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "03-15-2006",
+        "name": "PAK QATAR GENERAL TAKAFUL LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Pak Qatar General Takaful",
+      "query_wordings": [
+        "Pak Qatar General Takaful Limited",
+        "Pak Qatar General Takaful"
+      ],
+      "registry_legal_name": "Pak Qatar General Takaful Limited",
+      "ticker": "PQGTL"
+    },
+    {
+      "company_id": 449,
+      "incorporated_row": {
+        "cro_city": "Lahore",
+        "cuin": "0010858",
+        "incorporation_date": "24-10-1983",
+        "name": "PANTHER TYRES LIMITED"
+      },
+      "notes": "Trailing Ltd. vs LIMITED is stripped by normalization.",
+      "organization_row": {
+        "displayed_date": "10-24-3983",
+        "name": "PANTHER TYRES LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Panther Tyres",
+      "query_wordings": [
+        "Panther Tyres Ltd.",
+        "Panther Tyres"
+      ],
+      "registry_legal_name": "Panther Tyres Ltd.",
+      "ticker": "PTL"
+    },
+    {
+      "company_id": 459,
+      "incorporated_row": {
+        "cro_city": "Karachi",
+        "cuin": "0014448",
+        "incorporation_date": "08-05-1986",
+        "name": "SANGHAR SUGAR MILLS LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "05-08-3986",
+        "name": "SANGHAR SUGAR MILLS LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Sanghar Sugar Mills",
+      "query_wordings": [
+        "Sanghar Sugar Mills Limited",
+        "Sanghar Sugar Mills"
+      ],
+      "registry_legal_name": "Sanghar Sugar Mills Limited",
+      "ticker": "SANSM"
+    },
+    {
+      "company_id": 469,
+      "incorporated_row": {
+        "cro_city": "Karachi",
+        "cuin": "0002179",
+        "incorporation_date": "08-12-1965",
+        "name": "SECURITY PAPERS LIMITED"
+      },
+      "notes": "Organization row name is shown verbatim with a trailing full stop.",
+      "organization_row": {
+        "displayed_date": "12-08-3965",
+        "name": "SECURITY PAPERS LIMITED."
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Security Papers",
+      "query_wordings": [
+        "Security Papers Limited",
+        "Security Papers"
+      ],
+      "registry_legal_name": "Security Papers Limited",
+      "ticker": "SEPL"
+    },
+    {
+      "company_id": 479,
+      "incorporated_row": {
+        "cro_city": "Karachi",
+        "cuin": "0006870",
+        "incorporation_date": "09-04-1979",
+        "name": "SHAHMURAD SUGAR MILLS LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "04-09-3979",
+        "name": "SHAHMURAD SUGAR MILLS LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Shahmurad Sugar Mills",
+      "query_wordings": [
+        "Shahmurad Sugar Mills Limited",
+        "Shahmurad Sugar Mills"
+      ],
+      "registry_legal_name": "Shahmurad Sugar Mills Limited",
+      "ticker": "SHSML"
+    },
+    {
+      "company_id": 489,
+      "incorporated_row": {
+        "cro_city": "Lahore",
+        "cuin": "0025262",
+        "incorporation_date": "28-09-1991",
+        "name": "SONERI BANK LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "09-28-3991",
+        "name": "SONERI BANK LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Soneri Bank",
+      "query_wordings": [
+        "Soneri Bank Limited",
+        "Soneri Bank"
+      ],
+      "registry_legal_name": "Soneri Bank Limited",
+      "ticker": "SNBL"
+    },
+    {
+      "company_id": 499,
+      "incorporated_row": null,
+      "notes": "No INCORPORATED row was returned in any wording. 'S S Oil Mills' (twice) and 'S S Oil' each returned only the organization row above (CUIN 0022304, CRO Lahore, shown in the organization row). Per the procedure the organization row is never used, so no incorporated observation is recorded and the outcome is NOT_FOUND, not AGREE. 'Oil Mills' returned 418 results and was not paginated through; 'SS Oil Mills' returned 0 results.",
+      "organization_row": {
+        "displayed_date": "08-21-3990",
+        "name": "S. S. OIL MILLS LIMITED"
+      },
+      "other_candidates": [
+        "7STAR OIL & GAS (PRIVATE) LIMITED",
+        "A & S OIL TERMINAL (PVT) LTD",
+        "A & S OIL INDUSTRIES (PRIVATE) LIMITED"
+      ],
+      "outcome": "NOT_FOUND",
+      "query_that_found": null,
+      "query_wordings": [
+        "S.S.Oil Mills Limited",
+        "S.S.Oil Mills",
+        "S S Oil Mills",
+        "Oil Mills",
+        "SS Oil Mills",
+        "S S Oil"
+      ],
+      "registry_legal_name": "S.S.Oil Mills Limited",
+      "ticker": "SSOM"
+    },
+    {
+      "company_id": 509,
+      "incorporated_row": {
+        "cro_city": "Karachi",
+        "cuin": "0078443",
+        "incorporation_date": "03-02-2012",
+        "name": "SYMMETRY GROUP LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "02-03-2012",
+        "name": "SYMMETRY GROUP LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Symmetry Group",
+      "query_wordings": [
+        "Symmetry Group Limited",
+        "Symmetry Group"
+      ],
+      "registry_legal_name": "Symmetry Group Limited",
+      "ticker": "SYM"
+    },
+    {
+      "company_id": 519,
+      "incorporated_row": {
+        "cro_city": "Multan",
+        "cuin": "0000619",
+        "incorporation_date": "07-09-1953",
+        "name": "THE THAL INDUSTRIES CORPORATION LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "09-07-3953",
+        "name": "THE THAL INDUSTRIES CORPORATION LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "The Thal Industries Corporation",
+      "query_wordings": [
+        "The Thal Industries Corporation Limited",
+        "The Thal Industries Corporation"
+      ],
+      "registry_legal_name": "The Thal Industries Corporation Limited",
+      "ticker": "TICL"
+    },
+    {
+      "company_id": 529,
+      "incorporated_row": {
+        "cro_city": "Lahore",
+        "cuin": "0005616",
+        "incorporation_date": "22-01-1977",
+        "name": "TREET CORPORATION LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "01-22-3977",
+        "name": "TREET CORPORATION LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Treet Corporation",
+      "query_wordings": [
+        "Treet Corporation Limited",
+        "Treet Corporation"
+      ],
+      "registry_legal_name": "Treet Corporation Limited",
+      "ticker": "TREET"
+    },
+    {
+      "company_id": 539,
+      "incorporated_row": null,
+      "notes": "All three wordings returned 0 results.",
+      "organization_row": null,
+      "other_candidates": [],
+      "outcome": "NOT_FOUND",
+      "query_that_found": null,
+      "query_wordings": [
+        "UBLPakistan Enterprise ETF",
+        "UBL Pakistan Enterprise ETF",
+        "Enterprise ETF"
+      ],
+      "registry_legal_name": "UBLPakistan Enterprise ETF",
+      "ticker": "UBLPETF"
+    },
+    {
+      "company_id": 549,
+      "incorporated_row": null,
+      "notes": "'Wah Noble Chemicals' and 'Wah Noble' returned 0 results. 'Noble Chemicals' returned the 2 candidates listed, neither is Wah Noble Chemicals Limited.",
+      "organization_row": null,
+      "other_candidates": [
+        "PAKNOBLE CHEMICALS (SMC-PRIVATE) LIMITED",
+        "NOBLE SOAP & CHEMICAL INDUSTRIES (PRIVATE) LIMITED"
+      ],
+      "outcome": "NOT_FOUND",
+      "query_that_found": null,
+      "query_wordings": [
+        "Wah Noble Chemicals Limited",
+        "Wah Noble Chemicals",
+        "Wah Noble",
+        "Noble Chemicals"
+      ],
+      "registry_legal_name": "Wah Noble Chemicals Limited",
+      "ticker": "WAHN"
+    },
+    {
+      "company_id": 559,
+      "incorporated_row": {
+        "cro_city": "Lahore",
+        "cuin": "0014636",
+        "incorporation_date": "30-06-1986",
+        "name": "ZUMA RESOURCES LIMITED"
+      },
+      "notes": "",
+      "organization_row": {
+        "displayed_date": "06-30-3986",
+        "name": "ZUMA RESOURCES LIMITED"
+      },
+      "other_candidates": [],
+      "outcome": "AGREE",
+      "query_that_found": "Zuma Resources",
+      "query_wordings": [
+        "Zuma Resources Limited",
+        "Zuma Resources"
+      ],
+      "registry_legal_name": "Zuma Resources Limited",
+      "ticker": "ZUMA"
+    }
+  ]
+}
