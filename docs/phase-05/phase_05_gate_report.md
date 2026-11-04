@@ -178,3 +178,106 @@ specification. Do NOT start Phase 6 from this report: Phases 6–10 all
 depend, directly or indirectly, on market or registry data that does not
 yet exist in production, and starting them now would repeat the same
 gate failure further down the chain.
+
+---
+
+## 11. Gate re-check attempt — 2026-11-04 (snapshot import task): STILL BLOCKED
+
+**This section is an addition, not a replacement. The original
+BLOCKED gate record in §1–§10 above is preserved unchanged.**
+
+Branch: `phase-05-snapshot-import` (from gate tip `c960937`).
+Task: import the parent's live-browser DPS Listing Status snapshot
+(Main Board / Normal Counter, 470 rows reported, page header
+Nov 4, 2026 1:17 PM) through the Phase 4 engine, reconcile, and
+re-judge the gate.
+
+### What this re-check coordinator verified itself
+
+PostgreSQL 16.15, database `psx_intelligence`, 2026-11-04
+(direct counts, not copied from Phase 4/5 reports):
+
+| Table | Production rows |
+|---|---|
+| companies | 0 |
+| securities | 0 |
+| sectors | 0 |
+| registry_evidence | 0 |
+| company_identifiers | 0 |
+| symbol_history | 0 |
+| public tables | 57 |
+| alembic_version | 1 row (`a909e8449cdd`, Phase 4 head) |
+
+### Why the import did not execute
+
+The row-level data from the parent's live-browser read did not
+reach this coordinator's session as a file or as row text. A
+full-workspace search found no file containing the 470 row
+tables; a fresh text fetch of https://dps.psx.com.pk/listings
+returned the same 0-row result as Phase 4 (JavaScript-driven
+portal, D-52); and the 24 browser screenshots on disk are
+viewport images (25 entries shown per view, overlapping scroll
+positions, cut rows at edges), not a row-level record.
+Transcribing a snapshot from them would be a reconstruction with
+unavoidable misreading risk, and this project forbids filling gaps
+by guessing. **No snapshot CSV was written and no import was run
+against production data.** No rows were fabricated, no test rows
+were promoted, and no reconciliation ratio is claimed in this
+section — there is no snapshot in the repository to reconcile
+against, so `reconcile()` still returns the no-snapshot note, not
+a coverage ratio.
+
+### What was prepared and tested (ready the moment the CSV arrives)
+
+- `scripts/import_dps_snapshot.py`: strict CSV validation
+  (header, continuous row_no, no duplicate symbols, no empty
+  symbol/name/sector, clearing_type NC-or-blank), import through
+  the Phase 4 engine, `reconcile()` run, database counts by
+  status, `--dry-run` (rollback) and `--commit` modes. Tested
+  2026-11-04 on a 3-row synthetic TEST ONLY CSV (rolled back):
+  3 created, re-import skipped 3, reconcile coverage 1.0, all
+  UNVERIFIED, VERIFIED = 0, live database confirmed still 0.
+  Validation rejections (duplicate symbol, non-continuous row_no,
+  invalid clearing_type) were tested and now fail before any
+  database access (a validation-order bug found in testing was
+  fixed and re-tested).
+- Provenance README:
+  `docs/phase-04/source_research_raw/dps_listing_status_2026-11-04_main_board_normal_counter.README.md`
+  (source, view, header datetime, method, scope limitation,
+  CSV contract, verification rule, licensing note, exact gap).
+- Import attempt record:
+  `docs/phase-04/snapshot_import_2026-11-04.md`.
+
+### Re-judgement (evidence-based)
+
+- **Phase 5 gate: STILL BLOCKED.** The gate evidence is unchanged
+  (registry 0 in production). Population for one view does not
+  exist in the database yet, reconciliation is still the
+  no-snapshot note, and no verification status can be assessed.
+- **What Phase 5 implementation may do now: nothing new.** It
+  remains blocked for the same reason as §10: no registry records
+  exist to ingest for.
+- **What it still may NOT claim:** a VERIFIED registry,
+  full-market completeness, KSE-100 completeness, or any
+  reconciliation coverage — none exists in evidence.
+- **Single precise unblocker:** the parent delivers the browser
+  report's row tables as a CSV at
+  `docs/phase-04/source_research_raw/dps_listing_status_2026-11-04_main_board_normal_counter.csv`
+  (470 rows, `row_no,symbol,name,sector,clearing_type`, names and
+  sectors exactly as displayed), or re-delivers the row text.
+  On delivery the run is mechanical: dry-run, verify, commit,
+  20-row spot-check (one blank-Clearing-Type row, one
+  rights/preference variant), reconcile, then a fresh gate
+  judgement on real evidence. Until then, the correct status
+  stays BLOCKED, and Phase 6 is NOT started.
+- **Defects:** D-54 stays OPEN. D-51 and D-52 stay OPEN (see the
+  import attempt record for why the parent's browser read does
+  not close them on its own). The PSX Terms licensing question
+  for internal use (not republication) remains unresolved in
+  writing.
+- **Git:** work is on branch `phase-05-snapshot-import`; push
+  attempt and result are recorded in
+  `docs/development/GITHUB_PUSH_LOG.md` (expected blocker: no
+  GitHub credential in this environment). No push to main, no
+  merge to main, no force-push. No paid services, no external
+  account, no secrets in this work.

@@ -85,3 +85,40 @@ No defect is marked RESOLVED unless its retest is recorded in the Retest column.
 - Cause: Phase 4 production registry is empty (population blocked on a dated official snapshot; D-51 direct DPS access NoHealthyNode, D-52 DPS Listing Status JavaScript-driven 0 rows via text fetch).
 - Effect: Phase 5 cannot proceed to collector implementation or ingestion without inventing a company universe, which its specification forbids.
 - Fix required (parent task): dated official snapshot via live-browser extraction or authorised machine-readable official list, imported via the Phase 4 engine, licensing resolved in writing, reconciliation re-run. Status: OPEN, blocking Phase 5 implementation and, downstream, Phases 6-10 data-dependent work.
+
+### Update 2026-11-04 — snapshot import attempt (branch phase-05-snapshot-import)
+
+- Numbering note: this register contains two entries labelled D-54 —
+  the table row D-54 (Phase 4 audit H1, RESOLVED) and this section
+  entry "D-54 — Phase 5 gate failure" (OPEN). They are distinct
+  items; the gate entry below refers only to this section entry.
+- Re-check evidence (coordinator's own DB counts, 2026-11-04):
+  companies 0, securities 0, sectors 0, registry_evidence 0,
+  company_identifiers 0, symbol_history 0, 57 public tables,
+  Alembic head a909e8449cdd. Gate evidence unchanged.
+- Import did NOT execute: the parent's live-browser row tables
+  (470 rows reported) did not reach this coordinator as a file or
+  row text; no snapshot CSV exists in the repository; a fresh text
+  fetch returned 0 rows (D-52 method limitation); the 24 browser
+  screenshots on disk are viewports, not a row record, and were
+  NOT transcribed (reconstruction risk, forbidden guessing).
+  No rows fabricated, no import run, no reconciliation ratio
+  claimed.
+- Prepared and tested: scripts/import_dps_snapshot.py (strict CSV
+  validation, Phase 4 engine import, reconcile(), counts by
+  status, dry-run/commit modes; 3-row synthetic dry-run: 3
+  created, re-import skipped 3, coverage 1.0, all UNVERIFIED,
+  VERIFIED = 0, rolled back, live DB still 0; validation
+  rejections tested incl. a fixed validation-order bug).
+  Provenance README + import attempt record written (see
+  docs/phase-04/snapshot_import_2026-11-04.md).
+- D-51 stays OPEN (not re-tested here; parent browser read is a
+  different route, not a fix to VM DPS access). D-52 stays OPEN as
+  a text-fetch limitation (parent browser read overcame rendering
+  in the parent's session, but row evidence is not in this repo,
+  so it cannot be closed on that basis).
+- This gate entry stays OPEN. Single unblocker: parent delivers
+  the 470-row CSV (or row text) at
+  docs/phase-04/source_research_raw/dps_listing_status_2026-11-04_main_board_normal_counter.csv;
+  then dry-run → verify → commit → 20-row spot-check → reconcile
+  → fresh gate judgement.

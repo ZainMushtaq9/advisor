@@ -70,3 +70,33 @@ See DEFECT_REGISTER.md. No defect in this file is marked resolved unless its ret
 - Unblocker: a dated official snapshot (e.g. live-browser extraction of the DPS Listing Status table on a stated date, or a documented machine-readable official list), imported through the Phase 4 engine with the >=2-source VERIFIED rule and source_key provenance control, licensing resolved in writing, reconciliation re-run with a real coverage result. No scraper against psx.com.pk/dps.psx.com.pk (PSX Terms of Use restrict automated navigation without prior written permission).
 - Documents: docs/phase-05/phase_05_gate_report.md (gate report, not a completion claim) and docs/phase-05/source_research_preparation.md (preparation only, not collection). Phase 6 NOT started.
 - Push: NOT attempted for this gate-report-only branch (no verified implementation to push; standing GitHub credential blocker already blocks Phases 2-4 branches). No push to main, no merge to main.
+
+## Phase 5 snapshot import attempt — STILL BLOCKED (2026-11-04)
+
+- Branch phase-05-snapshot-import (from Phase 5 gate tip c960937).
+- Parent reported a live-browser DPS Listing Status read (Main
+  Board / Normal Counter, 470 rows, page header Nov 4, 2026
+  1:17 PM), but the row tables did not reach this coordinator as
+  a file or row text; no snapshot CSV exists in the repository.
+  No import was executed and no CSV was written — no rows
+  fabricated. Fresh text fetch returned 0 rows (D-52); 24 browser
+  screenshots on disk are viewports, not a row record, and were
+  not transcribed.
+- Coordinator's own DB counts: companies 0, securities 0, sectors
+  0, registry_evidence 0, company_identifiers 0, symbol_history
+  0, 57 public tables, Alembic head a909e8449cdd. Gate evidence
+  unchanged; Phase 5 gate still BLOCKED; Phase 6 NOT started.
+- Prepared and tested: scripts/import_dps_snapshot.py (strict
+  validation, Phase 4 engine import, reconcile(), dry-run/commit;
+  3-row synthetic dry-run passed with all UNVERIFIED and
+  VERIFIED = 0, rolled back). Provenance README + import attempt
+  record: docs/phase-04/source_research_raw/dps_listing_status_2026-11-04_main_board_normal_counter.README.md
+  and docs/phase-04/snapshot_import_2026-11-04.md. Gate report
+  re-check section appended to
+  docs/phase-05/phase_05_gate_report.md (original BLOCKED record
+  preserved).
+- Single unblocker: parent delivers the 470-row CSV (or row text)
+  at the path above; then dry-run → verify → commit → 20-row
+  spot-check → reconcile → fresh gate judgement. D-54-gate stays
+  OPEN; D-51/D-52 stay OPEN (see DEFECT_REGISTER note on the
+  D-54 numbering collision). Push result in GITHUB_PUSH_LOG.md.

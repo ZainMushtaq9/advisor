@@ -75,3 +75,25 @@
 ## 2026-11-04 — Phase 5 gate check (BLOCKED)
 - Verified actual DB counts: companies 0, securities 0, sectors 0, registry_evidence 0, market_prices 0; 57 tables; head a909e8449cdd.
 - Gate FAILED per Phase 5 Section 2. No implementation, no ingestion, no invented company list. Gate report: docs/phase-05/phase_05_gate_report.md. Phase 6 NOT started.
+
+## 2026-11-04 — Phase 5 snapshot import attempt (STILL BLOCKED)
+
+- Branch phase-05-snapshot-import from c960937. Parent's
+  live-browser DPS snapshot (470 rows reported) did not reach
+  this coordinator as a file or row text; no snapshot CSV exists
+  in the repo, so no import was executed and no rows were
+  fabricated. Fresh text fetch: 0 rows (D-52). Browser
+  screenshots on disk are viewports, not a row record, and were
+  not transcribed.
+- Own DB counts: companies 0, securities 0, sectors 0,
+  registry_evidence 0, 57 tables, head a909e8449cdd. Gate still
+  BLOCKED; Phase 6 NOT started.
+- Built + tested: scripts/import_dps_snapshot.py (validation,
+  Phase 4 engine import, reconcile, dry-run/commit; synthetic
+  3-row dry-run passed, all UNVERIFIED, VERIFIED = 0, rolled
+  back; validation-order bug found and fixed). Docs: snapshot
+  provenance README, snapshot_import_2026-11-04.md, gate report
+  §11 re-check section. D-54-gate/D-51/D-52 stay OPEN.
+- Unblocker: parent delivers the 470-row CSV (or row text);
+  then dry-run → verify → commit → 20-row spot-check →
+  reconcile → fresh gate judgement.
