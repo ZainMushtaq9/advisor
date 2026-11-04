@@ -158,7 +158,8 @@ def test_every_exposure_cites_statement_evidence():
 
 
 def test_hbl_has_no_exposure_rows():
-    assert all(exp["company_id"] != HBL for exp in EXPOSURES)
+    # Exposures are seeded by ticker (never by surrogate company id).
+    assert all(exp["ticker"] != HBL for exp in EXPOSURES)
 
 
 def test_sector_profiles_cover_four_sectors():

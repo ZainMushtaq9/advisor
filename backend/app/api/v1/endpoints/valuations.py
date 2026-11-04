@@ -78,15 +78,15 @@ def list_valuations(
     """Live assessment for one ticker (all methods, all verdicts)."""
     security = _resolve_company(session, ticker)
     company_id = security.company_id
-    if company_id in PENDING_COMPANIES:
+    if ticker in PENDING_COMPANIES:
         return {
             "ticker": ticker,
             "status": "pending",
-            "reason": PENDING_COMPANIES[company_id],
+            "reason": PENDING_COMPANIES[ticker],
             "methods": [],
             "scope_note": SCOPE_NOTE,
         }
-    if company_id not in PERIODS:
+    if ticker not in PERIODS:
         return {
             "ticker": ticker,
             "status": "no_inputs",
@@ -94,8 +94,8 @@ def list_valuations(
             "methods": [],
             "scope_note": SCOPE_NOTE,
         }
-    inputs = runner.load_valuation_inputs(session, company_id)
-    verdicts = coverage.assess(company_id, inputs)
+    inputs = runner.load_valuation_inputs(session, ticker)
+    verdicts = coverage.assess(ticker, inputs)
     return {
         "ticker": ticker,
         "company_id": company_id,

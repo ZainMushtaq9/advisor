@@ -212,8 +212,10 @@ SEED_SUMMARIES = {
     ),
 }
 
-# HBL (Habib Bank Limited, company 277, COMMERCIAL BANKS) is PENDING.
-HBL = 277
+# HBL (Habib Bank Limited, COMMERCIAL BANKS) is PENDING. Pending
+# companies are keyed by ticker, never by surrogate company id (ids
+# shift across fresh registry imports).
+HBL = "HBL"
 PENDING_COMPANIES = {
     HBL: "statements not yet loaded (HBL CY2025 PDF blocked at download)",
 }

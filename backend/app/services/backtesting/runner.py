@@ -79,7 +79,13 @@ def _build_bias_evidence(session: Session) -> dict[str, dict]:
     # Point-in-time: statement publications vs the decision date.
     inputs: list[dict] = []
     handled: list[str] = []
-    for company_id, ticker in ((289, "HUBC"), (394, "NML"), (403, "OGDC")):
+    for ticker in ("HUBC", "NML", "OGDC"):
+        # Company ids are surrogate and shift across fresh registry
+        # imports: resolve the live id by ticker at run time.
+        _sec = session.query(Security).filter(Security.ticker == ticker).first()
+        if _sec is None:
+            continue
+        company_id = _sec.company_id
         pubs = [
             r[0]
             for r in session.query(FinancialStatement.publication_date)
@@ -140,7 +146,13 @@ def _build_bias_evidence(session: Session) -> dict[str, dict]:
     # Stale prices: price dates + stale statements.
     price_dates = session.query(MarketPrice.trading_date).distinct().count()
     stale: list[dict] = []
-    for company_id, ticker in ((289, "HUBC"), (394, "NML"), (403, "OGDC")):
+    for ticker in ("HUBC", "NML", "OGDC"):
+        # Company ids are surrogate and shift across fresh registry
+        # imports: resolve the live id by ticker at run time.
+        _sec = session.query(Security).filter(Security.ticker == ticker).first()
+        if _sec is None:
+            continue
+        company_id = _sec.company_id
         latest_end = (
             session.query(FinancialStatement.period_end)
             .filter(FinancialStatement.company_id == company_id)

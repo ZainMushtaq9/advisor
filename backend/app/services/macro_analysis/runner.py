@@ -23,6 +23,7 @@ from sqlalchemy.orm import Session
 from app.models.analysis import EconomicIndicator, SectorMetricProfile
 from app.models.governance import DataSource
 from app.models.macro import CompanyMacroExposure, MacroEvent, MacroRegime
+from app.models.reference import Security
 from app.services.macro_analysis import (
     EVENTS,
     EXPOSURES,
@@ -179,10 +180,19 @@ def run_macro(session: Session, commit: bool) -> dict:
         report["observations_written"] += 1
 
     for exp in EXPOSURES:
+        # Exposures are seeded by ticker; the live company id is resolved
+        # from the database (surrogate ids shift across registry imports).
+        exp_company = (
+            session.query(Security).filter(Security.ticker == exp["ticker"]).first()
+        )
+        if exp_company is None:
+            report["exposures_skipped_existing"] += 1
+            continue
+        exp_company_id = exp_company.company_id
         existing = (
             session.query(CompanyMacroExposure)
             .filter_by(
-                company_id=exp["company_id"],
+                company_id=exp_company_id,
                 exposure_key=exp["exposure_key"],
                 is_current=True,
             )
@@ -194,7 +204,7 @@ def run_macro(session: Session, commit: bool) -> dict:
         if commit:
             session.add(
                 CompanyMacroExposure(
-                    company_id=exp["company_id"],
+                    company_id=exp_company_id,
                     exposure_key=exp["exposure_key"],
                     exposure_name=exp["exposure_name"],
                     direction=exp["direction"],

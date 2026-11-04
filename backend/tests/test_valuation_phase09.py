@@ -118,7 +118,7 @@ def test_peer_median_needs_three_peers():
 
 
 def test_hubc_assessment_computed_methods():
-    by_key = _by_key(coverage.assess(289, _base_inputs()))
+    by_key = _by_key(coverage.assess("HUBC", _base_inputs()))
     pe = by_key["multiples:pe_trailing"]
     assert pe["status"] == "computed"
     assert _close(pe["value"], "5.1552535")
@@ -146,8 +146,7 @@ def test_hubc_assessment_computed_methods():
 
 def test_ogdc_assessment():
     by_key = _by_key(
-        coverage.assess(
-            403,
+        coverage.assess("OGDC",
             _base_inputs(
                 ticker="OGDC",
                 sector="OIL & GAS EXPLORATION COMPANIES",
@@ -171,8 +170,7 @@ def test_ogdc_assessment():
 
 def test_nml_assessment_two_independent_pe_blocks():
     by_key = _by_key(
-        coverage.assess(
-            394,
+        coverage.assess("NML",
             _base_inputs(
                 ticker="NML",
                 sector="TEXTILE COMPOSITE",
@@ -198,8 +196,7 @@ def test_nml_assessment_two_independent_pe_blocks():
 
 def test_look_ahead_publication_rejected():
     by_key = _by_key(
-        coverage.assess(
-            289,
+        coverage.assess("HUBC",
             _base_inputs(publication_date=date(2026, 12, 1)),
         )
     )
@@ -209,7 +206,7 @@ def test_look_ahead_publication_rejected():
 
 
 def test_missing_publication_date_rejected_even_with_positive_eps():
-    by_key = _by_key(coverage.assess(289, _base_inputs(publication_date=None)))
+    by_key = _by_key(coverage.assess("HUBC", _base_inputs(publication_date=None)))
     pe = by_key["multiples:pe_trailing"]
     assert pe["status"] == "insufficient_inputs"
     assert "point-in-time unverifiable" in pe["reason"]

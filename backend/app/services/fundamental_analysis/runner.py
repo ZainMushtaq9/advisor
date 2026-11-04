@@ -117,10 +117,30 @@ def _sum_keys(face: dict, keys: tuple[str, ...]) -> tuple[Decimal | None, bool]:
     return total, len(present) < len(keys)
 
 
-def load_period_inputs(session: Session, company_id: int) -> tuple[dict, list[int], list[str]]:
-    """Build the canonical input dict for one company-period."""
-    cfg = PERIODS[company_id]
-    keymap = KEY_MAPS[company_id]
+def resolve_company_id(session: Session, ticker: str) -> int | None:
+    """Resolve a ticker to its CURRENT registry company id.
+
+    Surrogate ids shift across fresh registry imports, so callers must
+    never hardcode a company id: resolve it from the live database by
+    ticker at request/run time.
+    """
+    sec = (
+        session.query(Security).filter(Security.ticker == ticker).order_by(Security.id).first()
+    )
+    return sec.company_id if sec is not None else None
+
+
+def load_period_inputs(session: Session, ticker: str) -> tuple[dict, list[int], list[str]]:
+    """Build the canonical input dict for one company-period.
+
+    The period config is keyed by ticker; the live company id is
+    resolved from the database by ticker (never hardcoded).
+    """
+    company_id = resolve_company_id(session, ticker)
+    if company_id is None:
+        raise ValueError(f"unknown ticker: {ticker}")
+    cfg = PERIODS[ticker]
+    keymap = KEY_MAPS[ticker]
     (fs, fe, freq) = cfg["flow_current"]
     (ps, pe, pfreq) = cfg["flow_prior"]
     inc_cur, id1 = _load_face(session, company_id, "income", fe, fs, freq)
@@ -236,15 +256,19 @@ def _sector_applicability(sector_name: str, metric_key: str) -> str:
 
 
 def run_analysis(
-    session: Session, company_ids: list[int] | None = None, dry_run: bool = True
+    session: Session, tickers: list[str] | None = None, dry_run: bool = True
 ) -> dict:
-    """Assess every configured company-period; write only when committed."""
-    targets = company_ids or sorted(PERIODS)
+    """Assess every configured company-period; write only when committed.
+
+    Companies are selected by ticker; live company ids are resolved
+    from the database per ticker (never hardcoded).
+    """
+    targets = tickers or sorted(PERIODS)
     report: dict = {
         "run_key": f"{RUN_KEY_PREFIX}-{CALCULATION_VERSION}",
         "dry_run": dry_run,
         "companies": {},
-        "pending_companies": {str(cid): reason for cid, reason in PENDING_COMPANIES.items()},
+        "pending_companies": {ticker: reason for ticker, reason in PENDING_COMPANIES.items()},
         "values_written": 0,
         "values_skipped_existing": 0,
         "health_written": 0,
@@ -272,16 +296,15 @@ def run_analysis(
     if not dry_run:
         session.flush()
 
-    for cid in targets:
-        cfg = PERIODS[cid]
+    for ticker in targets:
+        cfg = PERIODS[ticker]
+        cid = resolve_company_id(session, ticker)
+        if cid is None:
+            report["companies"][ticker] = {"status": "error", "error": f"unknown ticker: {ticker}"}
+            continue
         company = session.query(Company).filter_by(id=cid).one_or_none()
-        # Securities carry the ticker (companies are issuers, not tickers).
-        sec = (
-            session.query(Security).filter(Security.company_id == cid).order_by(Security.id).first()
-        )
-        ticker = sec.ticker if sec is not None else str(cid)
         try:
-            inputs, stmt_ids, notes = load_period_inputs(session, cid)
+            inputs, stmt_ids, notes = load_period_inputs(session, ticker)
         except ValueError as exc:
             report["companies"][ticker] = {"status": "error", "error": str(exc)}
             continue
@@ -291,7 +314,7 @@ def run_analysis(
                 "error": "no current statements found",
             }
             continue
-        results = coverage.assess(cid, inputs)
+        results = coverage.assess(ticker, inputs)
         values = {r["metric_key"]: r["value"] for r in results}
         flags = {r["metric_key"]: r.get("flags", []) for r in results}
         health_scores = health.score_dimensions(values, flags)

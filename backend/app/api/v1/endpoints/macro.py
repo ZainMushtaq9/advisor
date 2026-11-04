@@ -192,11 +192,11 @@ def list_exposures(ticker: str, session: Session = Depends(get_session)):
     """Issuer-evidenced exposures for one company."""
     security = _resolve_company(session, ticker)
     company_id = security.company_id
-    if company_id in PENDING_COMPANIES:
+    if ticker in PENDING_COMPANIES:
         return {
             "ticker": ticker,
             "status": "pending",
-            "reason": PENDING_COMPANIES[company_id],
+            "reason": PENDING_COMPANIES[ticker],
             "exposures": [],
             "scope_note": SCOPE_NOTE,
         }

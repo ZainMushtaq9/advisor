@@ -124,8 +124,12 @@ def _assess_pe(inputs: dict) -> dict:
     )
 
 
-def assess(company_id: int, inputs: dict) -> list[dict]:
-    """Assess every registered method for one company."""
+def assess(ticker: str, inputs: dict) -> list[dict]:
+    """Assess every registered method for one company.
+
+    The ticker is accepted for a uniform call signature; the assessment
+    itself reads only the inputs dict (no company-id lookup).
+    """
     out: list[dict] = []
     sector = inputs.get("sector")
     peers = inputs.get("peers") or []

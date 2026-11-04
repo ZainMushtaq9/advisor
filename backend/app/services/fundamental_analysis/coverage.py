@@ -63,8 +63,12 @@ def _na(metric_key: str, reason: str) -> dict:
     }
 
 
-def assess(company_id: int, inputs: dict) -> list[dict]:
-    """Assess every registered metric for one company-period."""
+def assess(ticker: str, inputs: dict) -> list[dict]:
+    """Assess every registered metric for one company-period.
+
+    The second NOT_APPLICABLE key is the company TICKER (config is
+    ticker-keyed; surrogate company ids shift across registry imports).
+    """
     g = inputs.get
     days = inputs.get("period_days") or 0
     derived_cost = bool(inputs.get("cost_derived"))
@@ -77,8 +81,8 @@ def assess(company_id: int, inputs: dict) -> list[dict]:
     # ---- Profitability ----
     gross_margin = div(g("gross_cur"), g("revenue_cur"))
     out.append(_result("gross_margin", gross_margin, missing("gross_cur", "revenue_cur")))
-    if g("op_cur") is None and (("operating_margin", company_id) in NOT_APPLICABLE):
-        out.append(_na("operating_margin", NOT_APPLICABLE[("operating_margin", company_id)]))
+    if g("op_cur") is None and (("operating_margin", ticker) in NOT_APPLICABLE):
+        out.append(_na("operating_margin", NOT_APPLICABLE[("operating_margin", ticker)]))
     else:
         out.append(
             _result(
@@ -128,8 +132,8 @@ def assess(company_id: int, inputs: dict) -> list[dict]:
         cap_cur = g("te_cur") + g("ib_cur")
     if g("te_prior") is not None and g("ib_prior") is not None:
         cap_prior = g("te_prior") + g("ib_prior")
-    if g("op_cur") is None and (("roce", company_id) in NOT_APPLICABLE):
-        out.append(_na("roce", NOT_APPLICABLE[("roce", company_id)]))
+    if g("op_cur") is None and (("roce", ticker) in NOT_APPLICABLE):
+        out.append(_na("roce", NOT_APPLICABLE[("roce", ticker)]))
     else:
         out.append(
             _result(
@@ -177,8 +181,8 @@ def assess(company_id: int, inputs: dict) -> list[dict]:
     out.append(
         _result("ib_debt_to_equity", div(g("ib_cur"), g("te_cur")), missing("ib_cur", "te_cur"))
     )
-    if ("interest_coverage", company_id) in NOT_APPLICABLE:
-        out.append(_na("interest_coverage", NOT_APPLICABLE[("interest_coverage", company_id)]))
+    if ("interest_coverage", ticker) in NOT_APPLICABLE:
+        out.append(_na("interest_coverage", NOT_APPLICABLE[("interest_coverage", ticker)]))
     else:
         fin = g("fin_cur")
         out.append(

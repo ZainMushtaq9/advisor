@@ -76,22 +76,24 @@ def _resolve_company(session: Session, ticker: str) -> tuple[int, str]:
 
 
 def _assess(session: Session, ticker: str, period_end: str | None) -> dict:
-    company_id, _ = _resolve_company(session, ticker)
-    if company_id in PENDING_COMPANIES:
+    # Config is keyed by ticker (surrogate company ids shift across
+    # registry imports); the live company id is resolved only for DB reads.
+    _resolve_company(session, ticker)
+    if ticker in PENDING_COMPANIES:
         return {
             "ticker": ticker,
             "status": "pending",
-            "note": PENDING_COMPANIES[company_id],
+            "note": PENDING_COMPANIES[ticker],
             "scope": SCOPE_NOTE,
         }
-    if company_id not in PERIODS:
+    if ticker not in PERIODS:
         return {
             "ticker": ticker,
             "status": "no_configured_period",
             "note": "No Phase 8 period configuration exists for this company.",
             "scope": SCOPE_NOTE,
         }
-    cfg = PERIODS[company_id]
+    cfg = PERIODS[ticker]
     if period_end is not None and period_end != cfg["flow_current"][1]:
         raise HTTPException(
             status_code=404,
@@ -100,7 +102,7 @@ def _assess(session: Session, ticker: str, period_end: str | None) -> dict:
                 f"configured period_end is {cfg['flow_current'][1]}."
             ),
         )
-    inputs, stmt_ids, notes = runner.load_period_inputs(session, company_id)
+    inputs, stmt_ids, notes = runner.load_period_inputs(session, ticker)
     if not stmt_ids:
         return {
             "ticker": ticker,
@@ -108,7 +110,7 @@ def _assess(session: Session, ticker: str, period_end: str | None) -> dict:
             "note": "No current Phase 7 statements found for this company-period.",
             "scope": SCOPE_NOTE,
         }
-    results = coverage.assess(company_id, inputs)
+    results = coverage.assess(ticker, inputs)
     values = {r["metric_key"]: r["value"] for r in results}
     flags = {r["metric_key"]: r.get("flags", []) for r in results}
     warn_inputs = dict(values)

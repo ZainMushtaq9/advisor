@@ -58,11 +58,16 @@ VALUATION_VERSION = "1.0"
 # for every price-based method.
 PRICE_DATE = date(2026, 11, 3)
 
-# Company ids in the live registry (post-recovery numbering, as Phase 8).
-HUBC = 289  # The Hub Power Company Limited — POWER GENERATION & DISTRIBUTION
-NML = 394  # Nishat Mills Limited — TEXTILE COMPOSITE
-OGDC = 403  # Oil & Gas Development Company Limited — OIL & GAS EXPLORATION
-HBL = 277  # Habib Bank Limited — COMMERCIAL BANKS (PENDING input)
+# Company tickers in the live registry. Config is keyed by TICKER, never by
+# surrogate company id: ids shift across fresh registry imports (the
+# original import used HUBC 289 / NML 394 / OGDC 403 / HBL 277; the
+# post-VM-replacement import uses 759 / 864 / 873 / 747), and id-keyed
+# config silently stopped matching after that shift. Live ids are always
+# resolved from the database by ticker at request/run time.
+HUBC = "HUBC"  # The Hub Power Company Limited — POWER GENERATION & DISTRIBUTION
+NML = "NML"  # Nishat Mills Limited — TEXTILE COMPOSITE
+OGDC = "OGDC"  # Oil & Gas Development Company Limited — OIL & GAS EXPLORATION
+HBL = "HBL"  # Habib Bank Limited — COMMERCIAL BANKS (PENDING input)
 
 PENDING_COMPANIES = {HBL: "statements not yet loaded (HBL CY2025 PDF blocked at download)"}
 

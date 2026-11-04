@@ -157,7 +157,7 @@ def test_formulas_never_return_zero_substitutes() -> None:
 
 
 def test_hubc_fy2026_ratios_reconcile() -> None:
-    r = _by_key(coverage.assess(289, HUBC_INPUTS))
+    r = _by_key(coverage.assess("HUBC", HUBC_INPUTS))
     assert _close(r["gross_margin"]["value"], "0.417400")
     assert _close(r["operating_margin"]["value"], "0.478978")
     assert _close(r["net_margin"]["value"], "0.790947")
@@ -188,7 +188,7 @@ def test_hubc_fy2026_ratios_reconcile() -> None:
 
 
 def test_nml_negative_earnings_reported_not_hidden() -> None:
-    r = _by_key(coverage.assess(394, NML_INPUTS))
+    r = _by_key(coverage.assess("NML", NML_INPUTS))
     assert r["net_margin"]["status"] == "computed"
     assert _close(r["net_margin"]["value"], "-0.007585")
     assert r["roa"]["value"] < 0
@@ -202,7 +202,7 @@ def test_nml_negative_earnings_reported_not_hidden() -> None:
 
 
 def test_ogdc_structural_gaps_are_not_applicable_or_insufficient() -> None:
-    r = _by_key(coverage.assess(403, OGDC_INPUTS))
+    r = _by_key(coverage.assess("OGDC", OGDC_INPUTS))
     assert r["operating_margin"]["status"] == "insufficient_inputs"
     assert "no operating-profit line" in r["operating_margin"]["reason"]
     assert r["interest_coverage"]["status"] == "not_applicable"
@@ -224,7 +224,7 @@ def test_health_bands_and_hubc_dimensions() -> None:
     assert health.band_score("debt_to_assets", D("0.7")) == 20
     assert health.band_score("cash_conversion", D("1.0")) == 100
     assert health.band_score("cash_conversion", D("0.3")) == 20
-    results = coverage.assess(289, HUBC_INPUTS)
+    results = coverage.assess("HUBC", HUBC_INPUTS)
     values = {x["metric_key"]: x["value"] for x in results}
     flags = {x["metric_key"]: x.get("flags", []) for x in results}
     dims = health.score_dimensions(values, flags)
@@ -240,7 +240,7 @@ def test_health_bands_and_hubc_dimensions() -> None:
 
 
 def test_warnings_flag_review_only() -> None:
-    nml = coverage.assess(394, NML_INPUTS)
+    nml = coverage.assess("NML", NML_INPUTS)
     vals = {x["metric_key"]: x["value"] for x in nml}
     vals["_pat_cur"] = NML_INPUTS["pat_cur"]
     vals["_ocf_cur"] = NML_INPUTS["ocf_cur"]
@@ -249,7 +249,7 @@ def test_warnings_flag_review_only() -> None:
     assert "negative_operating_cash_flow" in types
     assert "pat_growth_sign_change" in types
     assert "cash_conversion_both_negative" in types
-    ogdc = coverage.assess(403, OGDC_INPUTS)
+    ogdc = coverage.assess("OGDC", OGDC_INPUTS)
     ovals = {x["metric_key"]: x["value"] for x in ogdc}
     ovals["_pat_cur"] = OGDC_INPUTS["pat_cur"]
     ovals["_ocf_cur"] = OGDC_INPUTS["ocf_cur"]

@@ -29,11 +29,16 @@ from __future__ import annotations
 CALCULATION_VERSION = "1.0"
 HEALTH_METHOD_VERSION = "health-v1"
 
-# Company ids in the live registry (post-recovery numbering).
-HUBC = 289  # The Hub Power Company Limited — POWER GENERATION & DISTRIBUTION
-NML = 394  # Nishat Mills Limited — TEXTILE COMPOSITE
-OGDC = 403  # Oil & Gas Development Company Limited — OIL & GAS EXPLORATION
-HBL = 277  # Habib Bank Limited — COMMERCIAL BANKS (PENDING input, see below)
+# Company tickers in the live registry. Config is keyed by TICKER, never by
+# surrogate company id: ids shift across fresh registry imports (the
+# original import used HUBC 289 / NML 394 / OGDC 403 / HBL 277; the
+# post-VM-replacement import uses 759 / 864 / 873 / 747), and id-keyed
+# config silently stopped matching after that shift. Live ids are always
+# resolved from the database by ticker at request/run time.
+HUBC = "HUBC"  # The Hub Power Company Limited — POWER GENERATION & DISTRIBUTION
+NML = "NML"  # Nishat Mills Limited — TEXTILE COMPOSITE
+OGDC = "OGDC"  # Oil & Gas Development Company Limited — OIL & GAS EXPLORATION
+HBL = "HBL"  # Habib Bank Limited — COMMERCIAL BANKS (PENDING input, see below)
 
 # HBL is a pending 4th company: its CY2025 annual report PDF could not
 # be fetched (issuer-site bot-management challenge on the PDF asset)

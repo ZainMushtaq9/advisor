@@ -56,6 +56,19 @@ def _security_for(session: Session, company_id: int) -> Security | None:
     )
 
 
+def _resolve_company_id(session: Session, ticker: str) -> int | None:
+    """Resolve a ticker to its CURRENT registry company id.
+
+    Surrogate ids shift across fresh registry imports, so callers must
+    never hardcode a company id: resolve it from the live database by
+    ticker at request/run time.
+    """
+    sec = (
+        session.query(Security).filter(Security.ticker == ticker).order_by(Security.id).first()
+    )
+    return sec.company_id if sec is not None else None
+
+
 def _sector_name(session: Session, company_id: int) -> str | None:
     company = session.query(Company).filter(Company.id == company_id).first()
     if company is None or company.sector_id is None:
@@ -83,7 +96,7 @@ def _income_publication_date(
     return row.publication_date if row else None
 
 
-def load_valuation_inputs(session: Session, company_id: int) -> dict:
+def load_valuation_inputs(session: Session, ticker: str) -> dict:
     """Build the canonical input dict for one company.
 
     Reuses Phase 8's load_period_inputs for statement faces (same
@@ -91,12 +104,17 @@ def load_valuation_inputs(session: Session, company_id: int) -> dict:
     income statement's publication date, the sector, and the peer
     set. Raises ValueError when the company has no configured period
     (it is then reported as pending/unknown, never fabricated).
+    The period config is keyed by ticker; the live company id is
+    resolved from the database by ticker (never hardcoded).
     """
-    if company_id not in PERIODS:
-        raise ValueError(f"no configured company-period for company {company_id}")
-    cfg = PERIODS[company_id]
-    keymap = KEY_MAPS[company_id]
-    inputs, stmt_ids, notes = load_period_inputs(session, company_id)
+    if ticker not in PERIODS:
+        raise ValueError(f"no configured company-period for company {ticker}")
+    company_id = _resolve_company_id(session, ticker)
+    if company_id is None:
+        raise ValueError(f"unknown ticker: {ticker}")
+    cfg = PERIODS[ticker]
+    keymap = KEY_MAPS[ticker]
+    inputs, stmt_ids, notes = load_period_inputs(session, ticker)
 
     (fs, fe, freq) = cfg["flow_current"]
     eps = inputs.get("eps_cur")
@@ -131,8 +149,11 @@ def load_valuation_inputs(session: Session, company_id: int) -> dict:
         "period_end": _parse(fe),
     }
     candidates = []
-    for other_id, other_cfg in PERIODS.items():
-        if other_id == company_id:
+    for other_ticker, other_cfg in PERIODS.items():
+        if other_ticker == ticker:
+            continue
+        other_id = _resolve_company_id(session, other_ticker)
+        if other_id is None:
             continue
         other_sec = _security_for(session, other_id)
         (ofs, ofe, ofreq) = other_cfg["flow_current"]
@@ -172,25 +193,29 @@ def load_valuation_inputs(session: Session, company_id: int) -> dict:
 
 def run_valuation(
     session: Session,
-    company_ids: list[int] | None = None,
+    tickers: list[str] | None = None,
     dry_run: bool = True,
 ) -> dict:
-    """Assess every method for each company; commit unless dry-run."""
-    ids = company_ids if company_ids is not None else sorted(PERIODS)
+    """Assess every method for each company; commit unless dry-run.
+
+    Companies are selected by ticker; live company ids are resolved
+    from the database per ticker (never hardcoded).
+    """
+    ids = tickers if tickers is not None else sorted(PERIODS)
     companies: dict[str, dict] = {}
     totals = {"rows": 0, "computed": 0, "insufficient": 0, "not_applicable": 0}
     written = 0
     skipped = 0
-    for company_id in ids:
-        if company_id in PENDING_COMPANIES:
-            companies[str(company_id)] = {
+    for ticker in ids:
+        if ticker in PENDING_COMPANIES:
+            companies[ticker] = {
                 "status": "pending",
-                "reason": PENDING_COMPANIES[company_id],
+                "reason": PENDING_COMPANIES[ticker],
                 "methods": [],
             }
             continue
-        inputs = load_valuation_inputs(session, company_id)
-        verdicts = coverage.assess(company_id, inputs)
+        inputs = load_valuation_inputs(session, ticker)
+        verdicts = coverage.assess(ticker, inputs)
         entries = []
         for verdict in verdicts:
             method_key = verdict["method_key"]
@@ -268,9 +293,9 @@ def run_valuation(
             )
             session.add(row)
             written += 1
-        companies[inputs["ticker"] or str(company_id)] = {
+        companies[inputs["ticker"]] = {
             "status": "assessed",
-            "company_id": company_id,
+            "company_id": inputs["company_id"],
             "ticker": inputs["ticker"],
             "methods": entries,
         }

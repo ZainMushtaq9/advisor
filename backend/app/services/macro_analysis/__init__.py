@@ -51,10 +51,14 @@ CALCULATION_VERSION = "1.0"
 REGIME_METHOD_VERSION = "regime-v1"
 
 # Company ids in the live registry (post-recovery numbering).
-HUBC = 289  # The Hub Power Company Limited
-NML = 394  # Nishat Mills Limited
-OGDC = 403  # Oil & Gas Development Company Limited
-HBL = 277  # Habib Bank Limited (PENDING input)
+# Company tickers in the live registry. Config is keyed by TICKER, never by
+# surrogate company id: ids shift across fresh registry imports (see the
+# Phase 8 note), and id-keyed config silently stopped matching after
+# that shift. Live ids are resolved from the database by ticker at run time.
+HUBC = "HUBC"  # The Hub Power Company Limited
+NML = "NML"  # Nishat Mills Limited
+OGDC = "OGDC"  # Oil & Gas Development Company Limited
+HBL = "HBL"  # Habib Bank Limited (PENDING input)
 
 PENDING_COMPANIES = {HBL: "statements not yet loaded (HBL CY2025 PDF blocked at download)"}
 
@@ -290,7 +294,7 @@ OBSERVATIONS = [
 
 EXPOSURES = [
     {
-        "company_id": HUBC,
+        "ticker": HUBC,
         "exposure_key": "rates_borrowing_cost",
         "exposure_name": "Interest-rate / borrowing-cost exposure",
         "direction": "cost",
@@ -307,7 +311,7 @@ EXPOSURES = [
         "quality_status": "UNVERIFIED",
     },
     {
-        "company_id": NML,
+        "ticker": NML,
         "exposure_key": "rates_borrowing_cost",
         "exposure_name": "Interest-rate / borrowing-cost exposure",
         "direction": "cost",
@@ -323,7 +327,7 @@ EXPOSURES = [
         "quality_status": "UNVERIFIED",
     },
     {
-        "company_id": NML,
+        "ticker": NML,
         "exposure_key": "fx_forward_contracts",
         "exposure_name": "Foreign-exchange exposure via forward contracts",
         "direction": "revenue",
@@ -337,7 +341,7 @@ EXPOSURES = [
         "quality_status": "UNVERIFIED",
     },
     {
-        "company_id": NML,
+        "ticker": NML,
         "exposure_key": "fx_translation",
         "exposure_name": "Foreign-exchange translation exposure",
         "direction": "balance_sheet",
@@ -350,7 +354,7 @@ EXPOSURES = [
         "quality_status": "UNVERIFIED",
     },
     {
-        "company_id": OGDC,
+        "ticker": OGDC,
         "exposure_key": "fx_transaction",
         "exposure_name": "Foreign-exchange transaction exposure",
         "direction": "revenue",
@@ -363,7 +367,7 @@ EXPOSURES = [
         "quality_status": "UNVERIFIED",
     },
     {
-        "company_id": OGDC,
+        "ticker": OGDC,
         "exposure_key": "rates_interest_income",
         "exposure_name": "Interest-rate exposure via interest income",
         "direction": "income",

@@ -92,9 +92,20 @@ def index_documents(session: Session, commit: bool) -> dict:
                 "docs_seen": docs_seen,
             }
         file_hash = sha256_file(pdf_path)
+        # Seeds are keyed by ticker + storage path, never by surrogate
+        # ids (both document and company ids shift across fresh imports).
+        seed_company_id = _ticker_to_company_id(session, seed["ticker"])
+        if seed_company_id is None:
+            return {
+                "error": f"Unknown ticker for {seed['ticker']}: no security row",
+                "docs_seen": docs_seen,
+            }
         source_doc = (
             session.query(FinancialDocument)
-            .filter(FinancialDocument.id == seed["financial_document_id"])
+            .filter(
+                FinancialDocument.company_id == seed_company_id,
+                FinancialDocument.storage_location == seed["storage_location"],
+            )
             .first()
         )
         if (
@@ -116,7 +127,7 @@ def index_documents(session: Session, commit: bool) -> dict:
         doc = (
             session.query(RagDocument)
             .filter(
-                RagDocument.company_id == seed["company_id"],
+                RagDocument.company_id == seed_company_id,
                 RagDocument.document_type == seed["document_type"],
                 RagDocument.title == seed["title"],
             )
@@ -124,8 +135,8 @@ def index_documents(session: Session, commit: bool) -> dict:
         )
         if doc is None:
             doc = RagDocument(
-                company_id=seed["company_id"],
-                financial_document_id=seed["financial_document_id"],
+                company_id=seed_company_id,
+                financial_document_id=source_doc.id if source_doc is not None else None,
                 title=seed["title"],
                 document_type=seed["document_type"],
                 storage_location=seed["storage_location"],
@@ -137,7 +148,11 @@ def index_documents(session: Session, commit: bool) -> dict:
                 quality_status="UNVERIFIED",
                 evidence={
                     "publication_date_note": seed["publication_date_note"],
-                    "source": f"financial_documents row {seed['financial_document_id']}",
+                    "source": (
+                        f"financial_documents row {source_doc.id}"
+                        if source_doc is not None
+                        else "no matching financial_documents row"
+                    ),
                 },
             )
             if commit:

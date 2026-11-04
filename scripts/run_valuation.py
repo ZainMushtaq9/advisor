@@ -56,24 +56,24 @@ def main() -> int:
         return 1
     session = sessionmaker(bind=engine)()
     try:
-        company_ids = None
+        tickers = None
         if args.company:
             wanted = [t.strip() for t in args.company.split(",") if t.strip()]
             rows = session.query(Security).filter(Security.ticker.in_(wanted)).all()
-            found = {r.ticker: r.company_id for r in rows}
+            found = {r.ticker for r in rows}
             missing = [t for t in wanted if t not in found]
             if missing:
                 print(f"Unknown tickers: {', '.join(missing)}", file=sys.stderr)
                 return 2
-            company_ids = [found[t] for t in wanted if found[t] in PERIODS]
-            if not company_ids:
+            tickers = [t for t in wanted if t in PERIODS]
+            if not tickers:
                 print(
                     "No configured company-periods among the requested tickers.",
                     file=sys.stderr,
                 )
                 return 2
         report = runner.run_valuation(
-            session, company_ids=company_ids, dry_run=not args.commit
+            session, tickers=tickers, dry_run=not args.commit
         )
     except Exception as exc:  # operational failure; session rolls back
         session.rollback()

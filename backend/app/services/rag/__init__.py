@@ -105,14 +105,15 @@ SNIPPET_MAX_CHARS = 500
 # pages split at paragraph boundaries.
 CHUNK_MAX_CHARS = 1500
 
-# Seed documents: (financial_document_id, company_id, ticker,
-# title, document_type, storage_location, page_count,
-# publication_date, publication_date_kind, access_level).
-# Company ids are the registry ids (HUBC 289, NML 394, OGDC 403).
+# Seed documents: (ticker, title, document_type, storage_location,
+# page_count, publication_date, publication_date_kind, access_level).
+# Seeds are keyed by ticker and storage path, never by surrogate
+# financial-document or company ids: both shift across fresh imports
+# (the original import used document ids 13/14/15 and company ids
+# 289/394/403; the post-VM-replacement import uses 4/5/6 and
+# 759/864/873). The runner resolves live ids from the database.
 SEED_DOCUMENTS: tuple[dict, ...] = (
     {
-        "financial_document_id": 13,
-        "company_id": 289,
         "ticker": "HUBC",
         "title": "HUBCO Integrated Annual Report 2026",
         "document_type": "annual_report",
@@ -129,8 +130,6 @@ SEED_DOCUMENTS: tuple[dict, ...] = (
         "access_level": "issuer_internal",
     },
     {
-        "financial_document_id": 14,
-        "company_id": 394,
         "ticker": "NML",
         "title": "Nishat Mills 3rd Quarter Report 2025",
         "document_type": "quarterly_report",
@@ -146,8 +145,6 @@ SEED_DOCUMENTS: tuple[dict, ...] = (
         "access_level": "issuer_internal",
     },
     {
-        "financial_document_id": 15,
-        "company_id": 403,
         "ticker": "OGDC",
         "title": (
             "OGDC Condensed Interim Consolidated Statements - six months ended 31 December 2025"
