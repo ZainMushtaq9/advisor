@@ -1,4 +1,12 @@
-# PSX Intelligence AI — Project Status (Phase 2 update on top of Phase 1)
+# PSX Intelligence AI — Project Status (Phase 3 update on top of Phase 2)
+
+## Phase 3 status (coordinator, 2026-11-04 — see docs/phase-03/phase_03_completion_report.md)
+
+- **Phase:** Phase 3 of 30 — Complete Database Architecture and Financial Data Storage Engine — implemented, independently audited, audit fixes applied, migration cycle + restore independently verified. STOP AFTER PHASE 3. Do not start Phase 4 without a separate instruction.
+- **Final status: COMPLETE.** 54 model tables (56 public incl. alembic_version + retained phase2_probe), migrations to head 20261104_0004, 23 triggers, 22 quality_status CHECKs (+1 verification_status CHECK), 53 tests passed / 0 failed, backup 2026-11-04T1230-PKT hash-verified + restore VERIFIED to a separate database, 0 business rows.
+- **What Phase 3 does NOT contain:** no PSX data collected, no Parquet dataset (pyarrow absent, guard raises rather than faking), no Phase 4 registry, no collectors, no frontend consumer of the new schema, no paid service. Docker definition-only and Playwright not run, carried forward from Phase 2.
+- **Git/push:** branch phase-03-database-storage; push result recorded in docs/development/GITHUB_PUSH_LOG.md. No merge to main.
+- **Accounts:** no external account created in Phase 3 (see docs/development/ACCOUNT_REGISTER.md).
 
 ## Phase 2 status (coordinator, 2026-11-04 — see docs/phase-02/PHASE_2_ACCEPTANCE_REPORT.md)
 

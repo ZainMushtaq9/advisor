@@ -17,3 +17,11 @@
 - No browser test (Playwright) result is asserted in this interim report.
 - No frontend route render result is asserted until Team B's report and the coordinator's re-run.
 - No Docker container run is asserted (Docker was absent at first check; Team E's evidence is pending).
+
+## Phase 3 live checks (2026-11-04, coordinator)
+
+- Backend on port 8002 (DATABASE_URL unset): /api/v1/health ok; /api/v1/system/version app 0.1.0, API v1, Python 3.12.3.
+- PostgreSQL: head 20261104_0004, 56 tables, 23 triggers, 22 quality CHECKs, 0 business rows (verified by query and by independent verifiers).
+- Backup 2026-11-04T1230-PKT: both SHAs MATCHED (coordinator + 2 verifiers); restore VERIFIED to psx_intelligence_restore_test, gate 0=0 (2 ignored pg_restore default-privilege warnings).
+- Migration cycle: downgrade base exit 0, upgrade head exit 0 (coordinator + second independent verifier).
+- Live preview URL: UNVERIFIED (github.dev returns sign-in page only).

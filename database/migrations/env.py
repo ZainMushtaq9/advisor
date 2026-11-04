@@ -13,18 +13,24 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import MetaData, engine_from_config, pool
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# env.py lives at <repo>/database/migrations/env.py, so the repo root is
+# three levels up (migrations -> database -> repo).
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
+BACKEND_DIR = os.path.join(BASE_DIR, "backend")
+if BACKEND_DIR not in sys.path:
+    sys.path.insert(0, BACKEND_DIR)
 
 config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Backend-team hook (NOT owned by Team D): replace with the backend
-# Base.metadata once backend/ models exist. Do not import backend code here
-# until it exists, or `alembic` commands will fail on import.
-target_metadata = MetaData()
+# Phase 3: backend models now exist. Importing app.models registers all
+# Phase 3 tables on app.database.Base; autogenerate uses that metadata.
+from app.models import Base  # noqa: E402
+
+target_metadata = Base.metadata
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 if DATABASE_URL:

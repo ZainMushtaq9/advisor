@@ -53,3 +53,11 @@ See DEFECT_REGISTER.md. No defect in this file is marked resolved unless its ret
 3. PostgreSQL/Redis project configuration (database, user, connection details) not yet documented by the owning teams — developers must not assume SQLite/workers-off is the production path.
 4. Push/PR/merge: explicitly deferred to a separate parent step after the Phase 2 acceptance report; main must not be merged without a separate approval.
 5. Phase 1 gates G-01 to G-08 remain open and are carried forward; they block affected later phases as stated in the Phase 1 audit report, not Phase 2 foundation work itself.
+
+## Phase 3 — COMPLETE (2026-11-04)
+
+- Branch phase-03-database-storage; head 20261104_0004; 56 public tables; 23 triggers; 22 quality CHECKs (+1 verification CHECK).
+- Tests: 53 passed, 0 failed (schema 10, PG 16, backend 18, storage 9). Backup 2026-11-04T1230-PKT hash-verified; restore VERIFIED (separate DB).
+- Audit: PASS WITH LIMITATIONS → all HIGH fixed; M9 closed by second independent verification (cycle downgrade 0 / upgrade 0).
+- Paid services: ZERO. No external account created. No PSX data collected. No merge to main.
+- Next: Phase 4 only on separate instruction + gate check.

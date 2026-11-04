@@ -49,3 +49,7 @@ None. No account was proposed in Phase 2 that reached a ToS/payment/CAPTCHA/iden
 ## Update rule
 
 Append a row to the table above for every future account actually created (with website, URL, email, purpose, date, free-plan status, verification status, connected components), and never add a password, recovery code, token, or session cookie to this file. If an account creation is blocked at ToS/payment/CAPTCHA/verification, record the service, the exact requirement, and the status BLOCKED — never as created.
+
+## Phase 3 accounts
+
+None created. No Phase 3 component requires an external account (local PostgreSQL/storage only). No ToS/payment/CAPTCHA/identity-verification step was reached, so no such step is reported. Pre-existing user GitHub account (ZainMushtaq9/advisor) is the push target only; no password, recovery code, token, or session cookie is recorded here.
