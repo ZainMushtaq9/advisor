@@ -11,7 +11,16 @@ exists, by design — see docs/phase-03/entity_catalog.md.
 """
 
 from app.database import Base  # noqa: F401  (re-exported for Alembic / tests)
-from app.models import analysis, financial, governance, macro, market, reference, registry  # noqa: F401
+from app.models import (  # noqa: F401
+    analysis,
+    financial,
+    governance,
+    macro,
+    market,
+    news_events,
+    reference,
+    registry,
+)
 
 __all__ = [
     "Base",
@@ -20,6 +29,7 @@ __all__ = [
     "governance",
     "macro",
     "market",
+    "news_events",
     "reference",
     "registry",
 ]
