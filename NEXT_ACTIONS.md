@@ -97,3 +97,8 @@ Each check states: what to check, how (read-only first), and what evidence upgra
 - Next step only: Phase 3, after a separate instruction AND its own gate check (Phase 2 acceptance report, PostgreSQL, SQLAlchemy/Alembic, migrations, storage, backup, git status).
 - Push step: after audit, push verified Phase 2 changes to branch phase-02-repository-foundation in ZainMushtaq9/advisor, verify remote SHA, record in docs/development/GITHUB_PUSH_LOG.md. No force-push, no direct push to main, no merge (NOT MERGED pending separate approval).
 - Do NOT start Phase 3, 4, or 5 from this file. Do NOT claim Docker or Playwright verified. Do NOT execute real trades.
+
+## Phase 3 — done (2026-11-04); Phase 4 gate (not started)
+
+- Phase 3 status: COMPLETE — see docs/phase-03/phase_03_completion_report.md (54 tables, head 20261104_0004, 53 tests passed, migration cycle + restore independently verified, push BLOCKED on GitHub credentials — see docs/development/GITHUB_PUSH_LOG.md).
+- Do NOT start Phase 4 from this file. Phase 4 starts only on a separate explicit instruction, with its own gate check first (Phases 1–3 accepted + Phase 3 schema/tables exist in the actual database), then Phase 5 (gate: Phase 4 registry records verified in the actual database). No merge to main without separate approval.
