@@ -1,11 +1,31 @@
 # PSX Intelligence AI — Project Execution State
 
-Date: 2026-11-04 (Phase 2 audit complete — see docs/phase-02/PHASE_2_ACCEPTANCE_REPORT.md for the verdict; push step pending at last update of this file)
+Date: 2026-11-04 (evening catch-up — see "2026-11-04 — Register
+catch-up (evening)" at the end of this file; earlier sections below
+are preserved history, not rewritten)
 
 ## Current phase
-- Current phase: Phase 2 of 30 — Repository, Development Environment and Project Foundation.
-- Completed phases: Phase 1 only, accepted as a specification checkpoint (67 files, 0 empty, docs/phase-01/PHASE_1_ACCEPTANCE_REPORT.md). Phase 1 gates G-01 to G-08 remain open as limitations (see Phase 1 audit report §4).
-- Phases 3 and 4: QUEUED behind Phase 2 acceptance. Not started. Do not start them from this file.
+- Current phase: Phase 7 first run DONE (PARTIALLY COMPLETE); active
+  work is the Phase 4 revisit (sampled SECP LEAP verification
+  preparation) on branch `phase-04-sampled-verification`, from
+  `phase-04-completion` tip `c078c0b`.
+- Completed phases: Phase 1 (specification checkpoint), Phase 2
+  (amended criteria), Phase 3. Partially complete: Phases 4, 5, 6, 7.
+  Phases 8–30: NOT STARTED.
+- Next, in order: (1) parent-routed live-browser run of the 61 LEAP
+  queries in `docs/phase-04/sampled_verification_plan_2026-11-04.md`,
+  then load via `scripts/load_leap_evidence.py`; (2) Phase 5 and
+  Phase 6 revisit (both Terms-gated, plus trading days for Phase 6);
+  (3) Phase 7 completion (cash-flow + changes-in-equity faces,
+  auditor-opinion table, KSE-100 expansion); (4) Phase 8.
+- Consolidated verdicts and evidence: see
+  `docs/development/PHASE_COMPLETION_REGISTER.md` (created in the
+  Phase 4 revisit). Dated execution entries: see
+  `docs/development/MASTER_EXECUTION_LOG.md`.
+- Standing blockers (unchanged): written PSX permission evidence
+  (user owns the permission side; the 2026-11-04 reply was deleted by
+  the user and is unverifiable); no merge to main without separate
+  approval (`main` untouched at `eb6025b`); no Docker anywhere.
 
 ## Current / pending tasks (Phase 2)
 - DONE (team reports received): Team A — environment audit, Git foundation, monorepo structure, config (skeleton commit only). Team C — backend foundation (FastAPI, 4 endpoints, 18/18 pytest, ruff pass — see its report; coordinator has not yet independently re-run these tests). Team B — frontend foundation (Next.js 16.4.5, React 19.3.0, TypeScript 5.9.3, Tailwind 4.3.4; 7 routes as labelled foundation shells with empty states only, no fabricated PSX data; team-reported typecheck, lint, Vitest 11 tests, Prettier, build, and dev-server curl 200 for all 7 routes — coordinator has not yet independently re-run these checks).
@@ -61,3 +81,49 @@ See DEFECT_REGISTER.md. No defect in this file is marked resolved unless its ret
 - Audit: PASS WITH LIMITATIONS → all HIGH fixed; M9 closed by second independent verification (cycle downgrade 0 / upgrade 0).
 - Paid services: ZERO. No external account created. No PSX data collected. No merge to main.
 - Next: Phase 4 only on separate instruction + gate check.
+
+## 2026-11-04 — Register catch-up (evening, parent-verified state)
+
+This section brings the file current without rewriting the sections
+above. Full per-phase evidence: PHASE_COMPLETION_REGISTER.md.
+
+- Phase 1: COMPLETE as specification checkpoint; gates G-01–G-08
+  remain open.
+- Phase 2: COMPLETE under amended criteria; branch
+  `phase-02-repository-foundation` `016f3c8`; Docker gap closed by
+  user decision (NOT verified); Playwright E2E 2/2 passed with files
+  deliberately untracked; CI-in-CI unverified.
+- Phase 3: COMPLETE; branch `phase-03-database-storage` `b22281a`;
+  54 model tables; backend suite 114 passed (evening re-run).
+- Phase 4: PARTIALLY COMPLETE, scoped Main Board / Normal Counter
+  view 17/17 PASS; branch `phase-04-completion` `c078c0b`; registry
+  470 companies / 470 securities / 37 sectors / 940 evidence rows,
+  all UNVERIFIED; GEM (5) + Non-Compliant (93) counted, not stored;
+  VERIFIED route is field-scoped SECP LEAP only; Terms basis open.
+- Phase 5: PARTIALLY COMPLETE; branch `phase-05-completion`
+  `f4b703d`; market_prices 444 rows, exactly one trading date
+  2026-11-03, all UNVERIFIED; sole blocker is written PSX Terms
+  resolution.
+- Phase 6: PARTIALLY COMPLETE; branch `phase-06-completion`
+  `e556806`; all 62 indicators NOT_CALCULABLE, 0 value rows,
+  0 signal events, 124 error rows, 1 coverage run; needs ≥4 more
+  trading days + Terms resolution.
+- Phase 7: PARTIALLY COMPLETE (first run); branch
+  `phase-07-financial-statements` `366ed32`; 3 documents,
+  16 statements, 316 line items, all UNVERIFIED; HUBC/NML/OGDC
+  balance-sheet identities pass; remaining: cash-flow +
+  changes-in-equity faces, structured auditor-opinion table,
+  KSE-100 expansion.
+- Phases 8–30: NOT STARTED.
+- Git: `main` untouched at `eb6025b`; canonical repo
+  ZainMushtaq9/advisor; no merge to main without separate approval.
+- Database: PostgreSQL 16.15, cluster 16/main; live DB recovered
+  after VM replacements (backup 2026-11-04T1230-PKT restored,
+  migrated to head `20261104_0005`, registry + price commits re-run
+  to the recorded state). Role password lives ONLY in
+  `database/.env` (gitignored, mode 0600).
+- Active work: Phase 4 revisit on branch
+  `phase-04-sampled-verification` (procedure + 61-company sample
+  plan + LEAP evidence loader + tests; live LEAP queries pending a
+  parent-routed live-browser task). Verdict unchanged:
+  PARTIALLY COMPLETE.
