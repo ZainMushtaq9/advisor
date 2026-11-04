@@ -161,7 +161,19 @@ def _find_label(lines, start, label):
             if want in nxt:
                 continue
             joined = normalise_text(lines[i][1] + " " + lines[i + 1][1])
-            if want in joined and words and words[0] in text.split() and words[-1] in nxt.split():
+
+            # Dash runs from the values' columns glue onto the
+            # second line's last word ("interest---(954,006)"), so
+            # split tokens on non-alphanumerics before comparing.
+            def _parts(s):
+                out = []
+                for tok in s.split():
+                    out.extend(p for p in re.split(r"[^a-z0-9]+", tok) if p)
+                return out
+
+            first_words = _parts(text)
+            last_words = _parts(nxt)
+            if want in joined and words and words[0] in first_words and words[-1] in last_words:
                 return i, True
     return None, False
 
@@ -173,8 +185,26 @@ def extract_face(lines, specs, n_cols):
     dicts with original_label, canonical key, displayed + numeric
     values per column, page number, and flags.
     """
+    rows, _cursor = extract_face_from(lines, specs, n_cols, 0)
+    return rows
+
+
+def extract_face_from(lines, specs, n_cols, start, scan_cap=12):
+    """Extract specs starting at line index ``start``.
+
+    Used by matrix faces (changes-in-equity statements), where
+    several movement blocks share one page and each block's specs
+    must resolve to their next occurrence after the previous block.
+    Returns (rows, end_cursor): the line index just past the last
+    consumed line, so the next block can continue from it.
+    ``scan_cap`` bounds how many lines a labeled row may scan for
+    its values (default 12, as in run 1); matrix faces pass a larger
+    cap because one row's values may occupy 16 separate lines in
+    content-stream order. The next-spec label break remains the
+    primary over-consumption guard at any cap.
+    """
     rows = []
-    cursor = 0
+    cursor = start
     for si, spec in enumerate(specs):
         label = spec.get("label")
         row = {
@@ -232,10 +262,16 @@ def extract_face(lines, specs, n_cols):
         want = normalise_text(label)
         pos = label_text.lower().find(want.lower())
         remainder = lines[idx][1]
+        # The last word must come from the RAW label, not the
+        # normalised one: normalise merges hyphen spacing, so a
+        # label ending "2023- (Audited)" normalises to a single
+        # word "2023-(audited)" that no raw token matches, and the
+        # remainder then falls back to the full line (leaking the
+        # year "2023" in as a value).
+        last_word = normalise_text(label.split()[-1]).rstrip(".,-")
         if pos >= 0:
             # Recompute remainder from the raw line: take tokens
             # after the label's last word.
-            last_word = want.split()[-1].lower()
             toks = lines[idx][1].split()
             cut = None
             for k, tok in enumerate(toks):
@@ -247,7 +283,6 @@ def extract_face(lines, specs, n_cols):
             # Values follow the label's last word on the second
             # line of the wrapped label (e.g. NML EPS values sit on
             # the "- BASIC AND DILUTED (RUPEES)" line itself).
-            last_word = want.split()[-1]
             toks2 = lines[idx + 1][1].split()
             cut2 = None
             for k, tok in enumerate(toks2):
@@ -267,7 +302,7 @@ def extract_face(lines, specs, n_cols):
         if si + 1 < len(specs) and specs[si + 1].get("label"):
             next_label = normalise_text(specs[si + 1]["label"])
         scanned = 0
-        while j < len(lines) and len(collected) < n_cols and scanned < 12:
+        while j < len(lines) and len(collected) < n_cols and scanned < scan_cap:
             text = lines[j][1]
             if next_label and next_label in normalise_text(text):
                 break
@@ -291,7 +326,7 @@ def extract_face(lines, specs, n_cols):
             row["flags"].append("incomplete_values")
         _fill_row(row, collected, n_cols)
         rows.append(row)
-    return rows
+    return rows, cursor
 
 
 def _fill_row(row, collected, n_cols):
@@ -373,8 +408,11 @@ def _same_line_values(text, label, n_cols):
     pos = norm.lower().find(want.lower())
     if pos < 0:
         return [], False
-    # Tokens after the label's last word, from the RAW line.
-    last_word = want.split()[-1].lower().rstrip(".,-")
+    # Tokens after the label's last word, from the RAW line. The
+    # last word comes from the raw label: normalise merges hyphen
+    # spacing, so a label ending "2023- (Audited)" would otherwise
+    # never match a raw token (same trap as extract_face_from).
+    last_word = normalise_text(label.split()[-1]).lower().rstrip(".,-")
     toks = text.split()
     cut = None
     for k, tok in enumerate(toks):

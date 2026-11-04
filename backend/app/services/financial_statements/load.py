@@ -118,12 +118,16 @@ def load_statement(
     method,
     confidence,
     confidence_map=None,
+    scope=None,
 ):
     """Write one statement (one column of a face) + its line items.
 
     ``confidence_map`` optionally overrides the confidence per
     line-item key (used for pdftotext page-match mismatches, which
     must be NULL at insert time: versioned tables forbid UPDATEs).
+    ``scope`` disambiguates matrix faces (changes-in-equity): one
+    statement per equity component per movement block, with
+    statement_scope = the component key; None for ordinary faces.
     Returns (statement, n_items_written, skipped_existing).
     """
     from app.models.financial import FinancialStatement, FinancialStatementLineItem
@@ -139,6 +143,7 @@ def load_statement(
             statement_type=page_map["statement_type"],
             version_number=1,
             data_source_id=data_source.id,
+            statement_scope=scope,
         )
         .one_or_none()
     )
@@ -164,6 +169,7 @@ def load_statement(
         quality_status="UNVERIFIED",
         version_number=1,
         is_current=True,
+        statement_scope=scope,
     )
     session.add(stmt)
     session.flush()

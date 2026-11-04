@@ -15,10 +15,13 @@ from app.services.financial_statements import numbers
 from app.services.financial_statements.extract import (
     _token_value,
     extract_face,
+    extract_face_from,
     extract_ogdc_face,
 )
+from app.services.financial_statements.opinions import validate_opinion_record
 from app.services.financial_statements.validate import (
     check_balance_identity,
+    check_cross_component,
     check_subtotal,
 )
 
@@ -339,3 +342,163 @@ def test_ogdc_grand_total_four_token_line():
     ]
     assert left_by_key["grand_total"]["values"] == [Decimal("1686617216"), Decimal("1654605970")]
     assert right_by_key["total_assets"]["values"] == [Decimal("1686617216"), Decimal("1654605970")]
+
+
+# ---------------------------------------------------------------------------
+# Phase 7 remainders: multi-segment note refs, cursor block extraction,
+# matrix cross-component checks, and opinion-record validation.
+# ---------------------------------------------------------------------------
+
+
+def test_is_note_ref_multi_segment():
+    # HUBC note 16.1.1 is a reference, not a value.
+    assert numbers.is_note_ref("16.1.1") is True
+    assert numbers.is_note_ref("14.3") is True
+    assert numbers.is_note_ref("42") is True
+    # Genuine decimals must never be mistaken for references.
+    assert numbers.is_note_ref("38.26") is False
+    assert numbers.is_note_ref("5.00") is False
+    assert numbers.is_note_ref("8.50") is False
+
+
+def test_extract_face_from_cursor_resolves_repeated_labels():
+    lines = [
+        (39, "Balance as at 30 June 2023"),
+        (39, "3,515,999"),
+        (39, "100,000"),
+        (39, "Profit for the period"),
+        (39, "50,000"),
+        (39, "60,000"),
+        (39, "Balance as at 31 March 2024"),
+        (39, "3,515,999"),
+        (39, "160,000"),
+        (39, "Profit for the period"),
+        (39, "70,000"),
+        (39, "80,000"),
+    ]
+    block1 = [
+        {"label": "Balance as at 30 June 2023", "key": "opening"},
+        {"label": "Profit for the period", "key": "profit"},
+        {"label": "Balance as at 31 March 2024", "key": "closing"},
+    ]
+    block2 = [{"label": "Profit for the period", "key": "profit"}]
+    rows1, cursor = extract_face_from(lines, block1, 2, 0)
+    assert [r["key"] for r in rows1] == ["opening", "profit", "closing"]
+    assert rows1[0]["values"] == [Decimal("3515999"), Decimal("100000")]
+    assert rows1[1]["values"] == [Decimal("50000"), Decimal("60000")]
+    # Second block resolves the repeated label to its NEXT occurrence.
+    rows2, _ = extract_face_from(lines, block2, 2, cursor)
+    assert rows2[0]["values"] == [Decimal("70000"), Decimal("80000")]
+
+
+def test_extract_face_from_scan_cap_for_tall_value_stacks():
+    # 16 values on separate lines (content-stream order) exceed the
+    # default 12-line scan cap; matrix extraction passes a larger cap.
+    lines = [(39, "Some reserve row")] + [(39, f"{i + 1},000") for i in range(16)]
+    specs = [{"label": "Some reserve row", "key": "row"}]
+    rows, _ = extract_face_from(lines, specs, 16, 0)
+    assert "incomplete_values" in rows[0]["flags"]
+    rows, _ = extract_face_from(lines, specs, 16, 0, scan_cap=40)
+    assert "incomplete_values" not in rows[0]["flags"]
+    assert rows[0]["values"][0] == Decimal("1000")
+    assert rows[0]["values"][15] == Decimal("16000")
+
+
+def test_label_ending_hyphen_paren_does_not_leak_year():
+    # NML balance rows end "2023- (Audited)": normalise merges the
+    # hyphen spacing into "2023-(audited)", so a last-word search
+    # on the normalised label never matches a raw token and the
+    # remainder used to fall back to the full line, leaking 2023
+    # in as the first value.
+    lines = [
+        (
+            39,
+            "Balance as at 30 June 2023- (Audited) 3,515,999 5,499,530",
+        )
+    ]
+    specs = [{"label": "Balance as at 30 June 2023- (Audited)", "key": "opening"}]
+    rows, _ = extract_face_from(lines, specs, 2, 0)
+    assert rows[0]["values"] == [Decimal("3515999"), Decimal("5499530")]
+    assert rows[0]["flags"] == []
+
+
+def test_joined_label_with_dash_glued_last_word():
+    # pdftotext -layout glues the values' dash columns onto the
+    # second line's last word ("interest------------"); the join
+    # acceptance must strip those dashes before comparing.
+    # Real 16-column shape: 14 dash columns, then the NCI and
+    # total-equity values on the second line.
+    lines = [
+        (39, "Transaction with owners - Dividend relating to year 2023"),
+        (
+            39,
+            "paid to non-controlling interest " + "- " * 14 + "(954,006) (954,006)",
+        ),
+    ]
+    specs = [
+        {
+            "label": (
+                "Transaction with owners - Dividend relating to year 2023 "
+                "paid to non-controlling interest"
+            ),
+            "key": "div_nci",
+        }
+    ]
+    rows, _ = extract_face_from(lines, specs, 16, 0)
+    assert "label_not_found" not in rows[0]["flags"]
+    assert rows[0]["values"][14:] == [Decimal("-954006"), Decimal("-954006")]
+    assert rows[0]["values"][:14] == [None] * 14
+
+
+def test_check_cross_component_matrix_total():
+    rows = [
+        {
+            "key": "balance_closing",
+            "values": [
+                Decimal("100"),
+                Decimal("250"),
+                Decimal("350"),
+            ],
+        }
+    ]
+    ok, detail = check_cross_component(rows, "balance_closing", 2, [0, 1])
+    assert ok is True
+    assert detail["difference"] == "0"
+    ok, detail = check_cross_component(rows, "balance_closing", 2, [0])
+    assert ok is False
+    assert detail["difference"] == "250"
+
+
+def test_check_cross_component_missing_as_zero_only_for_dashes():
+    rows = [{"key": "balance_closing", "values": [Decimal("100"), None, Decimal("100")]}]
+    ok, detail = check_cross_component(rows, "balance_closing", 2, [0, 1], missing="zero")
+    assert ok is True
+    assert detail["missing_as_zero"] == [1]
+    ok, _ = check_cross_component(rows, "balance_closing", 2, [0, 1], missing="fail")
+    assert ok is False
+
+
+def test_validate_opinion_record_present_and_absent():
+    present = {
+        "company_symbol": "HUBC",
+        "opinion_scope": "consolidated",
+        "opinion_type": "unmodified",
+        "firm_name": "A. F. Ferguson & Co.",
+        "opinion_date": "2026-09-21",
+        "opinion_text": "In our opinion, ...",
+    }
+    assert validate_opinion_record(present) == []
+    assert "requires firm_name" in " ".join(validate_opinion_record({**present, "firm_name": None}))
+    absent = {
+        "company_symbol": "NML",
+        "opinion_scope": "consolidated_interim",
+        "opinion_type": "none",
+        "absence_note": "No review report included.",
+    }
+    assert validate_opinion_record(absent) == []
+    errors = validate_opinion_record({**absent, "firm_name": "Someone"})
+    assert any("must not carry firm_name" in e for e in errors)
+    errors = validate_opinion_record({**absent, "absence_note": None})
+    assert any("requires absence_note" in e for e in errors)
+    errors = validate_opinion_record({**present, "opinion_type": "glowing"})
+    assert any("unknown opinion_type" in e for e in errors)

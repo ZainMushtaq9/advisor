@@ -16,7 +16,7 @@ import re
 from decimal import Decimal, InvalidOperation
 
 _DASH_TOKENS = {"-", "--", "–", "—", "nil", "nil.", "n/a", ""}
-_NOTE_REF_RE = re.compile(r"^\d{1,2}(\.\d)?$")
+_NOTE_REF_RE = re.compile(r"^\d{1,2}(\.\d){0,3}$")
 _NUM_TOKEN_RE = re.compile(r"^\(?[\d,]+(\.\d+)?\)?$")
 
 
@@ -31,7 +31,13 @@ def normalise_text(text: str) -> str:
 
 
 def is_note_ref(token: str) -> bool:
-    """True for a bare note-reference token such as '14' or '25.3'."""
+    """True for a bare note-reference token such as '14', '25.3' or
+    '16.1.1' (multi-segment references, e.g. HUBC note 16.1.1).
+
+    Each dotted segment must be exactly one digit, so genuine
+    decimals are never mistaken for references: EPS '38.26' and
+    dividend rates '5.00' / '8.50' do NOT match.
+    """
     return bool(_NOTE_REF_RE.match(token.strip()))
 
 

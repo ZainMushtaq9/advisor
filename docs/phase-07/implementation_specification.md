@@ -80,3 +80,58 @@ entries with `flagged_rows`, per-column `columns[].checks`
 rows load at confidence NULL). Exit 2 on bad args;
 any unknown company/period aborts before any write (same fail-fast
 discipline as the market ingestion CLI).
+
+---
+
+## Addendum — remainders 2026-11-04 (matrix path, opinion module, 0006)
+
+Matrix extraction (`extract_matrix` in the CLI): the primary method
+comes from the map (`layout_text` = pdftotext -layout, `embedded_text`
+= PyMuPDF); the second read is always the other method, with the same
+`drop_lines_matching` furniture drops. Blocks resolve via the
+advancing cursor from `extract_face_from` (new in this branch:
+`extract_face` is now a wrapper over `extract_face_from(..., start,
+scan_cap=12)`; matrix blocks pass `scan_cap=40` because one row's
+values may occupy 16 separate lines in content-stream order). The
+page-match dict is keyed (block_idx, key, comp_idx); mismatched
+cells load at confidence NULL.
+
+Matrix validation (`validate_matrix` in the CLI): per block,
+per-component roll-forward via `check_subtotal` (synthetic opening
+row for previous-close blocks), balance checks via the new
+`check_cross_component` (validate.py), flagged rows, and page-match
+mismatches. A block gates OUT when any check fails OR any row is
+flagged — a flagged row means the extraction itself failed, and
+missing-as-zero must never hide it. A printed dash in a closing row
+means nil: the check substitutes 0 and records
+`closing_dash_as_zero: True`.
+
+Extractor fixes in this branch (numbers.py, extract.py): the
+last-word remainder search uses the raw label's last word (a label
+ending `2023- (Audited)` normalises to one word and otherwise leaks
+the year in as a value); the two-line join acceptance splits tokens
+on non-alphanumerics (dash columns glue onto the second line's last
+word); `is_note_ref` accepts multi-segment references (`16.1.1`)
+while each segment must be exactly one digit, so EPS `38.26` and
+rates `5.00`/`8.50` never match.
+
+Opinion module (`opinions.py`): `validate_opinion_record` is pure
+(present opinions require firm + date + text and must not carry an
+absence note; absence records must not carry firm/partner/UDIN/text
+and require an absence note); `load_opinion` is idempotent (existing
+→ return without update; new → UNVERIFIED row, version 1,
+is_current). Unknown JSON fields are ignored.
+
+Migration `20261104_0006` (down_revision `20261104_0005`): adds
+nullable `financial_statements.statement_scope` and recreates the
+grain unique constraint and partial current index with the scope
+column (Postgres treats NULLs as distinct, so existing rows are
+unaffected); creates `auditor_opinions` with the shared
+quality_status CHECK vocabulary, grain UQ, company index, partial
+current index, and the versioned trigger reusing
+`psx_allow_only_current_flag()` from migration 0003 (so the table
+is VERSIONED like financial_statements/line_items, not immutable).
+The CLI loads opinions in the same transaction as the maps (a
+partial --maps run skips companies lacking a document, reported as
+`skipped_no_document`); the opinions JSON is validated upfront as
+fail-fast before any DB work.

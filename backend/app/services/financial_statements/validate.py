@@ -47,6 +47,51 @@ def check_balance_identity(rows, col, equity_keys, liability_keys):
     }
 
 
+def check_cross_component(rows, row_key, total_idx, comp_indices, missing="zero"):
+    """A balance-row total equals the sum of its components across
+    the columns of a matrix face (changes-in-equity statements).
+
+    ``rows`` is one movement block's rows; each row's ``values`` are
+    per-component (component order = the map's component list).
+    ``row_key`` selects the balance row (opening/closing);
+    ``total_idx`` is the total component's index; ``comp_indices``
+    are the summed components' indices. ``missing="zero"`` treats a
+    printed dash (NULL) as contributing nothing, listing the keys
+    — valid only where the missing value is a printed dash, never
+    for a genuinely missed extraction (callers must also require
+    zero flagged rows before trusting missing-as-zero).
+    """
+    row = None
+    for r in rows:
+        if r["key"] == row_key:
+            row = r
+            break
+    if row is None:
+        return False, {"reason": f"missing row {row_key}"}
+    if total_idx >= len(row["values"]):
+        return False, {"reason": f"total index {total_idx} out of range"}
+    total = row["values"][total_idx]
+    if total is None:
+        return False, {"reason": f"missing total at index {total_idx}"}
+    acc = Decimal(0)
+    missing_keys = []
+    for idx in comp_indices:
+        value = row["values"][idx] if idx < len(row["values"]) else None
+        if value is None:
+            missing_keys.append(idx)
+        else:
+            acc += value
+    if missing_keys and missing != "zero":
+        return False, {"reason": "missing components", "indices": missing_keys}
+    diff = total - acc
+    return diff == 0, {
+        "total": str(total),
+        "computed": str(acc),
+        "difference": str(diff),
+        "missing_as_zero": missing_keys,
+    }
+
+
 def check_subtotal(rows, total_key, component_keys, col, missing="fail"):
     """A printed section total equals the sum of its components.
 

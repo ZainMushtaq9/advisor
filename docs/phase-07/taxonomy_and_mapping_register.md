@@ -226,3 +226,70 @@ are authoritative for the loader. Where this register's earlier
 "pending" wording differs from a page-map key, the page-map key is
 the one loaded; original labels are always preserved verbatim in
 `original_label` on every line-item row.
+
+---
+
+## Addendum — remainders 2026-11-04 (cash-flow, changes-in-equity, opinions)
+
+New canonical keys (standard faces; original labels preserved verbatim
+in `original_label`):
+
+- HUBC cash flow (`hubc_cf`, p.278): `pbt_continuing`,
+  `pbt_discontinued`, `pbt_total` (bare), `op_profit_before_wc`,
+  `wc_changes`, `cash_generated`, `interest_received`, `interest_paid`,
+  `gratuity_paid`, `taxes_paid`, `net_operating`, investing rows,
+  `net_investing`, financing rows, `net_financing`, `net_change`,
+  `cash_begin`, `loss_fx_closing` (second "Loss on foreign currency
+  balance" occurrence), `cash_end`.
+- HUBC changes in equity (`hubc_ce`, p.279): `om_end`,
+  `unapp_end`, `transactions_subtotal` (bare), `share_issue_cost`,
+  `owners_total`, `nci_end`, `total_equity`; dividend rows carry
+  full two-line joined labels (e.g. "Final dividend for the fiscal
+  year 2024-25 @ Rs. 10 (2023-24 @ Rs. 8.50) per share").
+- NML cash flow (`nml_cf`, p.40): `net_operating`, `net_investing`,
+  `net_financing`, `net_change`, `cash_end`.
+- OGDC cash flow (`ogdc_cf`, p.11): `op_subtotal` (bare),
+  `cash_generated_ops`, `deductions_subtotal` (bare),
+  `net_operating`, `net_investing`, `net_financing`, `net_change`,
+  `cash_begin`, `fx_effect`, `cash_end`. Known source difference:
+  `net_change` 2025 column prints 12,517,648 vs components
+  12,517,649 (1 thousand); recorded, never adjusted.
+
+Matrix faces (changes in equity) — one statement per equity
+component per movement block, component in
+`financial_statements.statement_scope` (NULL for ordinary faces).
+This avoids composite keys entirely: the movement stays in
+`line_item_key`, the component in `statement_scope`. Per-component
+roll-forward (closing = opening + movements) is checked with the
+existing `check_subtotal` per component-statement; cross-component
+balance checks use `check_cross_component`. NML blocks 2–3 take
+their opening from the previous block's closing row (the face does
+not repeat them); OGDC blocks are self-contained. Specs marked
+`"subtotal": true` (total comprehensive income, total
+distributions) are subtotals, not movements, and are excluded from
+roll-forward sums.
+
+- NML components (16, in order): Share Capital, Premium on Issue of
+  Right Shares, Fair Value Reserve FVTOCI Investments, Exchange
+  Translation Reserve, Statutory Reserve, Capital Redemption Reserve
+  Fund, Maintenance Reserve, Overhauling Reserve, Sub Total (Capital
+  Reserves), General Reserve, Unappropriated profit/(loss), Sub
+  Total (Revenue Reserves), Total Reserves, Shareholders' Equity,
+  Non-controlling Interest, Total Equity.
+- OGDC components (8, in order): Share capital, Capital reserve,
+  Self insurance reserve, Share of capital redemption reserve fund
+  in associate, Share of self insurance reserve in associate,
+  Foreign translation currency reserve, Unappropriated profit,
+  Total equity.
+
+Auditor opinions (`auditor_opinions.json`): `opinion_scope`,
+`opinion_type` (`unmodified` | `qualified` | `adverse` |
+`disclaimer` | `none`), `firm_name`, `engagement_partner`,
+`opinion_date`, `udin`, `opinion_text` (verbatim),
+`going_concern_material_uncertainty` (NULL unless stated),
+`going_concern_note`, `absence_note`, `opinion_page`,
+`signature_page`. HUBC consolidated: unmodified, A. F. Ferguson &
+Co., Osama Kapadia, 2026-09-21, UDIN AR202610080onH3rpTV1,
+opinion p.271 (printed p.270), signature p.274 (printed p.273).
+NML/OGDC consolidated interim: type `none` with an `absence_note`
+— no opinion wording exists to record.

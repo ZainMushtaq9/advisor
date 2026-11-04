@@ -39,6 +39,7 @@ class FinancialStatement(IdMixin, CreatedMixin, ProvenanceMixin, VersionMixin, B
             "statement_type",
             "version_number",
             "data_source_id",
+            "statement_scope",
             name="uq_financial_statements_grain",
         ),
         Index("idx_financial_statements_company_period", "company_id", "period_end"),
@@ -51,6 +52,7 @@ class FinancialStatement(IdMixin, CreatedMixin, ProvenanceMixin, VersionMixin, B
             "period_end",
             "statement_type",
             "data_source_id",
+            "statement_scope",
             unique=True,
             postgresql_where=text("is_current"),
         ),
@@ -87,6 +89,71 @@ class FinancialStatement(IdMixin, CreatedMixin, ProvenanceMixin, VersionMixin, B
     document_id: Mapped[int | None] = mapped_column(
         BigInteger, ForeignKey("financial_documents.id", ondelete="SET NULL"), nullable=True
     )
+    # Phase 7 remainders: disambiguates matrix faces. For ordinary
+    # faces (one statement per period column) this is NULL. For
+    # changes-in-equity faces it is the equity-component key
+    # (e.g. 'unappropriated_profit', 'total_equity'): one statement
+    # per component per movement block, whose line items are the
+    # movements for that component. NULLs stay distinct in the
+    # Postgres unique constraint, so existing rows are unaffected.
+    statement_scope: Mapped[str | None] = mapped_column(String(100), nullable=True)
+
+
+class AuditorOpinion(IdMixin, CreatedMixin, ProvenanceMixin, VersionMixin, Base):
+    """A structured auditor-opinion record (Phase 7 remainders).
+
+    Source wording is preserved verbatim in ``opinion_text``; nothing
+    is paraphrased into a stronger claim. ``opinion_type = 'none'``
+    records the explicit ABSENCE of an opinion (unaudited interim
+    statements): firm/UDIN/text stay NULL and ``absence_note``
+    states what was checked. Never invent an opinion, firm, or UDIN.
+    Restatements are new rows (version_number + 1, supersedes_id
+    set), never edits — the versioned trigger enforces this.
+    """
+
+    __tablename__ = "auditor_opinions"
+    __table_args__ = (
+        UniqueConstraint(
+            "company_id",
+            "document_id",
+            "opinion_scope",
+            "version_number",
+            name="uq_auditor_opinions_grain",
+        ),
+        Index("idx_auditor_opinions_company", "company_id"),
+        Index(
+            "uq_auditor_opinions_current",
+            "company_id",
+            "document_id",
+            "opinion_scope",
+            unique=True,
+            postgresql_where=text("is_current"),
+        ),
+    )
+    company_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("companies.id", ondelete="RESTRICT"), nullable=False
+    )
+    document_id: Mapped[int | None] = mapped_column(
+        BigInteger, ForeignKey("financial_documents.id", ondelete="SET NULL"), nullable=True
+    )
+    # Scope of the statements the opinion covers, e.g.
+    # 'consolidated' (annual) or 'consolidated_interim'.
+    opinion_scope: Mapped[str] = mapped_column(String(50), nullable=False)
+    # 'unmodified' | 'qualified' | 'adverse' | 'disclaimer' | 'none'
+    # ('none' = no opinion issued; see absence_note).
+    opinion_type: Mapped[str] = mapped_column(String(50), nullable=False)
+    firm_name: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    engagement_partner: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    opinion_date: Mapped[object] = mapped_column(Date, nullable=True)
+    udin: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    opinion_text: Mapped[str | None] = mapped_column(Text, nullable=True)
+    going_concern_material_uncertainty: Mapped[bool | None] = mapped_column(
+        Boolean, nullable=True
+    )  # True/False where stated; NULL where the report says nothing
+    going_concern_note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    absence_note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    opinion_page: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    signature_page: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
 
 
 class FinancialStatementLineItem(IdMixin, CreatedMixin, VersionMixin, Base):
