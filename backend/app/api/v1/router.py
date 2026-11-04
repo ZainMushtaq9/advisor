@@ -13,6 +13,7 @@ from app.api.v1.endpoints import (
     macro,
     market,
     news,
+    orchestration,
     ownership,
     portfolios,
     registry,
@@ -36,3 +37,4 @@ api_router.include_router(risk.router)
 api_router.include_router(decisions.router)
 api_router.include_router(portfolios.router)
 api_router.include_router(backtesting.router)
+api_router.include_router(orchestration.router)

@@ -8,6 +8,10 @@ health/warnings and sector profiles). The Phase 1 'ratios' entity is realised as
 fundamental_metric_definitions + fundamental_metric_values (definition
 + value rows with input statement references); no second ratio table
 exists, by design — see docs/phase-03/entity_catalog.md.
+
+Phase 18 adds orchestration models (agent_definitions,
+orchestration_runs, orchestration_tasks, agent_audit_logs,
+agent_evaluations) to the same registry.
 """
 
 from app.database import Base  # noqa: F401  (re-exported for Alembic / tests)
@@ -21,6 +25,7 @@ from app.models import (  # noqa: F401
     macro,
     market,
     news_events,
+    orchestration,
     ownership_actions,
     portfolio,
     reference,
@@ -39,6 +44,7 @@ __all__ = [
     "macro",
     "market",
     "news_events",
+    "orchestration",
     "ownership_actions",
     "portfolio",
     "reference",
