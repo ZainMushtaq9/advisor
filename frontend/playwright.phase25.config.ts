@@ -1,0 +1,44 @@
+import { defineConfig, devices } from "@playwright/test";
+
+/**
+ * Phase 25 operations dashboard suite (committed on the
+ * Phase 25 branch). Deliberately separate from the Phase 23
+ * suite (playwright.phase23.config.ts) and the untracked
+ * Phase 2 smoke config, so no suite can disturb another.
+ *
+ * Prerequisites before running:
+ *   1. Backend API running on http://127.0.0.1:8000 (FastAPI,
+ *      migration 20261104_0021 applied, registry seeded).
+ *   2. Production frontend build present (`npm run build`).
+ * Kill any manually started `next start` on port 3000 first:
+ * reuseExistingServer silently reuses a stale server and
+ * masks fixes (Phase 23 lesson).
+ */
+export default defineConfig({
+  testDir: "./e2e/phase25",
+  timeout: 60_000,
+  expect: { timeout: 15_000 },
+  fullyParallel: false,
+  retries: 0,
+  reporter: [["list"]],
+  use: {
+    baseURL: "http://127.0.0.1:3000",
+    trace: "retain-on-failure",
+  },
+  webServer: {
+    command: "npm run start -- --port 3000",
+    url: "http://127.0.0.1:3000",
+    reuseExistingServer: true,
+    timeout: 60_000,
+  },
+  projects: [
+    {
+      name: "desktop",
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "mobile",
+      use: { ...devices["Pixel 7"] },
+    },
+  ],
+});

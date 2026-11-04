@@ -31,6 +31,7 @@ export default function AdminPage() {
     { endpoint: "Risk / Decisions", status: "see Risk, Research" },
     { endpoint: "Portfolio / Backtesting", status: "see Portfolio, Research" },
     { endpoint: "Screener / Alerts / Reports", status: "see Screener, Alerts, Reports" },
+    { endpoint: "Jobs / automation", status: "see Jobs" },
   ];
 
   return (

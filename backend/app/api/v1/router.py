@@ -12,6 +12,7 @@ from app.api.v1.endpoints import (
     forecasting,
     fundamentals,
     indicators,
+    jobs,
     macro,
     market,
     news,
@@ -48,3 +49,4 @@ api_router.include_router(rag.router)
 api_router.include_router(screener.router)
 api_router.include_router(alerts.router)
 api_router.include_router(reports.router)
+api_router.include_router(jobs.router)

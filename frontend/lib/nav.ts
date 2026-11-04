@@ -93,4 +93,10 @@ export const NAV_ITEMS: NavItem[] = [
     label: "Admin",
     description: "Backend health and endpoint status. No credentials are shown.",
   },
+  {
+    href: "/admin/jobs",
+    label: "Jobs",
+    description:
+      "Job automation: registry, runs, checkpoints and dead letters. Read-only; actions run through the CLI.",
+  },
 ];
