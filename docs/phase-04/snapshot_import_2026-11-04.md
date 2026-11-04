@@ -110,3 +110,80 @@ re-judgement on real evidence.
 - Phase 5 gate: still BLOCKED. Phase 5 market-data implementation:
   NOT started. No push, no merge, no VERIFIED claim, no
   full-market claim is made by this document.
+
+## Second run — import COMMITTED (2026-11-04)
+
+Status of THIS run: **COMPLETE for the import + gate re-check
+task. Phase 5 gate: PARTIALLY PASSED (see
+docs/phase-05/phase_05_gate_report.md §12). Phase 5 market-data
+implementation: NOT started in this run. Phase 6: NOT started.**
+
+The §11 unblocker arrived as a file on disk: the parent wrote
+the canonical snapshot CSV (470 rows, verified by the parent:
+row_no 1–470 continuous, 470 unique symbols, no empty
+symbol/name/sector, clearing_type NC or blank, 17 blanks).
+This coordinator re-verified the file independently before
+importing and did not edit any row.
+
+### Independent CSV verification (before import)
+
+470 rows; row_no 1–470 continuous; 470 unique symbols, 0
+duplicates; 0 empty symbol/name/sector; clearing_type NC 453,
+blank 17; blank list matches the parent's list exactly
+(BAPLR1, CENIR, CWHC, GCWLPRS, IDEAL, JSRR, NGLEL, NNAR,
+PINLR, SELECT, SLM, SOYASUP, SPAC2, SPSL, STLR, TISL,
+WAHDAT); first row 786 / 786 Investments Limited, last row
+470 ZUMA / Zuma Resources Limited.
+
+### Import run (scripts/import_dps_snapshot.py, Phase 4 engine)
+
+- Dry-run: validation passed; 470 companies, 470 securities,
+  37 sectors, 940 evidence rows in-transaction; re-import
+  skipped 470 (idempotent); reconciliation matched 470, missing
+  0, extra 0, coverage 1.0; all UNVERIFIED, VERIFIED = 0;
+  rolled back, live database confirmed unchanged.
+- Commit run: same figures, COMMITTED. pending_review 0,
+  conflicts 0, rejected 0. Clearing Type is log-only, not a
+  listing or verification status. Audit rule H1 applied
+  honestly: a single DPS source cannot verify, so every record
+  stays UNVERIFIED.
+- Independent PostgreSQL verification (not the script):
+  companies 470, securities 470, sectors 37, registry_evidence
+  940 (source_key
+  `dps_listing_status_2026-11-04_main_board_normal_counter`),
+  UNVERIFIED 470/470, VERIFIED 0, PENDING_REVIEW 0, CONFLICTED
+  0, company_identifiers 0, symbol_history 0, market_prices 0,
+  57 public tables, Alembic head `a909e8449cdd`.
+- Spot-check: 24 imported rows compared field-by-field with
+  the CSV — 24/24 pass, 0 fails — including 7 blank-Clearing-Type
+  rows and rights/preference variants (AGLNCPS, ASLCPS,
+  PIAHCLB, STLR, PINLR), with displayed spellings verbatim
+  ("Ittehad Chemicals Limted", "PIA Holding Company
+  LimitedB", "Bawany Air Products LimitedRight").
+- Registry APIs (live, then stopped): `/registry/statistics`
+  470/470/37, UNVERIFIED 470/470, evidence 940;
+  `/companies` total 470; `/registry/quality` verified 0,
+  partially_verified 0, pending 0, conflicted 0, evidence 940.
+  `/companies?search=OGDC` returns 0 because search is a
+  legal-name substring match — correct behaviour, not a defect.
+- Wording gap noted: `/registry/quality` interpretation text
+  says VERIFIED means one official evidence row agrees, while
+  audit H1 requires >=2 distinct agreeing sources including
+  one official. Observed behaviour matches H1 (all UNVERIFIED),
+  so no misclassification; endpoint text should be corrected
+  in a registry follow-up.
+
+### Scope and limits (unchanged by this run)
+
+- Snapshot = Main Board / Normal Counter ONLY. GEM Board (5)
+  and Non-Compliant/Winding-Up (93) rows were counted, not
+  captured — this is NOT the full PSX registry.
+- KSE-100 completeness NOT established (membership not checked
+  against this snapshot).
+- PSX Terms internal-use (not republication) note still not
+  resolved in writing.
+- No market observation ingested (market_prices 0); no ISIN or
+  identifier history from this source (identifiers 0).
+- D-51 and D-52 stay OPEN. D-54 gate entry stays OPEN but
+  narrowed: population blocker resolved; verification and
+  full-universe blockers remain.

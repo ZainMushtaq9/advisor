@@ -100,3 +100,39 @@ See DEFECT_REGISTER.md. No defect in this file is marked resolved unless its ret
   spot-check → reconcile → fresh gate judgement. D-54-gate stays
   OPEN; D-51/D-52 stay OPEN (see DEFECT_REGISTER note on the
   D-54 numbering collision). Push result in GITHUB_PUSH_LOG.md.
+
+## Phase 5 snapshot import — COMMITTED, gate PARTIALLY PASSED (2026-11-04, second run)
+
+- Branch phase-05-snapshot-import (same branch; first-run
+  preparation reused). Canonical snapshot CSV delivered on disk
+  by the parent and re-verified independently: 470 rows, row_no
+  1–470 continuous, 470 unique symbols, clearing NC 453 /
+  blank 17, no empty fields.
+- Import via scripts/import_dps_snapshot.py: dry-run clean
+  (rolled back), then COMMITTED — 470 companies, 470 securities,
+  37 sectors, 940 evidence rows (source_key
+  dps_listing_status_2026-11-04_main_board_normal_counter),
+  re-import skips 470 (idempotent), reconciliation matched 470 /
+  missing 0 / extra 0 / coverage 1.0 for the Main Board /
+  Normal Counter view. All records UNVERIFIED (single DPS
+  source, audit H1); VERIFIED 0, pending 0, conflicts 0.
+- Independent checks: direct PostgreSQL counts match the script;
+  24-row field-by-field spot-check vs CSV 24/24 pass (incl.
+  blank-Clearing-Type rows and rights/preference variants);
+  registry APIs live (statistics 470/470/37, /companies total
+  470, quality verified 0) then stopped. market_prices 0,
+  company_identifiers 0, symbol_history 0, 57 tables, head
+  a909e8449cdd.
+- Gate judgement (phase_05_gate_report.md §12): PARTIALLY
+  PASSED — population, ticker mappings, provenance and
+  reconciliation now exist for one view; UNVERIFIED status,
+  GEM (5) + Non-Compliant (93) views, KSE-100 completeness,
+  identifier coverage and the PSX Terms internal-use note
+  remain open. Phase 5 implementation may proceed scoped to
+  the 470 snapshot securities under quality-status controls;
+  it may NOT claim a VERIFIED registry, full-market or
+  KSE-100 completeness, or any market price. Phase 6 NOT
+  started; parent decides the Phase 5 implementation start.
+- D-54 gate entry stays OPEN but narrowed (population resolved;
+  verification + full-universe remain). D-51/D-52 stay OPEN.
+  Push result in GITHUB_PUSH_LOG.md.

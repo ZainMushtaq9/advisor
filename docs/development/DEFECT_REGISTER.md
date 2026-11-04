@@ -122,3 +122,34 @@ No defect is marked RESOLVED unless its retest is recorded in the Retest column.
   docs/phase-04/source_research_raw/dps_listing_status_2026-11-04_main_board_normal_counter.csv;
   then dry-run → verify → commit → 20-row spot-check → reconcile
   → fresh gate judgement.
+
+### Update 2026-11-04 — snapshot import COMMITTED, gate PARTIALLY PASSED (second run, same branch)
+
+- The unblocker arrived as a file on disk (canonical snapshot
+  CSV, 470 rows, re-verified independently: row_no 1–470
+  continuous, 470 unique symbols, clearing NC 453 / blank 17).
+  Dry-run clean (rolled back), then COMMITTED via
+  scripts/import_dps_snapshot.py: 470 companies, 470
+  securities, 37 sectors, 940 evidence rows, reconciliation
+  matched 470 / missing 0 / extra 0 / coverage 1.0 for the Main
+  Board / Normal Counter view. Independent PostgreSQL counts
+  match; 24-row spot-check vs CSV 24/24 pass; registry APIs
+  confirmed (statistics 470/470/37, /companies total 470,
+  quality verified 0) then stopped. All records UNVERIFIED
+  (single DPS source, audit H1); VERIFIED 0, pending 0,
+  conflicts 0. market_prices 0, identifiers 0, symbol_history
+  0, 57 tables, head a909e8449cdd.
+- This gate entry stays OPEN but NARROWED: the population
+  blocker is resolved (registry records, ticker mappings and
+  provenance now exist for one view, with real reconciliation).
+  Remaining blockers: verification (a second distinct agreeing
+  source including one official does not exist yet, so nothing
+  is VERIFIED), full universe (GEM 5 + Non-Compliant 93 rows
+  not captured), KSE-100 completeness (membership not checked),
+  identifier coverage (0), and the PSX Terms internal-use note
+  (still not resolved in writing). Phase 5 implementation may
+  proceed scoped to the 470 snapshot securities under
+  quality-status controls; it may NOT claim a VERIFIED
+  registry, full-market or KSE-100 completeness, or any market
+  price. Full gate report: docs/phase-05/phase_05_gate_report.md
+  §12. D-51 and D-52 stay OPEN.

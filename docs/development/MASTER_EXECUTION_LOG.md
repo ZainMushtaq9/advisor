@@ -97,3 +97,16 @@
 - Unblocker: parent delivers the 470-row CSV (or row text);
   then dry-run → verify → commit → 20-row spot-check →
   reconcile → fresh gate judgement.
+
+- Snapshot import second run (2026-11-04): CSV on disk
+  re-verified (470 rows, 470 unique symbols, NC 453 / blank
+  17); dry-run clean, then COMMITTED via the Phase 4 engine:
+  470 companies, 470 securities, 37 sectors, 940 evidence
+  rows, reconciliation 470/470 coverage 1.0 (Main Board /
+  Normal Counter view only). All UNVERIFIED, VERIFIED 0,
+  pending/conflicts 0. Independent PG counts match; 24-row
+  spot-check 24/24; registry APIs confirmed then stopped.
+  Gate PARTIALLY PASSED (§12): Phase 5 may proceed scoped to
+  the 470 securities under quality controls; no VERIFIED,
+  full-market, KSE-100 or price claims. D-54 gate OPEN
+  (narrowed); D-51/D-52 OPEN. Phase 6 NOT started.

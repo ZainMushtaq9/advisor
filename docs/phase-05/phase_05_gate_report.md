@@ -281,3 +281,125 @@ a coverage ratio.
   GitHub credential in this environment). No push to main, no
   merge to main, no force-push. No paid services, no external
   account, no secrets in this work.
+
+## §12 — Gate re-check, second run: snapshot imported, gate PARTIALLY PASSED (2026-11-04)
+
+This section appends to, and does not erase, §1–§11. The §11
+unblocker arrived: the parent delivered the canonical snapshot
+file on disk, and this coordinator ran the import (second run,
+same branch `phase-05-snapshot-import`).
+
+### Snapshot file (verified on disk before import)
+
+`docs/phase-04/source_research_raw/dps_listing_status_2026-11-04_main_board_normal_counter.csv`
+— 470 data rows, `row_no,symbol,name,sector,clearing_type`,
+row_no 1–470 continuous, 470 unique symbols, no empty
+symbol/name/sector, clearing_type NC (453) or blank (17).
+Blank-Clearing-Type symbols: BAPLR1, CENIR, CWHC, GCWLPRS,
+IDEAL, JSRR, NGLEL, NNAR, PINLR, SELECT, SLM, SOYASUP, SPAC2,
+SPSL, STLR, TISL, WAHDAT. Source: https://dps.psx.com.pk/listings,
+Main Board / Normal Counter view, page header Nov 4, 2026
+1:17 PM, live-browser page-by-page read. Scope: Main Board /
+Normal Counter ONLY — GEM Board (5 entries) and Main Board
+Non-Compliant/Winding-Up (93 entries) were counted but not
+captured, so this snapshot is NOT the full PSX registry.
+
+### Import run (2026-11-04, via scripts/import_dps_snapshot.py)
+
+- Dry-run first: validation passed; in-transaction import
+  470 companies, 470 securities, 37 sectors, 940 evidence rows;
+  re-import skipped 470 (idempotent); reconciliation matched 470,
+  missing 0, extra 0, coverage 1.0; all UNVERIFIED, VERIFIED = 0;
+  rolled back, live database confirmed unchanged.
+- Commit run: same figures, COMMITTED. No pending_review, no
+  conflicts, no rejected rows. Clearing Type recorded in the
+  import log only — not mapped to a listing or verification
+  status.
+- Independent verification (direct PostgreSQL, not the script):
+  companies 470, securities 470, sectors 37, registry_evidence
+  940 (source_key
+  `dps_listing_status_2026-11-04_main_board_normal_counter`),
+  companies by status UNVERIFIED 470, securities by status
+  UNVERIFIED 470, VERIFIED 0, PENDING_REVIEW 0, CONFLICTED 0,
+  company_identifiers 0, symbol_history 0, market_prices 0,
+  57 public tables, Alembic head `a909e8449cdd`.
+- Spot-check: 24 imported rows compared field-by-field against
+  the CSV (ticker, legal name, sector, both statuses) — 24/24
+  pass, 0 fails. Sample included 7 blank-Clearing-Type rows
+  (BAPLR1, CENIR, CWHC, JSRR, PINLR, STLR, WAHDAT) and
+  rights/preference variants (AGLNCPS, ASLCPS, PIAHCLB, STLR,
+  PINLR), including displayed spellings kept verbatim
+  ("Ittehad Chemicals Limted", "PIA Holding Company
+  LimitedB", "Bawany Air Products LimitedRight").
+- Registry APIs (live, uvicorn port 8003, then stopped):
+  `/registry/statistics` = companies 470, securities 470,
+  sectors 37, UNVERIFIED 470/470, evidence 940;
+  `/companies` total 470; `/registry/quality` =
+  verified 0, partially_verified 0, pending_review 0,
+  conflicted 0, evidence 940. Note: `/companies?search=OGDC`
+  returns 0 because search is a legal-name substring match
+  (registry.py: legal name only) and no legal name contains
+  "OGDC" — correct behaviour, not a defect.
+- Wording gap noted (documentation, not a misclassification):
+  the `/registry/quality` interpretation text says VERIFIED
+  means "at least one evidence row from an official source
+  agrees", while Phase 4 audit rule H1 requires >=2 distinct
+  agreeing sources including one official. Observed engine
+  behaviour matches H1 (all records stayed UNVERIFIED despite
+  DPS evidence rows), so no record was misclassified; the
+  endpoint text should be corrected in a registry follow-up so
+  the two wordings agree.
+
+### Gate judgement (evidence-based)
+
+- **Phase 5 gate: PARTIALLY PASSED.** The original gate failure
+  (empty production registry) is resolved for one view; the
+  verification and full-universe parts of the gate are not.
+- **What now passes:** production registry records exist with
+  company–security relationships (470/470), ticker/security
+  identity mappings for all 470 snapshot symbols, and provenance
+  (2 evidence rows per security, dated snapshot source_key);
+  reconciliation against the dated snapshot is real and
+  complete for this view (matched 470, missing 0, extra 0,
+  coverage 1.0); the import is idempotent (re-import skips 470).
+- **What remains partial/open:** (a) every record is
+  UNVERIFIED — VERIFIED still requires a second distinct
+  agreeing source including one official, which does not exist
+  yet; (b) the snapshot is Main Board / Normal Counter only —
+  GEM (5) and Non-Compliant/Winding-Up (93) rows are not in the
+  registry, so full-market completeness is NOT established;
+  (c) KSE-100 completeness is NOT established — KSE-100
+  membership was not checked against this snapshot;
+  (d) company_identifiers and symbol_history are 0 — this
+  source carries no ISIN/identifier history, so identifier
+  coverage is absent, not zero-filled; (e) the PSX Terms
+  question for internal use (not republication) remains
+  unresolved in writing; (f) market_prices is still 0 — no
+  market observation has been ingested yet.
+- **What Phase 5 implementation may now do:** proceed scoped
+  to the 470 snapshot securities, under quality-status
+  controls — ingest only for these securities, label all
+  outputs as sourced from a single UNVERIFIED DPS snapshot,
+  apply the Phase 5 quality statuses (VERIFIED /
+  PARTIALLY_VERIFIED / UNVERIFIED / CONFLICTED / MISSING /
+  REJECTED / STALE) without promoting single-source records,
+  and never present partial-view coverage as full-market.
+  Any "KSE-100 first" claim still requires a separate verified
+  KSE-100 membership check against this snapshot before it is
+  made.
+- **What it still may NOT claim:** a VERIFIED registry,
+  full-market completeness, KSE-100 completeness, any market
+  price or observation (none exists yet), or any identifier
+  (ISIN) coverage.
+- **D-54 gate entry:** stays OPEN, narrowed — the population
+  blocker is resolved; the verification and full-universe
+  blockers remain. D-51 and D-52 stay OPEN (the browser read
+  is a different route, not a fix to VM DPS access or to the
+  text-fetch limitation). Phase 6 is NOT started in this run;
+  the parent decides the Phase 5 implementation start from
+  this re-check.
+- **Git:** branch `phase-05-snapshot-import`; push attempt and
+  result in `docs/development/GITHUB_PUSH_LOG.md` (expected
+  standing credential blocker). No push to main, no merge to
+  main, no force-push. No paid services, no external account,
+  no secrets in this work.
