@@ -32,6 +32,7 @@ from app.models import (  # noqa: F401
     rag,
     reference,
     registry,
+    reports,
     risk,
     screener,
 )
@@ -54,6 +55,7 @@ __all__ = [
     "rag",
     "reference",
     "registry",
+    "reports",
     "risk",
     "screener",
 ]

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html><head><meta charset='utf-8'>
+<title>Portfolio Review: rule_screen_pass_balanced</title>
+<style>body{font-family:sans-serif;max-width:900px;margin:auto;padding:1em}table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:4px 8px;text-align:left}</style>
+</head><body>
+<h1>Portfolio Review: rule_screen_pass_balanced</h1>
+<p>Report date: 2026-11-04 | Data cut-off: 2026-11-04 | Price date: 2026-11-03 | Audience: internal_research | Status: DRAFT</p>
+<h2>Executive summary</h2>
+<p>SIMULATED portfolio rule_screen_pass_balanced (rule_based_screen_pass, hypothetical capital 1000000.0000 PKR, price date 2026-11-03). Holdings: HUBC: 2534.0000 units, 499806.1600 PKR; OGDC: 1646.0000 units, 499774.9800 PKR See portfolio_invested and portfolio_return.</p>
+<h2>Holdings</h2>
+<p>HUBC: 2534.0000 units, 499806.1600 PKR; OGDC: 1646.0000 units, 499774.9800 PKR See portfolio_holding_count.</p>
+<h2>Exclusions</h2>
+<p>HBL (SCREEN_NOT_RUNNABLE: Phase 15 screening is not SCREEN_PASS; gate reasons: {&#x27;gates&#x27;: [&#x27;no_statements&#x27;, &#x27;too_few_dimensions&#x27;]}.); NML (SCREEN_FAIL: Phase 15 screening failed; gate reasons: {&#x27;gates&#x27;: [&#x27;stale_latest_statement&#x27;, &#x27;publication_date_unknown&#x27;, &#x27;valuation_publication_unknown&#x27;]}.) See portfolio_holding_count.</p>
+<h2>Comparison</h2>
+<p>rule_based_screen_pass: COMPUTED See portfolio_return.</p>
+<h2>Thesis</h2>
+<p>The simulated construction follows its stated method on stored closes only. See portfolio_invested.</p>
+<h2>Counter-thesis</h2>
+<p>One price date means no return, no covariance, and no risk-adjusted comparison exists. See portfolio_return.</p>
+<h2>Risks</h2>
+<p>All inputs are UNVERIFIED; this is a simulation, never a real holding. See portfolio_capital.</p>
+<h2>Uncertainty</h2>
+<p>Returns are insufficient_inputs; forecasts are abstained; user-facing values are WITHHELD. See portfolio_return.</p>
+<h2>Methodology, sources and disclosures</h2>
+<p>Methodology: figures are pulled from stored platform rows only, as described in the template methodology above; no new market data was collected for this report. Source tables used: portfolio_sector_allocations, simulated_portfolio_holdings, simulated_portfolios. Every figure states its computation status and inherits its inputs&#x27; quality status; a figure with status insufficient_inputs or not_applicable carries its reason in the figures table, never a number. INTERNAL RESEARCH DOCUMENT — NOT INVESTMENT ADVICE. This report assembles figures already stored in the PSX Intelligence platform; it introduces no new market data. Every figure inherits its inputs&#x27; quality status (all statement, price, ratio, valuation, macro, news, ownership, forecast, risk, decision, portfolio, backtest, screen, and alert inputs in this run are UNVERIFIED unless a figure note says otherwise). Screen matches are filter results, not investment opportunities. Phase 15 user-facing values are WITHHELD and Phase 13 forecasts are abstained; neither is reintroduced here. No price target is stated anywhere in this report, and no section recommends a trade. This report is not published externally; APPROVED means internally reviewed only.</p>
+<h2>Figures</h2>
+<table><tr><th>Figure</th><th>Value</th><th>Status</th><th>Kind</th><th>Source</th></tr>
+<tr><td>Hypothetical capital</td><td>1000000.0000 PKR</td><td>computed</td><td>assumption</td><td>simulated_portfolios</td></tr>
+<tr><td>Invested value</td><td>999581.1400 PKR</td><td>computed</td><td>deterministic_calculation</td><td>simulated_portfolio_holdings</td></tr>
+<tr><td>Holdings</td><td>2 holdings</td><td>computed</td><td>deterministic_calculation</td><td>simulated_portfolio_holdings</td></tr>
+<tr><td>Portfolio return</td><td>not available</td><td>insufficient_inputs</td><td>model_output</td><td>simulated_portfolio_holdings</td></tr>
+<tr><td>Holding HUBC</td><td>499806.1600 PKR</td><td>computed</td><td>deterministic_calculation</td><td>simulated_portfolio_holdings</td></tr>
+<tr><td>Holding OGDC</td><td>499774.9800 PKR</td><td>computed</td><td>deterministic_calculation</td><td>simulated_portfolio_holdings</td></tr>
+<tr><td>Sector OIL &amp; GAS EXPLORATION COMPANIES invested</td><td>499774.9800 PKR</td><td>computed</td><td>deterministic_calculation</td><td>portfolio_sector_allocations</td></tr>
+<tr><td>Sector POWER GENERATION &amp; DISTRIBUTION invested</td><td>499806.1600 PKR</td><td>computed</td><td>deterministic_calculation</td><td>portfolio_sector_allocations</td></tr>
+</table>
+</body></html>

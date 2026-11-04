@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html><head><meta charset='utf-8'>
+<title>Risk Report: Oil &amp; Gas Development Company Limited (OGDC)</title>
+<style>body{font-family:sans-serif;max-width:900px;margin:auto;padding:1em}table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:4px 8px;text-align:left}</style>
+</head><body>
+<h1>Risk Report: Oil &amp; Gas Development Company Limited (OGDC)</h1>
+<p>Report date: 2026-11-04 | Data cut-off: 2026-11-04 | Price date: 2026-11-03 | Audience: internal_research | Status: DRAFT</p>
+<h2>Executive summary</h2>
+<p>Risk report for Oil &amp; Gas Development Company Limited (OGDC). Risk rows: 13; flags: 2. See risk_volume_liquidity_tier.</p>
+<h2>Risk metrics</h2>
+<p>Stored risk metrics are in the figures table; see risk_volume_liquidity_tier.</p>
+<h2>Controls</h2>
+<p>drawdown_warning_pct: {&#x27;threshold&#x27;: &#x27;-10&#x27;, &#x27;unit&#x27;: &#x27;pct_or_shares&#x27;}; min_daily_volume_shares: {&#x27;threshold&#x27;: &#x27;50000&#x27;, &#x27;unit&#x27;: &#x27;pct_or_shares&#x27;}; min_diversification_names: {&#x27;threshold&#x27;: &#x27;3&#x27;, &#x27;unit&#x27;: &#x27;pct_or_shares&#x27;}; sector_cap_pct: {&#x27;threshold&#x27;: &#x27;50&#x27;, &#x27;unit&#x27;: &#x27;pct_or_shares&#x27;}; single_name_cap_pct: {&#x27;threshold&#x27;: &#x27;25&#x27;, &#x27;unit&#x27;: &#x27;pct_or_shares&#x27;} See control_single_name_cap_pct_SIMULATED_PORTFOLIO.</p>
+<h2>Stress scenarios</h2>
+<p>Stress impacts are simulation arithmetic on stored closes only. See stress_commodity_oil_minus_10.</p>
+<h2>Thesis</h2>
+<p>Risk is described from stored rows only; no new risk number is introduced. See risk_volume_liquidity_tier.</p>
+<h2>Counter-thesis</h2>
+<p>Series risk metrics are unavailable on one price date, so this report cannot speak to volatility, beta, or drawdown. See risk_volatility.</p>
+<h2>Uncertainty</h2>
+<p>All inputs are UNVERIFIED; flags are review-only. See risk_volume_liquidity_tier.</p>
+<h2>Methodology, sources and disclosures</h2>
+<p>Methodology: figures are pulled from stored platform rows only, as described in the template methodology above; no new market data was collected for this report. Source tables used: risk_control_checks, risk_metric_values, stress_results. Every figure states its computation status and inherits its inputs&#x27; quality status; a figure with status insufficient_inputs or not_applicable carries its reason in the figures table, never a number. INTERNAL RESEARCH DOCUMENT — NOT INVESTMENT ADVICE. This report assembles figures already stored in the PSX Intelligence platform; it introduces no new market data. Every figure inherits its inputs&#x27; quality status (all statement, price, ratio, valuation, macro, news, ownership, forecast, risk, decision, portfolio, backtest, screen, and alert inputs in this run are UNVERIFIED unless a figure note says otherwise). Screen matches are filter results, not investment opportunities. Phase 15 user-facing values are WITHHELD and Phase 13 forecasts are abstained; neither is reintroduced here. No price target is stated anywhere in this report, and no section recommends a trade. This report is not published externally; APPROVED means internally reviewed only.</p>
+<h2>Figures</h2>
+<table><tr><th>Figure</th><th>Value</th><th>Status</th><th>Kind</th><th>Source</th></tr>
+<tr><td>Risk beta_vs_benchmark</td><td>not available</td><td>insufficient_inputs</td><td>model_output</td><td>risk_metric_values</td></tr>
+<tr><td>Risk commodity_sensitivity_coeff</td><td>not available</td><td>insufficient_inputs</td><td>model_output</td><td>risk_metric_values</td></tr>
+<tr><td>Risk correlation_vs_market</td><td>not available</td><td>insufficient_inputs</td><td>model_output</td><td>risk_metric_values</td></tr>
+<tr><td>Risk downside_deviation</td><td>not available</td><td>insufficient_inputs</td><td>model_output</td><td>risk_metric_values</td></tr>
+<tr><td>Risk es95_hist</td><td>not available</td><td>insufficient_inputs</td><td>model_output</td><td>risk_metric_values</td></tr>
+<tr><td>Risk fx_sensitivity_coeff</td><td>not available</td><td>insufficient_inputs</td><td>model_output</td><td>risk_metric_values</td></tr>
+<tr><td>Risk gap_risk</td><td>not available</td><td>insufficient_inputs</td><td>model_output</td><td>risk_metric_values</td></tr>
+<tr><td>Risk max_drawdown</td><td>not available</td><td>insufficient_inputs</td><td>model_output</td><td>risk_metric_values</td></tr>
+<tr><td>Risk rate_sensitivity_coeff</td><td>not available</td><td>insufficient_inputs</td><td>model_output</td><td>risk_metric_values</td></tr>
+<tr><td>Risk turnover_liquidity</td><td>not available</td><td>insufficient_inputs</td><td>model_output</td><td>risk_metric_values</td></tr>
+<tr><td>Risk var95_hist</td><td>not available</td><td>insufficient_inputs</td><td>model_output</td><td>risk_metric_values</td></tr>
+<tr><td>Risk volatility</td><td>not available</td><td>insufficient_inputs</td><td>model_output</td><td>risk_metric_values</td></tr>
+<tr><td>Risk volume_liquidity_tier</td><td>737659.000000</td><td>computed</td><td>model_output</td><td>risk_metric_values</td></tr>
+<tr><td>Control single_name_cap_pct (SIMULATED_PORTFOLIO)</td><td>breach</td><td>computed</td><td>model_output</td><td>risk_control_checks</td></tr>
+<tr><td>Control sector_cap_pct (SIMULATED_PORTFOLIO)</td><td>pass</td><td>computed</td><td>model_output</td><td>risk_control_checks</td></tr>
+<tr><td>Control drawdown_warning_pct (SIMULATED_PORTFOLIO)</td><td>blocked</td><td>computed</td><td>model_output</td><td>risk_control_checks</td></tr>
+<tr><td>Control min_diversification_names (SIMULATED_PORTFOLIO)</td><td>pass</td><td>computed</td><td>model_output</td><td>risk_control_checks</td></tr>
+<tr><td>Control min_daily_volume_shares (HUBC)</td><td>pass</td><td>computed</td><td>model_output</td><td>risk_control_checks</td></tr>
+<tr><td>Control min_daily_volume_shares (NML)</td><td>pass</td><td>computed</td><td>model_output</td><td>risk_control_checks</td></tr>
+<tr><td>Control min_daily_volume_shares (OGDC)</td><td>pass</td><td>computed</td><td>model_output</td><td>risk_control_checks</td></tr>
+<tr><td>Stress commodity_oil_minus_10</td><td>not available</td><td>insufficient_inputs</td><td>model_output</td><td>stress_results</td></tr>
+<tr><td>Stress fx_pkr_minus_10</td><td>not available</td><td>insufficient_inputs</td><td>model_output</td><td>stress_results</td></tr>
+<tr><td>Stress fx_pkr_minus_10</td><td>not available</td><td>insufficient_inputs</td><td>model_output</td><td>stress_results</td></tr>
+<tr><td>Stress idiosyncratic_minus_20</td><td>-6.666667 percent</td><td>computed</td><td>model_output</td><td>stress_results</td></tr>
+<tr><td>Stress idiosyncratic_minus_20</td><td>-6.666667 percent</td><td>computed</td><td>model_output</td><td>stress_results</td></tr>
+<tr><td>Stress idiosyncratic_minus_20</td><td>-6.666667 percent</td><td>computed</td><td>model_output</td><td>stress_results</td></tr>
+<tr><td>Stress market_minus_10</td><td>-10.000000 percent</td><td>computed</td><td>model_output</td><td>stress_results</td></tr>
+<tr><td>Stress rate_plus_100bps</td><td>not available</td><td>insufficient_inputs</td><td>model_output</td><td>stress_results</td></tr>
+<tr><td>Stress rate_plus_100bps</td><td>not available</td><td>insufficient_inputs</td><td>model_output</td><td>stress_results</td></tr>
+<tr><td>Stress rate_plus_100bps</td><td>not available</td><td>insufficient_inputs</td><td>model_output</td><td>stress_results</td></tr>
+</table>
+<h2>Warnings</h2><ul>
+<li>[risk_flag] auditor_opinion_absent (info): Interim condensed statements carry no auditor opinion row; recorded as a disclosure gap, not as an adverse opinion.</li>
+<li>[risk_flag] warning_receivables_days_over_one_year (info): Review-only flag from Phase 8; not a fraud, default or solvency conclusion.</li>
+</ul>
+</body></html>
