@@ -120,3 +120,24 @@
   the branch must not be pushed to the public repo with the CSV
   force-added unless the PSX redistribution question is resolved
   in writing first.
+
+- Phase 5 implementation push attempt (2026-11-04, branch
+  phase-05-snapshot-import, tip 5c6536c): BLOCKED.
+  Command: git push origin phase-05-snapshot-import.
+  Result: fatal: could not read Username for
+  'https://github.com': No such device or address.
+  Same standing blocker as Phases 2–4 (no credential
+  helper/token in this environment; prompts unavailable) —
+  wording differs slightly from the earlier "terminal prompts
+  disabled" variant, same cause class. No remote branch
+  created, no PR, no push to main, no merge, no force-push,
+  no token invented, no password asked for, no control
+  bypassed. Commit 5c6536c contains the Phase 5 engine,
+  APIs, CLI, frontend page, source research, 16 docs in
+  docs/phase-05/, audit, and tracker updates; it contains
+  NO seed CSV (gitignored, untracked), NO .env, NO secret.
+  The unrelated untracked
+  docs/development/AGENTIC_TECHNICAL_RECOMMENDATIONS.md was
+  deliberately NOT committed. A future parent push must
+  verify the remote SHA against 5c6536c after this log
+  record is itself committed.
