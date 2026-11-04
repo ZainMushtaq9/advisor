@@ -32,6 +32,7 @@ REPORTABLE_SETTINGS = (
     "LOG_LEVEL",
     "DATABASE_URL",
     "CORS_ORIGINS",
+    "AUTH_ENFORCEMENT",
 )
 
 # Defaults that apply when the corresponding env var is absent. These are
@@ -54,6 +55,18 @@ class Settings(BaseSettings):
     # Never put a real credential in a default value.
     DATABASE_URL: str | None = None
     CORS_ORIGINS: tuple[str, ...] = DEFAULT_CORS_ORIGINS
+    # Phase 24 authentication. "off" is the development default so the
+    # Phase 23 dashboard (credential-less GET calls) keeps working;
+    # production refuses to boot with enforcement off (see validator).
+    # These values are operational, never secret, and may be reported
+    # by name (AUTH_ENFORCEMENT is in REPORTABLE_SETTINGS).
+    AUTH_ENFORCEMENT: Literal["off", "on"] = "off"
+    AUTH_TOKEN_TTL_HOURS: int = 24
+    AUTH_SERVICE_TOKEN_TTL_DAYS: int = 90
+    AUTH_RATE_LIMIT_PER_MINUTE: int = 300
+    AUTH_RATE_LIMIT_AUTH_PER_MINUTE: int = 30
+    AUTH_MAX_FAILED_LOGINS: int = 5
+    AUTH_LOCKOUT_MINUTES: int = 15
 
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod
@@ -75,6 +88,10 @@ class Settings(BaseSettings):
             raise ValueError("CORS_ORIGINS must not contain '*' in production")
         if self.ENVIRONMENT == "production" and self.DEBUG:
             raise ValueError("DEBUG must be false in production")
+        # Checked last on purpose: the two rules above keep their
+        # existing error messages for existing tests and callers.
+        if self.ENVIRONMENT == "production" and self.AUTH_ENFORCEMENT != "on":
+            raise ValueError("AUTH_ENFORCEMENT must be 'on' in production")
         return self
 
     def config_status(self) -> list[dict[str, str]]:

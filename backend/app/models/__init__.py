@@ -18,6 +18,7 @@ from app.database import Base  # noqa: F401  (re-exported for Alembic / tests)
 from app.models import (  # noqa: F401
     alerts,
     analysis,
+    auth,
     backtesting,
     decision,
     financial,
@@ -40,6 +41,7 @@ from app.models import (  # noqa: F401
 __all__ = [
     "Base",
     "alerts",
+    "auth",
     "analysis",
     "backtesting",
     "decision",

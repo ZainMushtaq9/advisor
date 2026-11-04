@@ -34,6 +34,10 @@ def create_app() -> FastAPI:
     settings = get_settings()
     configure_logging(settings.LOG_LEVEL)
 
+    # Phase 24: OpenAPI docs are disabled in production. The schema
+    # discloses route structure; production deployments must not
+    # serve interactive docs to unauthenticated callers.
+    _docs_enabled = settings.ENVIRONMENT != "production"
     app = FastAPI(
         title="PSX Intelligence AI",
         description=(
@@ -42,6 +46,9 @@ def create_app() -> FastAPI:
             "AI-agent functionality is provided at this stage."
         ),
         version=__version__,
+        docs_url="/docs" if _docs_enabled else None,
+        redoc_url="/redoc" if _docs_enabled else None,
+        openapi_url="/openapi.json" if _docs_enabled else None,
     )
     # Database engine is built once per app instance from DATABASE_URL.
     # None when unset: endpoints then truthfully report "unavailable".
@@ -56,6 +63,19 @@ def create_app() -> FastAPI:
         allow_methods=["GET"],
         allow_headers=["*"],
     )
+
+    # Phase 24 security middleware. Order (Starlette runs the last
+    # added first): enforcement -> rate limit -> security headers
+    # -> request context, so a denied request still carries headers.
+    from app.services.auth.middleware import (
+        EnforcementMiddleware,
+        RateLimitMiddleware,
+        SecurityHeadersMiddleware,
+    )
+
+    app.add_middleware(EnforcementMiddleware)
+    app.add_middleware(RateLimitMiddleware)
+    app.add_middleware(SecurityHeadersMiddleware)
 
     @app.middleware("http")
     async def request_context(request: Request, call_next):  # type: ignore[no-untyped-def]
