@@ -16,6 +16,7 @@ from app.api.v1.endpoints import (
     orchestration,
     ownership,
     portfolios,
+    rag,
     registry,
     risk,
     system,
@@ -38,3 +39,4 @@ api_router.include_router(decisions.router)
 api_router.include_router(portfolios.router)
 api_router.include_router(backtesting.router)
 api_router.include_router(orchestration.router)
+api_router.include_router(rag.router)
