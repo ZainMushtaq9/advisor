@@ -110,3 +110,12 @@
   the 470 securities under quality controls; no VERIFIED,
   full-market, KSE-100 or price claims. D-54 gate OPEN
   (narrowed); D-51/D-52 OPEN. Phase 6 NOT started.
+
+- Phase 5 implementation (2026-11-04, branch
+  phase-05-snapshot-import): PARTIALLY COMPLETE. Engine,
+  APIs, CLI, frontend page, source research, 16 docs in
+  docs/phase-05/, audit PASS WITH LIMITATIONS, full suite
+  85 passed. Production market_prices 0 (no verified dated
+  price file; live adapters BLOCKED on D-51/D-52 + PSX
+  Terms; intraday OUT OF SCOPE). Gate PARTIALLY PASSED
+  unchanged (§13). Phase 6 NOT started.

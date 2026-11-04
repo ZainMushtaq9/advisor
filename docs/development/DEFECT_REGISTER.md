@@ -153,3 +153,32 @@ No defect is marked RESOLVED unless its retest is recorded in the Retest column.
   registry, full-market or KSE-100 completeness, or any market
   price. Full gate report: docs/phase-05/phase_05_gate_report.md
   §12. D-51 and D-52 stay OPEN.
+
+### Update 2026-11-04 — Phase 5 implementation run (same branch): engine complete, data still 0, gate UNCHANGED
+
+- Gate counts re-verified by the coordinator in the live DB
+  before building: companies 470, securities 470, sectors 37,
+  registry_evidence 940, all UNVERIFIED, VERIFIED 0,
+  identifiers 0, symbol_history 0, market_prices 0, 57 tables,
+  head a909e8449cdd — matching §12 exactly.
+- Built and tested: deterministic daily-OHLCV validation,
+  quality assignment, idempotent validated-file ingestion
+  with safe catch-up, GET-only /api/v1/market/… endpoints,
+  dry-run-default CLI, read-only /market page + nav entry,
+  source research (15 fields/source) + comparison matrix.
+  Full backend suite 85 passed (41 new + 44 pre-existing;
+  implementer's 42/43 split corrected in the test report).
+  Independent audit PASS WITH LIMITATIONS (0 CRITICAL,
+  0 HIGH, 1 MEDIUM accepted: cross-run conflict re-flagging
+  impossible under Phase 3 immutability).
+- Production market_prices remains 0: no verified dated price
+  file exists to ingest, and live adapters are BLOCKED
+  (D-51/D-52 + PSX Terms); intraday OUT OF SCOPE. Research
+  reachability probes (one HEAD to each site root only) do
+  NOT close D-51 or D-52. The PSX Terms internal-use question
+  remains UNRESOLVED in writing.
+- This gate entry stays OPEN, narrowed as in the §12 update.
+  Phase 5 implementation status: PARTIALLY COMPLETE. Phase 6
+  NOT started. Full record: docs/phase-05/
+  phase_05_completion_report.md and phase_05_gate_report.md
+  §13. D-51 and D-52 stay OPEN.

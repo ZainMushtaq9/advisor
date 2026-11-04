@@ -136,3 +136,21 @@ See DEFECT_REGISTER.md. No defect in this file is marked resolved unless its ret
 - D-54 gate entry stays OPEN but narrowed (population resolved;
   verification + full-universe remain). D-51/D-52 stay OPEN.
   Push result in GITHUB_PUSH_LOG.md.
+
+- Phase 5 implementation run (2026-11-04, branch
+  phase-05-snapshot-import): PARTIALLY COMPLETE. Gate
+  re-verified first (470/470/37, all UNVERIFIED,
+  market_prices 0, 57 tables, head a909e8449cdd, matching
+  §12). Built: deterministic daily-OHLCV validation, quality
+  assignment, idempotent validated-file ingestion with safe
+  catch-up, GET-only /api/v1/market/… endpoints, CLI
+  (dry-run default), /market page + nav entry, source
+  research + comparison matrix (live adapters BLOCKED,
+  intraday OUT OF SCOPE). Tests: full backend suite 85
+  passed (41 new + 44 pre-existing, corrected split); Ruff
+  clean; frontend typecheck/lint clean. Audit PASS WITH
+  LIMITATIONS. Production market_prices remains 0 (no
+  verified dated price file; no live route legally
+  available). Gate still PARTIALLY PASSED (§13); D-54 gate
+  entry OPEN (narrowed); D-51/D-52 OPEN; PSX Terms
+  internal-use note UNRESOLVED. Phase 6 NOT started.

@@ -19,6 +19,11 @@ export const NAV_ITEMS: NavItem[] = [
     description: "Company directory shell — no data yet.",
   },
   {
+    href: "/market",
+    label: "Market",
+    description: "Daily OHLCV for snapshot securities, from validated observations only.",
+  },
+  {
     href: "/research",
     label: "Research",
     description: "Research workspace shell — no data yet.",

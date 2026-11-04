@@ -403,3 +403,42 @@ captured, so this snapshot is NOT the full PSX registry.
   standing credential blocker). No push to main, no merge to
   main, no force-push. No paid services, no external account,
   no secrets in this work.
+
+---
+
+## §13 — Phase 5 implementation run (2026-11-04): gate UNCHANGED, still PARTIALLY PASSED
+
+This section appends to, and does not erase, §1–§12.
+
+Working branch for implementation: `phase-05-snapshot-import`
+(chosen because it holds the import script and the §12
+evidence; no commit was made to `phase-05-market-data-engine`).
+Gate counts re-verified by the coordinator in the live
+database before building: companies 470, securities 470,
+sectors 37, registry_evidence 940, all UNVERIFIED, VERIFIED 0,
+company_identifiers 0, symbol_history 0, market_prices 0,
+57 public tables, Alembic head `a909e8449cdd` — matching §12
+exactly (the status column is `status`, not
+`verification_status`; counts identical).
+
+What the implementation run built (see
+`phase_05_completion_report.md`): deterministic daily-OHLCV
+validation, quality assignment, idempotent validated-file
+ingestion with safe catch-up, GET-only `/api/v1/market/…`
+endpoints, a dry-run-default CLI, a read-only `/market`
+frontend page + nav entry, and source research with
+per-source verdicts (live adapters BLOCKED, intraday OUT OF
+SCOPE). Tests: full backend suite 85 passed (41 new + 44
+pre-existing; the implementer's 42/43 split is corrected in
+the test report). Independent audit: PASS WITH LIMITATIONS
+(0 CRITICAL, 0 HIGH, 1 MEDIUM accepted).
+
+What did NOT change, and why the gate is still only
+PARTIALLY PASSED: production `market_prices` remains 0 — no
+verified dated price file exists to ingest, and no live route
+is legally available. The PSX Terms internal-use question
+remains UNRESOLVED in writing; GEM (5) + Non-Compliant (93)
+remain outside the registry; KSE-100 completeness remains
+unestablished; all records remain UNVERIFIED. Phase 5
+implementation status: PARTIALLY COMPLETE. Phase 6 is NOT
+started in this run.
