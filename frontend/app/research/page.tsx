@@ -209,14 +209,14 @@ export default function ResearchPage() {
                 ]}
                 rows={rag.data.results ?? []}
                 emptyTitle="No results"
-                emptyDescription="No indexed passage matches this query. HBL has no indexed document."
+                emptyDescription="No indexed passage matches this query."
               />
             </>
           )}
           {rag.state !== "ready" && submitted === null && (
             <p className="text-sm text-neutral-600 dark:text-neutral-300">
-              Search the three indexed issuer reports (HUBC, NML, OGDC — 943
-              chunks). Vector retrieval is registered but NOT implemented: no
+              Search the four indexed issuer reports (HUBC, NML, OGDC, HBL
+              — 2,020 chunks). Vector retrieval is registered but NOT implemented: no
               verified local embedding model exists on this host.
             </p>
           )}

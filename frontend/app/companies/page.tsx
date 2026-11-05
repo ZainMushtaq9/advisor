@@ -138,11 +138,8 @@ export default function CompaniesPage() {
                 },
                 {
                   key: "sector",
-                  header: "Sector (source taxonomy)",
-                  render: (row) =>
-                    row.sector_name
-                      ? `${row.sector_name}${row.sector_source ? ` (${row.sector_source})` : ""}`
-                      : "Unavailable",
+                  header: "Sector",
+                  render: (row) => row.sector_name ?? "Unavailable",
                 },
                 { key: "status", header: "Status", accessor: "status" },
                 {
@@ -198,7 +195,7 @@ export default function CompaniesPage() {
               <Link href="/companies/HUBC" className="underline">HUBC</Link> ·{" "}
               <Link href="/companies/NML" className="underline">NML</Link> ·{" "}
               <Link href="/companies/OGDC" className="underline">OGDC</Link> ·{" "}
-              <Link href="/companies/HBL" className="underline">HBL (pending)</Link>.
+              <Link href="/companies/HBL" className="underline">HBL</Link>.
             </p>
           </>
         )}

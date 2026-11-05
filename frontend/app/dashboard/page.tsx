@@ -6,13 +6,10 @@ import { DataTable } from "@/components/data-table";
 import { PageHeader, StateNotice, QualityBadge } from "@/components/data-states";
 import { useApi } from "@/lib/use-api";
 import { fmtNum } from "@/lib/format";
-
-interface MarketStatus {
-  price_rows?: number;
-  trading_dates?: string[];
-  quality_status?: string;
-  scope?: string;
-}
+import {
+  marketStatusView,
+  type MarketStatusResponse,
+} from "@/lib/market-status";
 
 interface BreadthResponse {
   metrics?: {
@@ -49,10 +46,13 @@ interface AlertsStatus {
  * exist, so breadth and coverage figures are shown as tables instead.
  */
 export default function DashboardPage() {
-  const market = useApi<MarketStatus>("/market/status");
+  const market = useApi<MarketStatusResponse>("/market/status");
   const breadth = useApi<BreadthResponse>("/breadth");
   const decisions = useApi<DecisionsResponse>("/decisions");
   const alerts = useApi<AlertsStatus>("/alerts/status");
+
+  const marketView =
+    market.state === "ready" ? marketStatusView(market.data) : null;
 
   const marketMetrics = (breadth.state === "ready" ? breadth.data.metrics ?? [] : []).filter(
     (m) => m.scope === "MARKET",
@@ -76,14 +76,15 @@ export default function DashboardPage() {
           {market.state === "ready" && (
             <div className="text-sm">
               <p>
-                <strong>{market.data.price_rows ?? "—"}</strong> price rows on{" "}
-                {(market.data.trading_dates ?? []).join(", ") || "no trading date"}
+                <strong>{marketView?.priceRows ?? "—"}</strong> price rows on{" "}
+                {marketView?.tradingDates.join(", ") || "no trading date"}
               </p>
               <p className="mt-2">
-                Quality: <QualityBadge status={market.data.quality_status} />
+                Quality: <QualityBadge status={marketView?.qualityStatus} />
               </p>
               <p className="mt-2 text-neutral-600 dark:text-neutral-300">
-                {market.data.scope ?? "470 Main Board / Normal Counter snapshot securities."}{" "}
+                {marketView?.scopeNote ??
+                  "470 Main Board / Normal Counter snapshot securities."}{" "}
                 All rows are unadjusted (is_adjusted false) and carry no
                 previous close or turnover.
               </p>
@@ -96,7 +97,7 @@ export default function DashboardPage() {
           )}
         </Card>
 
-        <Card title="Market breadth — 2026-11-03">
+        <Card title="Market breadth — 2026-11-03" className="min-w-0">
           {breadth.state === "loading" && <p className="text-sm">Loading…</p>}
           {breadth.state === "error" && (
             <StateNotice kind="error" message={breadth.error} />
@@ -104,6 +105,7 @@ export default function DashboardPage() {
           {breadth.state === "ready" && (
             <DataTable
               caption="Market breadth metrics for 2026-11-03"
+              layout="fixed"
               columns={[
                 { key: "metric_key", header: "Metric", accessor: "metric_key" },
                 { key: "metric_value", header: "Value", accessor: "metric_value" },
@@ -124,7 +126,10 @@ export default function DashboardPage() {
           </p>
         </Card>
 
-        <Card title="Decisions (research opinions only)">
+        <Card
+          title="Decisions (research opinions only)"
+          className="min-w-0 lg:col-span-2"
+        >
           {decisions.state === "loading" && <p className="text-sm">Loading…</p>}
           {decisions.state === "error" && (
             <StateNotice kind="error" message={decisions.error} />
@@ -132,6 +137,7 @@ export default function DashboardPage() {
           {decisions.state === "ready" && (
             <DataTable
               caption="Phase 15 decisions"
+              layout="fixed"
               columns={[
                 { key: "company_id", header: "Company id", accessor: "company_id" },
                 { key: "screening_outcome", header: "Screening", accessor: "screening_outcome" },

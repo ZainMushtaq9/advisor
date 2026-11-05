@@ -50,7 +50,7 @@ export default function ForecastsPage() {
     <div className="pb-10">
       <PageHeader
         title="Forecasts"
-        description="Forecast assessments over 1-day, 1-week, 1-month, 3-month, 6-month and 12-month horizons. All 120 assessments are insufficient_inputs and zero forecasts are computed. A horizon never changes the verdict: a 12-month forecast from one observation is exactly as unsupported as a 1-day one."
+        description="Forecast assessments over 1-day, 1-week, 1-month, 3-month, 6-month and 12-month horizons. All 156 assessments are insufficient_inputs and zero forecasts are computed. A horizon never changes the verdict: a 12-month forecast from one observation is exactly as unsupported as a 1-day one."
         banners={[
           "No forecast figure appears anywhere in this product. Any number labelled as a forecast elsewhere would be a fabrication.",
         ]}

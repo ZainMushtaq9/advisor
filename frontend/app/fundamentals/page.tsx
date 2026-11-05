@@ -28,8 +28,8 @@ interface RatiosResponse {
 
 /**
  * Fundamentals page: statement-derived ratios for one selected ticker.
- * HBL reports "pending" — its statements are not loaded. Periods are never
- * annualised and no TTM is synthesised: each company keeps its own period.
+ * Periods are never annualised and no TTM is synthesised: each company
+ * keeps its own period.
  */
 export default function FundamentalsPage() {
   const [ticker, setTicker] = useState("HUBC");
@@ -39,7 +39,7 @@ export default function FundamentalsPage() {
     <div className="pb-10">
       <PageHeader
         title="Fundamentals"
-        description="Statement-derived ratios and health scores. All values are UNVERIFIED and period-specific: HUBC is a full FY2026 year, NML is nine months to 31 Mar 2025, OGDC is six months to 31 Dec 2025. Averages use two balance-sheet dates only. Health scores are descriptive, not a credit rating and not investment advice."
+        description="Statement-derived ratios and health scores. All values are UNVERIFIED and period-specific: HUBC is a full FY2026 year, NML is nine months to 31 Mar 2025, OGDC is six months to 31 Dec 2025, HBL is a full year to 31 Dec 2025. Averages use two balance-sheet dates only. Health scores are descriptive, not a credit rating and not investment advice."
         banners={[
           "NML's nine-month result is a LOSS — it is shown as a loss, never hidden or replaced by the full-year figure.",
         ]}

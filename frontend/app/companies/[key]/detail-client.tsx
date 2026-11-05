@@ -123,7 +123,7 @@ interface DecisionsResponse {
  * Company detail page, resolved by registry id (numeric) or ticker.
  * Every tab fetches only when opened. Companies without loaded statements
  * show pending / no-configured-period states from the API — never invented
- * figures. HBL shows "pending" on fundamentals, valuation and macro tabs.
+ * figures.
  */
 export function CompanyDetailClient() {
   const params = useParams<{ key: string }>();
@@ -229,11 +229,11 @@ export function CompanyDetailClient() {
           isNumeric && company.state === "ready"
             ? `${company.data.legal_name} — sector: ${company.data.sector_name ?? "unavailable"} (source: ${company.data.sector_source ?? "unavailable"}). Registry quality: ${company.data.status}.`
             : ticker
-              ? `Detail for ticker ${ticker}. Registry identity is resolved from the live registry; statement coverage is three companies only (HUBC, NML, OGDC).`
+              ? `Detail for ticker ${ticker}. Registry identity is resolved from the live registry; statement coverage is four companies (HUBC, NML, OGDC, HBL).`
               : "Company could not be resolved."
         }
         banners={[
-          "Statement-derived figures cover HUBC, NML and OGDC only. Any other company shows pending or no-configured-period states — that absence is the honest answer, not a gap to fill.",
+          "Statement-derived figures cover HUBC, NML, OGDC and HBL. Any other company shows pending or no-configured-period states — that absence is the honest answer, not a gap to fill.",
         ]}
       />
 
@@ -531,7 +531,7 @@ export function CompanyDetailClient() {
                   ]}
                   rows={newsForCompany}
                   emptyTitle="No events for this company"
-                  emptyDescription="No stored news event links to this company. Seed coverage is 3 of 470 companies."
+                  emptyDescription="No stored news event links to this company. Seed coverage is 4 of 470 companies."
                 />
               )}
             </Card>

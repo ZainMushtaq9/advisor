@@ -6,6 +6,10 @@ import { ApiStatus } from "@/components/api-status";
 import { NAV_ITEMS } from "@/lib/nav";
 import { PageHeader, StateNotice, QualityBadge } from "@/components/data-states";
 import { useApi } from "@/lib/use-api";
+import {
+  marketStatusView,
+  type MarketStatusResponse,
+} from "@/lib/market-status";
 
 interface StatisticsResponse {
   companies: number;
@@ -13,12 +17,6 @@ interface StatisticsResponse {
   sectors: number;
   quality_status?: string;
   evidence_rows?: number;
-}
-
-interface MarketStatus {
-  price_rows?: number;
-  trading_dates?: string[];
-  quality_status?: string;
 }
 
 interface RegimeResponse {
@@ -43,10 +41,13 @@ interface ReportsStatus {
  */
 export default function Home() {
   const stats = useApi<StatisticsResponse>("/registry/statistics");
-  const market = useApi<MarketStatus>("/market/status");
+  const market = useApi<MarketStatusResponse>("/market/status");
   const regimes = useApi<RegimeResponse>("/macro/regimes");
   const alerts = useApi<AlertsStatus>("/alerts/status");
   const reports = useApi<ReportsStatus>("/reports/status");
+
+  const marketView =
+    market.state === "ready" ? marketStatusView(market.data) : null;
 
   const anyError =
     stats.state === "error" ||
@@ -59,7 +60,7 @@ export default function Home() {
     <div className="pb-10">
       <PageHeader
         title="PSX Intelligence AI"
-        description="A Pakistan Stock Exchange research workspace built only from stored, labelled observations. Prices cover one trading date, statements cover three companies, forecasts are abstained, decisions are withheld, and reports are drafts — the interface states each limit where the data appears."
+        description="A Pakistan Stock Exchange research workspace built only from stored, labelled observations. Prices cover one trading date, statements cover four companies, forecasts are abstained, decisions are withheld, and reports are drafts — the interface states each limit where the data appears."
         banners={[
           "All figures on this site are descriptive analysis of stored rows, not investment advice, not buy/sell signals, and not forecasts.",
           "Every stored price, statement, ratio and valuation is UNVERIFIED unless its quality badge says otherwise.",
@@ -103,13 +104,13 @@ export default function Home() {
           {market.state === "ready" && (
             <div className="text-sm">
               <p>
-                <strong>{market.data.price_rows ?? "—"}</strong> price rows
+                <strong>{marketView?.priceRows ?? "—"}</strong> price rows
               </p>
               <p className="mt-1">
-                Trading dates: {(market.data.trading_dates ?? []).join(", ") || "none"}
+                Trading dates: {marketView?.tradingDates.join(", ") || "none"}
               </p>
               <p className="mt-2">
-                Quality: <QualityBadge status={market.data.quality_status} />
+                Quality: <QualityBadge status={marketView?.qualityStatus} />
               </p>
               <p className="mt-2 text-neutral-600 dark:text-neutral-300">
                 One trading date only. No advances/declines can be computed
@@ -167,10 +168,9 @@ export default function Home() {
         </Card>
         <Card title="Coverage limits">
           <ul className="list-disc space-y-1 pl-5 text-sm text-neutral-600 dark:text-neutral-300">
-            <li>Statements: 3 of 470 companies (HUBC, NML, OGDC).</li>
-            <li>HBL: pending — its annual report PDF could not be downloaded.</li>
+            <li>Statements: 4 of 470 companies (HUBC, NML, OGDC, HBL).</li>
             <li>Technical values: 0 calculable from one price date.</li>
-            <li>Forecasts: 120 assessments, 0 computed (abstained).</li>
+            <li>Forecasts: 156 assessments, 0 computed (abstained).</li>
             <li>Decisions: user-facing values all WITHHELD.</li>
             <li>Backtests: all NOT_RUNNABLE on a single observation.</li>
           </ul>
