@@ -46,3 +46,37 @@ sampled issuer/regulatory documents, stored outside Git, never
 republished, and logged with provenance. If PSX later asserts that
 its portal terms cover filings, DPS-sourced downloads (none in this
 run) would be the first thing re-examined.
+
+## HBL follow-up addendum (2026-11-05)
+
+- The HBL row in "Sample companies and document status" above is
+  SUPERSEDED: the CY2025 annual report was obtained 2026-11-05 by a
+  normal browser visit to the issuer's own Financial Reports page
+  (no account, sign-in, payment, mirror, cache, or DPS copy; no
+  bot-management challenge appeared in the browser visit, unlike
+  the earlier curl 302/"Loading" loop on the PDF asset for
+  non-browser fetches).
+- Exact link followed:
+  https://www.hbl.com/investor-relations/investor-relations/financial-reports
+  → "Annual Accounts" / "2025" → "HBL Annual Report 2025" →
+  https://www.hbl.com/assets/documents/HBL_Annual_Report_2025.pdf.
+- File: storage/financial_reports/HBL_Annual_Report_2025.pdf,
+  6,437,243 bytes, 411 pages, SHA-256
+  6cde814285561cfb28596ead2ae5d4dc897ec71c77b4e5271bae626474d75ccd,
+  embedded text. Verdict: issuer IR ALLOWED on the same basis as
+  the HUBC/NML rows (company-published stakeholder document,
+  sampled only, internal analysis only, no republication).
+- Document: HBL Annual Report 2025 (ticker HBL, id 747),
+  consolidated statements for the year ended 31 December 2025,
+  audited (KPMG Taseer Hadi & Co., unmodified opinion dated
+  03 March 2026, UDIN AR202510201HsNS5gUWD). Consolidated faces
+  only, matching the Phase 7 sample scope; the unconsolidated
+  opinion and faces in the same report are NOT recorded here.
+- Known source defects recorded, never adjusted (see run report):
+  (1) one CF movement row between the subordinated-debt mark-up
+  row and the first operating subtotal has no printed label in
+  the source (values Rs (7,528,688) thousand for 2025 and
+  Rs (3,749,239) thousand for 2024); it is loaded as a bare row
+  with its values and no invented label; (2) the statement of
+  comprehensive income (PDF p.77) is not a separate extracted
+  face, matching the Phase 7 four-face scope.

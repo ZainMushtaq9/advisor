@@ -224,8 +224,14 @@ def extract_face_from(lines, specs, n_cols, start, scan_cap=12):
             # taken as a value (HUBC EPS total: note 43 precedes
             # 38.26 / 35.56); share-count lines are skipped via the
             # same lookahead as the labeled path.
+            # skip_values: leading value tokens to skip before
+            # collecting (dual-currency faces print USD columns
+            # before PKR columns in content-stream order, so an
+            # HBL bare row needs skip_values=2 to collect PKR).
             collected = []
             j = cursor
+            skip = spec.get("skip_values", 0)
+            skipped = 0
             while j < len(lines) and len(collected) < n_cols:
                 if _is_skip_line_with_lookahead(lines, j):
                     j += 1
@@ -236,6 +242,9 @@ def extract_face_from(lines, specs, n_cols, start, scan_cap=12):
                     j += 1
                     continue
                 for value, sign_inferred, raw in _line_value_tokens(collectable):
+                    if skipped < skip:
+                        skipped += 1
+                        continue
                     collected.append((value, sign_inferred, raw, lines[j][0]))
                     if len(collected) >= n_cols:
                         break
@@ -247,7 +256,32 @@ def extract_face_from(lines, specs, n_cols, start, scan_cap=12):
             _fill_row(row, collected, n_cols)
             rows.append(row)
             continue
-        idx, joined = _find_label(lines, cursor, label)
+        # label_parts: a label split across NON-consecutive lines
+        # with value lines interleaved (HBL CF: the first half of
+        # the translation row's label prints, then the USD value
+        # pair, then the second half, then the PKR pair — so the
+        # two-consecutive-line join in _find_label cannot match).
+        # Each part must match a single line, in order; values are
+        # collected after the LAST part's line. The full label
+        # stays in spec["label"] for the record; label_parts only
+        # states how it is matched.
+        effective_label = label
+        label_parts = spec.get("label_parts")
+        if label_parts:
+            idx = None
+            joined = False
+            search_from = cursor
+            for part in label_parts:
+                found, part_joined = _find_label(lines, search_from, part)
+                if found is None:
+                    idx = None
+                    break
+                idx = found
+                joined = part_joined
+                search_from = found + 1
+            effective_label = label_parts[-1]
+        else:
+            idx, joined = _find_label(lines, cursor, label)
         if idx is None:
             row["flags"].append("label_not_found")
             _fill_row(row, [], n_cols)
@@ -259,7 +293,7 @@ def extract_face_from(lines, specs, n_cols, start, scan_cap=12):
         # skipping a leading note reference.
         collected = []
         label_text = normalise_text(lines[idx][1])
-        want = normalise_text(label)
+        want = normalise_text(effective_label)
         pos = label_text.lower().find(want.lower())
         remainder = lines[idx][1]
         # The last word must come from the RAW label, not the
@@ -268,7 +302,7 @@ def extract_face_from(lines, specs, n_cols, start, scan_cap=12):
         # word "2023-(audited)" that no raw token matches, and the
         # remainder then falls back to the full line (leaking the
         # year "2023" in as a value).
-        last_word = normalise_text(label.split()[-1]).rstrip(".,-")
+        last_word = normalise_text(effective_label.split()[-1]).rstrip(".,-")
         if pos >= 0:
             # Recompute remainder from the raw line: take tokens
             # after the label's last word.
@@ -322,6 +356,29 @@ def extract_face_from(lines, specs, n_cols, start, scan_cap=12):
             j += 1
             scanned += 1
         cursor = j
+        # blank_columns: column indices whose cell is BLANK in the
+        # source (no dash, no value — verified by word positions,
+        # HBL CE 2024 equity row: the NCI cell is empty while the
+        # total column carries the value). Applies ONLY when the
+        # collected token count fits exactly (tokens ==
+        # n_cols - len(blanks)); otherwise the row stays
+        # incomplete and gates out as usual. A blank cell records
+        # None, exactly as a printed dash does — no value is
+        # invented, and the block's rollforward/balance gates
+        # still verify the declared position.
+        blanks = spec.get("blank_columns") or []
+        if blanks and len(collected) == n_cols - len(blanks):
+            blank_set = set(blanks)
+            rebuilt = []
+            ti = 0
+            for ci in range(n_cols):
+                if ci in blank_set:
+                    rebuilt.append((None, False, None, label_line_no))
+                else:
+                    rebuilt.append(collected[ti])
+                    ti += 1
+            collected = rebuilt
+            row["flags"].append("blank_column_recorded")
         if len(collected) < n_cols:
             row["flags"].append("incomplete_values")
         _fill_row(row, collected, n_cols)

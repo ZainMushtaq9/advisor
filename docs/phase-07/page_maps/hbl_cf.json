@@ -1,0 +1,270 @@
+{
+  "audited_status": "audited",
+  "columns": [
+    {
+      "label": "2025",
+      "period_end": "2025-12-31",
+      "period_start": "2025-01-01"
+    },
+    {
+      "label": "2024",
+      "period_end": "2024-12-31",
+      "period_start": "2024-01-01"
+    }
+  ],
+  "company_symbol": "HBL",
+  "consolidated_status": "consolidated",
+  "currency": "PKR",
+  "document_type": "annual_report",
+  "layout_note": "Dual-currency face: USD ('000) columns print before PKR ('000) columns in content-stream order. Labeled rows anchor on the label so PKR values are collected; bare subtotal rows use skip_values=2 to skip the USD pair and collect PKR. One movement row between the subordinated-debt mark-up row and the first subtotal has NO printed label in the source (verified visually and in the text spans); it is recorded as a bare row with its values, never given an invented label.",
+  "method": "embedded_text",
+  "pages": [
+    79
+  ],
+  "pdf": "storage/financial_reports/HBL_Annual_Report_2025.pdf",
+  "publication_date": "2026-03-03",
+  "publication_date_note": "Consolidated auditor report date (PDF p.74, printed p.72).",
+  "reporting_frequency": "annual",
+  "source_url": "https://www.hbl.com/assets/documents/HBL_Annual_Report_2025.pdf",
+  "specs": [
+    {
+      "key": "profit_before_taxation",
+      "label": "Profit before taxation"
+    },
+    {
+      "key": "dividend_income",
+      "label": "Dividend income"
+    },
+    {
+      "key": "share_profit_associates",
+      "label": "Share of profit of associates"
+    },
+    {
+      "key": "markup_subordinated_debt",
+      "label": "Mark-up expensed on subordinated debt"
+    },
+    {
+      "key": "cf_unlabeled_row",
+      "label": null,
+      "original_label": "(label not printed in source)",
+      "skip_values": 2
+    },
+    {
+      "key": "cf_operating_subtotal_1",
+      "label": null,
+      "original_label": "(section subtotal, label not printed)",
+      "skip_values": 2
+    },
+    {
+      "key": "depreciation",
+      "label": "Depreciation"
+    },
+    {
+      "key": "amortisation",
+      "label": "Amortisation"
+    },
+    {
+      "key": "depreciation_rou",
+      "label": "Depreciation on right-of-use assets"
+    },
+    {
+      "key": "markup_lease_rou",
+      "label": "Mark-up expensed on lease liability against right-of-use assets"
+    },
+    {
+      "key": "reversal_cla_investments",
+      "label": "Reversal of credit loss allowance against investments"
+    },
+    {
+      "key": "provisions_cla_loans",
+      "label": "Provisions / credit loss allowance against loans and advances"
+    },
+    {
+      "key": "reversal_cla_lendings",
+      "label": "Reversal of credit loss allowance against lendings to financial institutions"
+    },
+    {
+      "key": "provision_cla_other_assets",
+      "label": "Provision / credit loss allowance against other assets"
+    },
+    {
+      "key": "reversal_charge_cla_offbs",
+      "label": "(Reversal) /charge of credit loss allowance against off-balance sheet obligations"
+    },
+    {
+      "key": "unrealised_fvtpl",
+      "label": "Unrealised loss / (gain) on securities designated at fair value through profit and loss (FVTPL)"
+    },
+    {
+      "key": "exchange_gain_loss_goodwill",
+      "label": "Exchange (gain) / loss on goodwill"
+    },
+    {
+      "key": "gain_sale_ppe",
+      "label": "Gain on sale of property and equipment - net"
+    },
+    {
+      "key": "gain_closure_branches",
+      "label": "Gain realised on closure / sale of the Bank's branches"
+    },
+    {
+      "key": "workers_welfare_fund",
+      "label": "Workers' Welfare Fund"
+    },
+    {
+      "key": "cf_adjustments_total",
+      "label": null,
+      "original_label": "(section subtotal, label not printed)",
+      "skip_values": 2
+    },
+    {
+      "key": "cf_operating_subtotal_2",
+      "label": null,
+      "original_label": "(section subtotal, label not printed)",
+      "skip_values": 2
+    },
+    {
+      "key": "lendings_fi_change",
+      "label": "Lendings to financial institutions"
+    },
+    {
+      "key": "fvtpl_investment_change",
+      "label": "Net investment in securities carried at FVTPL"
+    },
+    {
+      "key": "advances_change",
+      "label": "Advances"
+    },
+    {
+      "key": "other_assets_change",
+      "label": "Other assets (excluding advance taxation)"
+    },
+    {
+      "key": "cf_operating_assets_total",
+      "label": null,
+      "original_label": "(section subtotal, label not printed)",
+      "skip_values": 2
+    },
+    {
+      "key": "bills_payable_change",
+      "label": "Bills payable"
+    },
+    {
+      "key": "borrowings_fi_change",
+      "label": "Borrowings from financial institutions"
+    },
+    {
+      "key": "deposits_change",
+      "label": "Deposits and other accounts"
+    },
+    {
+      "key": "other_liabilities_change",
+      "label": "Other liabilities"
+    },
+    {
+      "key": "cf_operating_liabilities_total",
+      "label": null,
+      "original_label": "(section subtotal, label not printed)",
+      "skip_values": 2
+    },
+    {
+      "key": "cf_operating_before_tax",
+      "label": null,
+      "original_label": "(section subtotal, label not printed)",
+      "skip_values": 2
+    },
+    {
+      "key": "income_tax_paid",
+      "label": "Income tax paid"
+    },
+    {
+      "key": "cf_net_operating",
+      "label": "Net cash flows (used in) / generated from operating activities"
+    },
+    {
+      "key": "fvcoci_investment_change",
+      "label": "Net investment in securities carried at FVOCI"
+    },
+    {
+      "key": "amortised_cost_investment_change",
+      "label": "Net investment in securities carried at Amortised Cost"
+    },
+    {
+      "key": "associates_investment_change",
+      "label": "Net investment in associates"
+    },
+    {
+      "key": "dividend_received",
+      "label": "Dividend received"
+    },
+    {
+      "key": "ppe_investment",
+      "label": "Investment in property and equipment"
+    },
+    {
+      "key": "intangible_investment",
+      "label": "Investment in intangible assets"
+    },
+    {
+      "key": "ppe_sale_proceeds",
+      "label": "Proceeds from sale of property and equipment"
+    },
+    {
+      "key": "translation_effect_investing",
+      "label": "Effect of translation of net investment in foreign branches, subsidiaries and associates - net of tax",
+      "label_parts": [
+        "Effect of translation of net investment in foreign branches, subsidiaries",
+        "and associates - net of tax"
+      ]
+    },
+    {
+      "key": "cf_net_investing",
+      "label": "Net cash flows used in investing activities"
+    },
+    {
+      "key": "subordinated_debt_proceeds",
+      "label": "Proceeds from issuance of subordinated debt"
+    },
+    {
+      "key": "subordinated_markup_paid",
+      "label": "Payment of mark-up on subordinated debt"
+    },
+    {
+      "key": "lease_liability_paid",
+      "label": "Payment of lease liability against right-of-use assets"
+    },
+    {
+      "key": "dividend_paid",
+      "label": "Dividend paid"
+    },
+    {
+      "key": "cf_net_financing",
+      "label": "Net cash flows used in financing activities"
+    },
+    {
+      "key": "cf_cash_increase",
+      "label": "Increase / (decrease) in cash and cash equivalents during the year"
+    },
+    {
+      "key": "cf_cash_beginning",
+      "label": "Cash and cash equivalents at the beginning of the year"
+    },
+    {
+      "key": "cf_exchange_effect_cash",
+      "label": "Effect of exchange rate changes on cash and cash equivalents"
+    },
+    {
+      "key": "cf_cash_before_increase",
+      "label": null,
+      "original_label": "(section subtotal, label not printed)",
+      "skip_values": 2
+    },
+    {
+      "key": "cf_cash_end",
+      "label": "Cash and cash equivalents at the end of the year"
+    }
+  ],
+  "statement_type": "cash_flow",
+  "title": "HBL Annual Report 2025",
+  "unit_scale": "thousands"
+}
