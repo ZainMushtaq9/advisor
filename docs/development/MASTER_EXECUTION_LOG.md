@@ -183,3 +183,9 @@
 - Registers consolidated onto phase-07-remainders by parent (this commit):
   PHASE_COMPLETION_REGISTER.md taken from phase-04-sampled-verification and
   extended; PROJECT_EXECUTION_STATE.md and MASTER_EXECUTION_LOG.md likewise.
+
+- 2026-11-05 — LEAP load (branch phase-04-leap-load eb2e331): 61 rows written, idempotency proven, suite 56 passed; registry_evidence 1,001; identifiers 0; statuses unchanged.
+- 2026-11-05 — HBL CY2025 PDF obtained via normal browser visit (6,437,243 bytes, 411 pages, SHA-256 recorded in the Phase 7 HBL report); placed gitignored at storage/financial_reports/HBL_Annual_Report_2025.pdf.
+- 2026-11-05 — HBL extraction COMPLETE (branch phase-07-hbl-extraction 42bd8e2): documents 4, statements 118, line items 2,116, opinions 4; all HBL rows UNVERIFIED; tests 30 passed; idempotency proven.
+- 2026-11-05 — Phases 8–30 completed, each PARTIALLY COMPLETE, each pushed and SHA-verified by parent (tips listed in PROJECT_EXECUTION_STATE.md, consolidation #2). VM replacements #5, #6, #7 recovered with deterministic re-runs; the only honest divergence is RAG benchmark results 6 (r3 only), r1/r2 never re-fabricated.
+- 2026-11-05 — Phase 30 release + handover (branch phase-30-release 6b1ff9f; tag v0.2.0-handover): handover report with six-way separation (IMPLEMENTED / VERIFIED / PARTIALLY VERIFIED / UNAVAILABLE / BLOCKED / PLANNED); backend 453 passed; fresh-clone reproducibility PASS; backup/restore drill VERIFIED; final audit scans 9/9 PASS; API smoke 9/9 200; recomputations 14/14 matched. System verdict: PARTIALLY COMPLETE. Registers consolidated by parent (this commit): consolidation #2.
