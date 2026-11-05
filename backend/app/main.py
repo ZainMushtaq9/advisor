@@ -77,6 +77,12 @@ def create_app() -> FastAPI:
     app.add_middleware(RateLimitMiddleware)
     app.add_middleware(SecurityHeadersMiddleware)
 
+    # Phase 27 correlation IDs: set/echo X-Correlation-ID per
+    # request so any failure is diagnosable from one id.
+    from app.services.observability.logging_config import CorrelationIdMiddleware
+
+    app.add_middleware(CorrelationIdMiddleware)
+
     @app.middleware("http")
     async def request_context(request: Request, call_next):  # type: ignore[no-untyped-def]
         request_id = str(uuid.uuid4())

@@ -121,4 +121,10 @@ export const NAV_ITEMS: NavItem[] = [
     description:
       "Model evaluation, forecast monitoring and research quality benchmarking. Read-only; runs execute through the CLI.",
   },
+  {
+    href: "/admin/observability",
+    label: "Observability",
+    description:
+      "System health, data-quality SLOs, source freshness, exception queue, incident reports, and performance baselines. Read-only; runs execute through the CLI.",
+  },
 ];

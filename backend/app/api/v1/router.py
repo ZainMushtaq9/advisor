@@ -17,6 +17,7 @@ from app.api.v1.endpoints import (
     macro,
     market,
     news,
+    observability,
     orchestration,
     ownership,
     portfolios,
@@ -52,3 +53,4 @@ api_router.include_router(alerts.router)
 api_router.include_router(reports.router)
 api_router.include_router(jobs.router)
 api_router.include_router(evaluation.router)
+api_router.include_router(observability.router)
