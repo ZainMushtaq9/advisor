@@ -53,12 +53,14 @@ SOURCE_KEYS = {
     "HUBC": "hubc_ir_annual_report_2026",
     "NML": "nml_ir_quarterly_2025_q3",
     "OGDC": "ogdc_rns_interim_2025_h1",
+    "HBL": "hbl_ir_annual_report_2025",
 }
 
 TERMS = {
     "HUBC": "Company-published integrated annual report on issuer investor-relations site; sampled only; internal analysis only; no republication.",
     "NML": "Company-published quarterly report on issuer investor-relations site; sampled only; internal analysis only; no republication.",
     "OGDC": "Company-authored filing transmitted via RNS (carrier, not author); sampled only; internal analysis only; no republication.",
+    "HBL": "Company-published annual report on issuer investor-relations site; sampled only; internal analysis only; no republication.",
 }
 
 # Balance-identity component lists per statement map.
@@ -69,6 +71,7 @@ IDENTITY = {
     ),
     "nml_sfp": (["total_equity"], ["total_liabilities"]),
     "ogdc_sfp": (["total_equity"], ["total_liabilities"]),
+    "hbl_sfp": (["total_equity"], ["total_liabilities"]),
 }
 
 SUBTOTALS = {
@@ -340,6 +343,121 @@ SUBTOTALS = {
             "unpaid_dividend",
             "unclaimed_dividend",
         ],
+    },
+    "hbl_sfp": {
+        "total_assets": [
+            "cash_treasury_banks",
+            "balances_other_banks",
+            "lendings_financial_institutions",
+            "investments",
+            "advances",
+            "property_equipment",
+            "right_of_use_assets",
+            "intangible_assets",
+            "deferred_tax_assets",
+            "other_assets",
+        ],
+        "total_liabilities": [
+            "bills_payable",
+            "borrowings",
+            "deposits_other_accounts",
+            "lease_liabilities",
+            "subordinated_debt",
+            "deferred_tax_liabilities",
+            "other_liabilities",
+        ],
+        "equity_attributable": [
+            "share_capital",
+            "reserves",
+            "surplus_revaluation_assets",
+            "unappropriated_profit",
+        ],
+        "total_equity": ["equity_attributable", "non_controlling_interest"],
+    },
+    # NOTE: check_subtotal only sums, so P&L links that need
+    # subtraction (net mark-up, profit chain) are NOT listed here;
+    # they were hand-verified in the run report instead. Only
+    # addition links are checked mechanically.
+    "hbl_pl": {
+        "total_non_markup_income": [
+            "fee_commission_income",
+            "dividend_income",
+            "share_profit_associates",
+            "foreign_exchange_income",
+            "income_derivatives",
+            "gain_securities_net",
+            "other_income",
+        ],
+        "total_non_markup_expenses": [
+            "operating_expenses",
+            "workers_welfare_fund",
+            "other_charges",
+        ],
+        "pat_total": ["pat_equity_holders", "pat_nci"],
+    },
+    "hbl_cf": {
+        "cf_operating_subtotal_1": [
+            "profit_before_taxation",
+            "dividend_income",
+            "share_profit_associates",
+            "markup_subordinated_debt",
+        ],
+        "cf_adjustments_total": [
+            "depreciation",
+            "amortisation",
+            "depreciation_rou",
+            "markup_lease_rou",
+            "reversal_cla_investments",
+            "provisions_cla_loans",
+            "reversal_cla_lendings",
+            "provision_cla_other_assets",
+            "reversal_charge_cla_offbs",
+            "unrealised_fvtpl",
+            "exchange_gain_loss_goodwill",
+            "gain_sale_ppe",
+            "gain_closure_branches",
+            "workers_welfare_fund",
+        ],
+        "cf_operating_subtotal_2": [
+            "cf_operating_subtotal_1",
+            "cf_adjustments_total",
+        ],
+        "cf_operating_assets_total": [
+            "lendings_fi_change",
+            "fvtpl_investment_change",
+            "advances_change",
+            "other_assets_change",
+        ],
+        "cf_operating_liabilities_total": [
+            "bills_payable_change",
+            "borrowings_fi_change",
+            "deposits_change",
+            "other_liabilities_change",
+        ],
+        "cf_operating_before_tax": [
+            "cf_operating_subtotal_2",
+            "cf_operating_assets_total",
+            "cf_operating_liabilities_total",
+        ],
+        "cf_net_operating": ["cf_operating_before_tax", "income_tax_paid"],
+        "cf_net_investing": [
+            "fvcoci_investment_change",
+            "amortised_cost_investment_change",
+            "associates_investment_change",
+            "dividend_received",
+            "ppe_investment",
+            "intangible_investment",
+            "ppe_sale_proceeds",
+            "translation_effect_investing",
+        ],
+        "cf_net_financing": [
+            "subordinated_debt_proceeds",
+            "subordinated_markup_paid",
+            "lease_liability_paid",
+            "dividend_paid",
+        ],
+        "cf_cash_before_increase": ["cf_cash_beginning", "cf_exchange_effect_cash"],
+        "cf_cash_end": ["cf_cash_before_increase", "cf_cash_increase"],
     },
 }
 
