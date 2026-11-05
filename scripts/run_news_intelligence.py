@@ -30,9 +30,16 @@ Usage (DATABASE_URL must be set, e.g. from database/.env):
 The report is JSON on stdout. Nothing is written unless --commit
 is passed, except the read-only commands, which never write.
 Processing uses the deterministic fallback (RULE_BASED) unless
---ollama-model is given AND a local Ollama server answers; a model
-that cannot be reached yields UNPROCESSED/fallback rows, never fake
-LLM output. No paid API is ever called by this script.
+--llm-provider names a configured provider (cloudflare /
+huggingface / ollama) whose credentials are present in the
+environment; a provider that cannot be reached, or whose
+credentials are absent, yields UNPROCESSED/fallback rows, never
+fake LLM output. Only free-tier remote APIs are ever called by
+this script, and only when their keys are set: Cloudflare
+Workers AI (primary, 10,000 Neurons/day free) and the Hugging
+Face Inference Providers router (fallback — its router needs
+credits, so a refused call falls back honestly). No paid API,
+no Gemini, no Groq.
 """
 
 from __future__ import annotations
@@ -68,10 +75,19 @@ def _cmd_process(args) -> int:
             if line:
                 items.append(json.loads(line))
     adapter = None
+    provider = getattr(args, "llm_provider", None) or os.environ.get(
+        "LLM_PROVIDER", "none"
+    )
     if args.ollama_model:
+        # Backwards compatible: an explicit Ollama model selects
+        # the local adapter regardless of --llm-provider.
         from app.services.news_intelligence.llm_adapter import OllamaAdapter
 
         adapter = OllamaAdapter(model=args.ollama_model)
+    elif provider and provider != "none":
+        from app.services.news_intelligence.providers import build_llm_adapter
+
+        adapter = build_llm_adapter({**os.environ, "LLM_PROVIDER": provider})
     session = _session()
     try:
         report = news_runner.run_processing(
@@ -205,6 +221,13 @@ def main(argv: list[str] | None = None) -> int:
         "--ollama-model",
         default=None,
         help="Local Ollama model to try (unreachable -> fallback, never faked).",
+    )
+    p.add_argument(
+        "--llm-provider",
+        default=None,
+        choices=["none", "cloudflare", "huggingface", "ollama"],
+        help="Remote/local LLM provider (default: LLM_PROVIDER env or none; "
+        "missing credentials -> deterministic fallback, never faked).",
     )
     e = sub.add_parser(
         "enforce", help="Record refused runs for policy-blocked sources."

@@ -18,8 +18,13 @@ Adapters:
   model is configured: the pipeline then records the article as
   UNPROCESSED with the exact reason, instead of faking output.
 
-No adapter ever calls a paid API. There is no OpenAI/Gemini/Groq
-code path anywhere in this package, by design.
+No adapter ever calls a paid API. Remote providers live in
+``providers.py`` (Cloudflare Workers AI, primary; Hugging Face
+Inference Providers router, fallback) and are free-tier only;
+there is no Gemini/Groq code path anywhere in this package, by
+decision (2026-11-05). A remote provider that is unconfigured
+or refuses the call raises ``ModelUnavailable`` and the caller
+falls back to ``DeterministicFallback`` below.
 """
 
 from __future__ import annotations

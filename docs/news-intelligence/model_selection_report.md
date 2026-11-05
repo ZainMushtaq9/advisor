@@ -72,3 +72,26 @@ synthetic headlines (83.3%), entity precision 91.7% / recall
 rule-based fallback only. These numbers measure the FALLBACK, not
 any LLM, and the sample size (20) cannot support a production
 accuracy claim.
+
+## Addendum 2026-11-05 — remote providers (branch llm-cloudflare-hf-adapters)
+
+Local Ollama remains UNVERIFIED (hardware unblocker above still
+open). Two remote providers were added in code, free-tier only:
+
+- Cloudflare Workers AI (PRIMARY): chat
+  `@cf/meta/llama-4-scout-17b-16e-instruct`, embeddings
+  `@cf/baai/bge-m3` (1024-dim), 10,000 Neurons/day free.
+  Live use UNVERIFIED — the token does not exist yet (user must
+  complete the Cloudflare two-factor step first).
+- Hugging Face Inference Providers router (FALLBACK): chat
+  `openai/gpt-oss-120b` (alternate `Qwen/Qwen3-8B`). Live-tested
+  once 2026-11-05 against a seeded event: REFUSED with HTTP 403
+  ("This authentication method does not have sufficient
+  permissions to call Inference Providers on behalf of user
+  zainmushtaq54") — the stored token lacks the permission, so HF
+  is not a working fallback with the current token. Details in
+  `llm_providers.md`.
+
+Gemini and Groq are not wired (user decision, 2026-11-05). The
+deterministic RULE_BASED fallback remains the operating path
+until a provider is configured and a live call is measured.

@@ -34,6 +34,10 @@ REPORTABLE_SETTINGS = (
     "DATABASE_URL",
     "CORS_ORIGINS",
     "AUTH_ENFORCEMENT",
+    "LLM_PROVIDER",
+    "CLOUDFLARE_API_TOKEN",
+    "CLOUDFLARE_ACCOUNT_ID",
+    "HF_API_TOKEN",
 )
 
 # Defaults that apply when the corresponding env var is absent. These are
@@ -74,6 +78,18 @@ class Settings(BaseSettings):
     AUTH_RATE_LIMIT_AUTH_PER_MINUTE: int = 30
     AUTH_MAX_FAILED_LOGINS: int = 5
     AUTH_LOCKOUT_MINUTES: int = 15
+    # News-intelligence LLM providers (see
+    # app/services/news_intelligence/providers.py). "none" is the
+    # default: the deterministic RULE_BASED fallback runs and no
+    # remote call is made. Token fields are optional and are
+    # reported by name only (never values) via config_status.
+    # Cloudflare is the primary provider; Hugging Face is the
+    # fallback (its router needs credits — verified 2026-11-05).
+    # Gemini and Groq are not wired (user decision, 2026-11-05).
+    LLM_PROVIDER: Literal["none", "cloudflare", "huggingface", "ollama"] = "none"
+    CLOUDFLARE_API_TOKEN: str | None = None
+    CLOUDFLARE_ACCOUNT_ID: str | None = None
+    HF_API_TOKEN: str | None = None
 
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod
@@ -93,6 +109,16 @@ class Settings(BaseSettings):
     @field_validator("DATABASE_URL")
     @classmethod
     def _reject_blank_database_url(cls, value: str | None) -> str | None:
+        if value is not None and not value.strip():
+            return None
+        return value
+
+    @field_validator(
+        "CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ACCOUNT_ID", "HF_API_TOKEN"
+    )
+    @classmethod
+    def _reject_blank_provider_tokens(cls, value: str | None) -> str | None:
+        # A blank token counts as unset, not as a configured provider.
         if value is not None and not value.strip():
             return None
         return value

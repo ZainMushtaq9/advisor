@@ -372,3 +372,19 @@ def search_chunks(
         if len(deduped) >= top_k:
             break
     return deduped
+
+
+def embed_texts(texts: list[str], provider=None) -> list[list[float]] | None:
+    """Compute embeddings with a configured provider, else None.
+
+    Vector search itself stays unimplemented (see services/rag
+    __init__): this only computes vectors when a provider is
+    configured, e.g. the Cloudflare bge-m3 provider from
+    news_intelligence.providers.build_embedding_provider().
+    Returns None when ``provider`` is None, so callers keep the
+    deterministic full-text path and never claim a vector score
+    they do not have.
+    """
+    if provider is None:
+        return None
+    return provider.embed(texts)

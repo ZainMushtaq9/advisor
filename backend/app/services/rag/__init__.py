@@ -73,10 +73,15 @@ RETRIEVAL_METHODS: dict[str, dict] = {
         "version": "rag-v1",
         "implemented": False,
         "description": (
-            "NOT IMPLEMENTED: no local embedding model has been "
-            "verified on this host, so no embedding is computed "
-            "or stored. Unblocker: a verified local/open-weight "
-            "embedding model plus licence and quality checks."
+            "NOT IMPLEMENTED: no embedding provider is configured "
+            "or verified on this host, so no embedding is computed "
+            "or stored. A Cloudflare Workers AI bge-m3 provider "
+            "exists in code (news_intelligence.providers, "
+            "embed_texts in services/rag/retrieval.py returns None "
+            "without it) but its token does not exist yet and no "
+            "live embedding call has been measured (2026-11-05). "
+            "Unblocker: configure the token, measure a call, and "
+            "pass licence and quality checks."
         ),
     },
 }
