@@ -427,19 +427,26 @@ def check_report_figure_census(session):
     )
     return {
         "check_key": "report_figure_census",
-        "claimed_value": "541 = 335 computed + 199 insufficient_inputs + 7 "
-        "not_applicable (Phase 22 report)",
+        "claimed_value": "649 = 389 computed + 244 insufficient_inputs + 16 "
+        "not_applicable (approved census after the 2026-11-05 clean "
+        "re-derivation; the Phase 22 claim 541 = 335/199/7 was "
+        "superseded when the HBL re-run batch added 3 reports, "
+        "+108 figures)",
         "recomputed_value": recomputed,
-        "matches": total == 541
-        and by_status.get("computed") == 335
-        and by_status.get("insufficient_inputs") == 199
-        and by_status.get("not_applicable") == 7,
+        "matches": total == 649
+        and by_status.get("computed") == 389
+        and by_status.get("insufficient_inputs") == 244
+        and by_status.get("not_applicable") == 16,
         "tolerance": "exact counts",
         "method": "report_figures grouped by computation_status, counted "
-        "directly. EXPECTED MISMATCH (defect D-05): the live census "
-        "is 334/200/7 — one figure (event_brief news:HUBC:earning, "
-        "event_date) is stale from the recovery #6 intermediate news "
-        "state, while its committed Markdown export shows computed.",
+        "directly. History: a recovery #6 intermediate state once "
+        "left one figure (event_brief news:HUBC:earning, event_date) "
+        "stale; recovery #7's news-first re-derivation resolved it, "
+        "and the 2026-11-05 clean re-derivation confirmed it (report "
+        "14 deleted and recreated as report 26 from current news "
+        "data, with identical figures and identical md/html export "
+        "hashes). The census claim moved from 541 to 649 only "
+        "because the HBL batch genuinely added 3 reports.",
     }
 
 
@@ -463,12 +470,11 @@ def check_decision_completeness(session):
         "recomputed_value": "; ".join(parts),
         "matches": hubc is not None and hubc[1] == 6 and ogdc is not None and ogdc[1] == 6,
         "tolerance": "exact",
-        "method": "decisions.scored_dimensions read directly. EXPECTED "
-        "MISMATCH (defect D-05): the live rows are 5/7 for HUBC and "
-        "OGDC — the decision engine ran during recovery #6 before "
-        "the corrected news links landed, so their news dimension "
-        "is ABSENT instead of neutral 0. Totals, conclusions, "
-        "confidence, and user-facing values are unaffected.",
+        "method": "decisions.scored_dimensions read directly. History: a "
+        "recovery #6 intermediate state once showed 5/7 for HUBC "
+        "and OGDC; recovery #7's news-first re-derivation restored "
+        "6/7, confirmed by the 2026-11-05 re-derivation (decisions "
+        "re-run: 0 written, 4 skipped on the 2026-11-04 grain).",
     }
 
 
@@ -478,17 +484,23 @@ def check_drift_vs_phase24_baseline(session):
     line_items = _one(session, "SELECT COUNT(*) FROM financial_statement_line_items") or 0
     return {
         "check_key": "drift_vs_phase24_baseline",
-        "claimed_value": "Phase 24 baseline: documents 3, statements 88, "
-        "line items 1,316 (Phase 26 drift check: 0 differences)",
+        "claimed_value": "Approved baseline after the HBL drift finding: "
+        "documents 4, statements 118, line items 2,116 (baseline "
+        "updated 2026-11-05 per the Phase 25 rule; the Phase 24 "
+        "baseline was documents 3, statements 88, line items 1,316)",
         "recomputed_value": f"documents {documents}, statements {statements}, "
         f"line items {line_items}",
-        "matches": documents == 3 and statements == 88 and line_items == 1316,
+        "matches": documents == 4 and statements == 118 and line_items == 2116,
         "tolerance": "exact counts",
-        "method": "Live counts compared with the Phase 24 baseline. "
-        "EXPECTED DIFFERENCE, not a failure: +1 document, +30 "
-        "statements, +800 line items is exactly the HBL extraction. "
-        "The drift SLO is working as designed; the baseline update "
-        "must be recorded with this evidence per the Phase 25 rule.",
+        "method": "Live counts compared with the approved baseline. "
+        "History: the Phase 24 baseline (3/88/1,316) drifted by "
+        "exactly the HBL extraction (+1 document, +30 statements, "
+        "+800 line items), recorded as drift 17 in jobs run 72 and "
+        "the observability finding run, then confirmed at drift 0 "
+        "(jobs run 73, observability confirm run) after the "
+        "baseline update. The check key is kept stable for run "
+        "history; it now fails only on NEW drift vs the approved "
+        "baseline.",
     }
 
 

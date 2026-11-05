@@ -21,31 +21,34 @@ test("acceptance page shows run, verdict and counts", async ({ page }) => {
   await expect(
     page.getByText("phase29-acceptance-2026-11-05").first(),
   ).toBeVisible();
-  // Verdict is PARTIALLY COMPLETE: the HBL chain is blocked and
-  // human sign-off is pending — neither is hidden.
+  // Verdict is PARTIALLY COMPLETE: human sign-off is pending —
+  // shown, not hidden. (The HBL chain is no longer blocked: the
+  // batch flipped G1 to MET and the blocker run resolved D-05.)
   await expect(page.getByText("PARTIALLY COMPLETE").first()).toBeVisible();
-  // Scenario counts: 15 total, 12 pass, 0 fail, 1 blocked,
-  // 2 not evaluable.
+  // Scenario counts (blocker run): 14 total, 12 pass, 0 fail,
+  // 0 blocked, 2 not evaluable.
   await expect(page.getByText("12 pass").first()).toBeVisible();
   await expect(page.getByText("0 fail").first()).toBeVisible();
-  // Recomputation counts: 14 matched, 1 mismatched (the expected
-  // HBL drift vs the Phase 24 baseline).
-  await expect(page.getByText("14 matched").first()).toBeVisible();
-  await expect(page.getByText("1 mismatched").first()).toBeVisible();
+  // Recomputation counts (blocker run): 15 matched, 0 mismatched.
+  // The former 14/1 split (expected HBL drift vs the Phase 24
+  // baseline) was resolved 2026-11-05 by the D-05/drift baseline
+  // updates — a mismatched count now means a real regression.
+  await expect(page.getByText("15 matched").first()).toBeVisible();
+  await expect(page.getByText("0 mismatched").first()).toBeVisible();
 });
 
-test("scenario table shows HBL blocked and no failures", async ({
+test("scenario table shows HBL full chain passing and no failures", async ({
   page,
 }) => {
   await page.goto("/admin/acceptance");
   await expect(
     page.getByRole("heading", { name: "Acceptance", exact: true }),
   ).toBeVisible();
-  // The HBL chain is blocked at statements, pending the
-  // post-Phase-30 re-runs — shown, not hidden.
-  await expect(page.getByText("chain_hbl_partial").first()).toBeVisible();
-  await expect(page.getByText("blocked", { exact: true }).first()).toBeVisible();
-  // The three full chains pass.
+  // The HBL chain is a full passing chain since the batch (G1 MET);
+  // the retired chain_hbl_partial key must not reappear.
+  await expect(page.getByText("chain_hbl_full").first()).toBeVisible();
+  await expect(page.getByText("0 blocked").first()).toBeVisible();
+  // The three other full chains pass.
   await expect(page.getByText("chain_hubc_full").first()).toBeVisible();
   await expect(page.getByText("chain_ogdc_full").first()).toBeVisible();
   await expect(page.getByText("chain_nml_full").first()).toBeVisible();

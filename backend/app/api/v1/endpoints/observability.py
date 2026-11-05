@@ -48,7 +48,20 @@ from app.models.observability import (
 
 router = APIRouter(tags=["observability"])
 
-EXPECTED_MIGRATION_HEAD = "20261104_0023"
+# Current LIVE migration head. History: the endpoint hardcoded
+# "20261104_0023" (a Phase 27 artifact) and therefore reported
+# migration_matches False / ready False against the branch chain
+# head 20261104_0024. The blocker-resolution run first retargeted
+# it to 0024, then the live head moved to 20261104_0025 when the
+# news-intelligence coordinator applied migration 0025 (9 news
+# tables) to the live database as gated Phase B work. The constant
+# tracks the LIVE head, not this branch's migration chain head
+# (0024): this branch does not carry the 0025 migration file, so a
+# checkout of this branch alone would truthfully report not-ready
+# until the news migration is merged into its chain. If a future
+# migration lands, update this constant AND the regression tests
+# together, never one alone.
+EXPECTED_MIGRATION_HEAD = "20261104_0025"
 
 
 def _session(request: Request):

@@ -65,8 +65,25 @@ def _add(session: Session, commit: bool, obj: object, counters: dict, key: str) 
     counters[key] += 1
 
 
-def run_risk(session: Session, commit: bool = False, company_filter: str | None = None) -> dict:
-    """Build the Phase 14 risk register. Returns a JSON-able report."""
+def run_risk(
+    session: Session,
+    commit: bool = False,
+    company_filter: str | None = None,
+    model_as_of: date | None = None,
+) -> dict:
+    """Build the Phase 14 risk register. Returns a JSON-able report.
+
+    ``model_as_of`` overrides the as-of date of the model-risk section
+    only (forecast_abstention_rate, technical_coverage_rate,
+    input_drift). It exists because MARKET model rows are keyed by
+    (metric_key, scope_key, as_of_date) and the runner skips existing
+    grains: without it, a model row's evidence could never be
+    refreshed after its inputs changed (the pre-HBL abstention row
+    kept citing 120/120 assessments after the count moved to 156).
+    A new as-of writes a NEW versioned row and preserves the old
+    one; it never overwrites stored history. Default keeps
+    ANALYSIS_D (2026-11-04) for backward compatibility.
+    """
     counters = {
         "definitions_written": 0,
         "definitions_skipped": 0,
@@ -388,6 +405,11 @@ def run_risk(session: Session, commit: bool = False, company_filter: str | None 
         )
 
     # --- 2f. Model risk -------------------------------------------------------
+    # Versioned by as-of date (see run_risk docstring): a new as-of
+    # writes fresh rows and preserves prior vintages; the default
+    # keeps ANALYSIS_D so existing behavior is unchanged.
+    model_d = model_as_of or ANALYSIS_D
+    model_d_str = model_d.isoformat()
     assessments = session.query(ForecastAssessment).all()
     n_assess = len(assessments)
     n_insuff = sum(1 for a in assessments if a.computation_status == "insufficient_inputs")
@@ -401,8 +423,8 @@ def run_risk(session: Session, commit: bool = False, company_filter: str | None 
             f"Phase 13 abstained on {n_insuff}/{n_assess} assessments: "
             "no series meets any method's interval minimum.",
             {"assessments": n_assess, "insufficient": n_insuff},
-            as_of=ANALYSIS_D,
-            as_of_str=ANALYSIS_DATE,
+            as_of=model_d,
+            as_of_str=model_d_str,
         )
     tech_values = session.execute(text("SELECT COUNT(*) FROM technical_indicator_values")).scalar()
     value_row(
@@ -414,8 +436,8 @@ def run_risk(session: Session, commit: bool = False, company_filter: str | None 
         "Phase 6 calculable indicator values / 470 assessed securities "
         "(0 values on one trading date).",
         {"values": tech_values or 0, "assessed": 470},
-        as_of=ANALYSIS_D,
-        as_of_str=ANALYSIS_DATE,
+        as_of=model_d,
+        as_of_str=model_d_str,
     )
     value_row(
         "input_drift",
@@ -426,8 +448,8 @@ def run_risk(session: Session, commit: bool = False, company_filter: str | None 
         "Only one feature vintage exists (as of 2026-11-03/04); drift "
         "needs two vintages to compare.",
         {"vintages_available": 1},
-        as_of=ANALYSIS_D,
-        as_of_str=ANALYSIS_DATE,
+        as_of=model_d,
+        as_of_str=model_d_str,
     )
 
     # --- 3. Risk flags ---------------------------------------------------------
