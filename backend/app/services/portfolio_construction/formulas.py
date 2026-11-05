@@ -148,21 +148,29 @@ def check_caps(
     }
 
 
-def mean_variance_gate(computed_forecasts: int, return_observations: int) -> tuple[str, list[str]]:
+def mean_variance_gate(
+    computed_forecasts: int, return_observations: int, assessments_total: int | None = None
+) -> tuple[str, list[str]]:
     """Mean-variance constructability gate (pure predicate).
 
     Returns ("CONSTRUCTIBLE", []) only when validated expected
     returns exist AND a covariance matrix can be estimated.
     Otherwise ("NOT_CALCULABLE", reasons). In this run both fail:
-    0 computed forecasts (Phase 13 abstained on all 120
-    assessments) and 0 return observations (1 price date).
+    0 computed forecasts (Phase 13 abstained on every assessment)
+    and 0 return observations (1 price date). The assessment total
+    is passed in by the caller (live count), never hardcoded: the
+    pre-batch total was 120 and the HBL re-run batch raised it.
     """
     reasons: list[str] = []
     if computed_forecasts <= 0:
+        total_note = (
+            f"all {assessments_total} assessments insufficient_inputs"
+            if assessments_total is not None
+            else "all assessments insufficient_inputs"
+        )
         reasons.append(
             "no validated expected returns: Phase 13 computed 0 "
-            "forecasts (all 120 assessments insufficient_inputs, "
-            "live forecasting abstained)"
+            f"forecasts ({total_note}, live forecasting abstained)"
         )
     if return_observations < 2:
         reasons.append(

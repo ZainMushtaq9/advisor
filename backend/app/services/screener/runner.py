@@ -79,7 +79,7 @@ def _outcome_to_json(outcome: dict) -> dict:
     }
 
 
-def load_universe(session: Session, universe: str) -> list[dict]:
+def load_universe(session: Session, universe: str, as_of: date = AS_OF) -> list[dict]:
     """Build one security dict per universe member from stored
     rows only. "priced" = all 470 registry securities;
     "decision_companies" = the 4 securities with a Phase 15
@@ -219,7 +219,7 @@ def load_universe(session: Session, universe: str) -> list[dict]:
                 "dividend_amount_note": dividend["note"] if dividend else None,
                 "news_event_count": news_counts.get(security.company_id, 0),
                 "risk_flag_count": flag_counts.get(security.company_id, 0),
-                "statement_age_days": ((AS_OF - period_end).days if period_end else None),
+                "statement_age_days": ((as_of - period_end).days if period_end else None),
                 "statement_period_end": str(period_end) if period_end else None,
                 "decision": decisions.get(security.id),
             }
@@ -255,7 +255,7 @@ def _peer_values(filter_key: str, universe_rows: list[dict]) -> list:
     return values
 
 
-def evaluate_screen(screen: dict, universe_rows: list[dict]) -> list[dict]:
+def evaluate_screen(screen: dict, universe_rows: list[dict], as_of_date: str = SCREEN_AS_OF) -> list[dict]:
     """Evaluate one seed screen over loaded universe rows.
 
     Returns one result dict per universe member, each with
@@ -287,7 +287,7 @@ def evaluate_screen(screen: dict, universe_rows: list[dict]) -> list[dict]:
             "screen": screen["name"],
             "version": screen["version"],
             "score_version": "screener-score-v1",
-            "as_of_date": SCREEN_AS_OF,
+            "as_of_date": as_of_date,
             "price_date": PRICE_DATE,
             "sector": row.get("sector"),
             "decision_context": row.get("decision"),
@@ -350,9 +350,18 @@ def seed_definitions(session: Session, commit: bool) -> dict:
     return {"seen": seen, "written": written, "to_write": to_write}
 
 
-def run_screen(session: Session, screen: dict, commit: bool) -> dict:
+def run_screen(session: Session, screen: dict, commit: bool, as_of: date | None = None) -> dict:
     """Run one seed screen. Returns the run summary with
-    per-ticker outcomes. Idempotent on (definition, as-of)."""
+    per-ticker outcomes. Idempotent on (definition, as-of).
+    as_of defaults to SCREEN_AS_OF (2026-11-04). A later as-of
+    creates a NEW run snapshot instead of overwriting: the HBL
+    re-run batch re-runs only dividend_payers at 2026-11-05,
+    the one screen whose HBL outcome changed (NO_MATCH ->
+    MATCH on its newly stored dividend actions); the other
+    screens' stored HBL outcomes are unchanged and their
+    2026-11-04 runs stand."""
+    as_of = as_of or AS_OF
+    as_of_str = as_of.isoformat()
     definition = (
         session.query(ScreenDefinition)
         .filter(
@@ -367,14 +376,14 @@ def run_screen(session: Session, screen: dict, commit: bool) -> dict:
         # Dry-run before the first commit: evaluate fresh
         # without a stored definition row. Nothing is written
         # and no run row is fabricated.
-        universe_rows = load_universe(session, screen["universe"])
-        results = evaluate_screen(screen, universe_rows)
+        universe_rows = load_universe(session, screen["universe"], as_of)
+        results = evaluate_screen(screen, universe_rows, as_of_str)
         matched = sum(1 for r in results if r["outcome"] == "MATCH")
         insufficient = sum(1 for r in results if r["outcome"] == "INSUFFICIENT_DATA")
         return {
             "screen": screen["name"],
             "version": screen["version"],
-            "as_of_date": SCREEN_AS_OF,
+            "as_of_date": as_of_str,
             "run_reused": False,
             "written": 0,
             "would_write": len(results),
@@ -391,7 +400,7 @@ def run_screen(session: Session, screen: dict, commit: bool) -> dict:
         session.query(ScreenRun)
         .filter(
             ScreenRun.screen_definition_id == definition.id,
-            ScreenRun.as_of_date == AS_OF,
+            ScreenRun.as_of_date == as_of,
         )
         .first()
     )
@@ -402,7 +411,7 @@ def run_screen(session: Session, screen: dict, commit: bool) -> dict:
         return {
             "screen": screen["name"],
             "version": screen["version"],
-            "as_of_date": SCREEN_AS_OF,
+            "as_of_date": as_of_str,
             "run_reused": True,
             "written": 0,
             "universe_size": existing_run.universe_size,
@@ -410,15 +419,15 @@ def run_screen(session: Session, screen: dict, commit: bool) -> dict:
             "insufficient_count": existing_run.insufficient_count,
             "results": len(stored),
         }
-    universe_rows = load_universe(session, screen["universe"])
-    results = evaluate_screen(screen, universe_rows)
+    universe_rows = load_universe(session, screen["universe"], as_of)
+    results = evaluate_screen(screen, universe_rows, as_of_str)
     matched = sum(1 for r in results if r["outcome"] == "MATCH")
     insufficient = sum(1 for r in results if r["outcome"] == "INSUFFICIENT_DATA")
     written = 0
     if commit:
         run = ScreenRun(
             screen_definition_id=definition.id,
-            as_of_date=AS_OF,
+            as_of_date=as_of,
             universe_size=len(results),
             matched_count=matched,
             insufficient_count=insufficient,
@@ -451,9 +460,10 @@ def run_screen(session: Session, screen: dict, commit: bool) -> dict:
     return {
         "screen": screen["name"],
         "version": screen["version"],
-        "as_of_date": SCREEN_AS_OF,
+        "as_of_date": as_of_str,
         "run_reused": False,
         "written": written,
+        "would_write": 0 if commit else len(results),
         "universe_size": len(results),
         "matched_count": matched,
         "insufficient_count": insufficient,
@@ -464,10 +474,10 @@ def run_screen(session: Session, screen: dict, commit: bool) -> dict:
     }
 
 
-def run_all(session: Session, commit: bool) -> dict:
+def run_all(session: Session, commit: bool, as_of: date | None = None) -> dict:
     """Seed definitions, then run every seed screen."""
     seeded = seed_definitions(session, commit=commit)
     runs = []
     for screen in SEED_SCREENS:
-        runs.append(run_screen(session, screen, commit=commit))
+        runs.append(run_screen(session, screen, commit=commit, as_of=as_of))
     return {"seeded": seeded, "runs": runs}

@@ -275,11 +275,13 @@ def _no_severe_defects() -> list:
 
 
 def test_gate_g1_not_met_when_hbl_blocked() -> None:
+    # HBL re-run batch: the chain key is chain_hbl_full now;
+    # the gate still reports not_met for a blocked chain.
     scenarios = [
         _scenario_row("chain_hubc_full", "pass"),
         _scenario_row("chain_ogdc_full", "pass"),
         _scenario_row("chain_nml_full", "pass"),
-        _scenario_row("chain_hbl_partial", "blocked"),
+        _scenario_row("chain_hbl_full", "blocked"),
         _scenario_row("point_in_time", "pass"),
         _scenario_row("model_failure", "pass"),
     ]
@@ -317,7 +319,7 @@ def test_verdict_partially_complete() -> None:
         "g4_repo_clean": {"result": "met", "evidence": ""},
         "g5_auditor_signoff": {"result": "partial", "evidence": ""},
     }
-    scenarios = [_scenario_row("chain_hbl_partial", "blocked")]
+    scenarios = [_scenario_row("chain_hbl_full", "blocked")]
     assert gate_lib.decide_verdict(gate, scenarios) == "PARTIALLY COMPLETE"
 
 
@@ -368,7 +370,8 @@ def test_runner_dry_run_writes_nothing(acc_session) -> None:  # type: ignore[no-
 def test_runner_commit_and_idempotency(acc_session) -> None:  # type: ignore[no-untyped-def]
     report = acc_runner.accept(acc_session, run_id="test-run", commit=True)
     assert report["committed"] is True
-    assert report["scenarios_created"] == 15
+    # HBL re-run batch: 14 scenarios (missing_source retired).
+    assert report["scenarios_created"] == 14
     assert report["recomputations_created"] == 15
     assert report["defects_created"] == 14
     second = acc_runner.accept(acc_session, run_id="test-run", commit=True)

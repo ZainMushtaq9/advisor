@@ -194,6 +194,43 @@ def test_nml_assessment_two_independent_pe_blocks():
     assert by_key["asset_based:equity_book_value_total"]["value"] == D("159920849000")
 
 
+def test_hbl_bank_model_set():
+    """HBL: trailing P/E and book values compute; industrial EV/DCF
+    are not_applicable by banking structure; the bank residual-income
+    model applies but stays insufficient without source-backed
+    assumptions (no invented cost of equity or forecasts)."""
+    inputs = _base_inputs(
+        ticker="HBL",
+        sector="COMMERCIAL BANKS",
+        period_end=date(2025, 12, 31),
+        bs_date=date(2025, 12, 31),
+        price=D("286.16"),
+        eps=D("45.48"),
+        eps_period_label="FY2025 annual (audited, consolidated)",
+        publication_date=date(2026, 3, 3),
+        total_equity=D("488614705000"),
+        owners_equity=D("486943716000"),
+    )
+    out = _by_key(coverage.assess("HBL", inputs))
+    assert len(out) == 17
+    # Method order preserved (pe, pb, ps, ev_ebitda, ev_ebit, ...).
+    assert list(out.keys())[3] == "multiples:ev_ebitda"
+    assert list(out.keys())[4] == "multiples:ev_ebit"
+    assert out["multiples:pe_trailing"]["status"] == "computed"
+    assert _close(out["multiples:pe_trailing"]["value"], "6.291996")
+    assert out["asset_based:equity_book_value_total"]["status"] == "computed"
+    assert out["asset_based:equity_book_value_total"]["value"] == D("488614705000")
+    assert out["asset_based:equity_book_value_owners"]["status"] == "computed"
+    assert out["asset_based:equity_book_value_owners"]["value"] == D("486943716000")
+    assert out["multiples:ev_ebitda"]["status"] == "not_applicable"
+    assert out["multiples:ev_ebit"]["status"] == "not_applicable"
+    assert out["dcf:fcff"]["status"] == "not_applicable"
+    assert out["dcf:fcfe"]["status"] == "not_applicable"
+    assert out["residual_income:bank"]["status"] == "insufficient_inputs"
+    assert out["multiples:pb"]["status"] == "insufficient_inputs"
+    assert out["multiples:peer_median_pe"]["status"] == "insufficient_inputs"
+
+
 def test_look_ahead_publication_rejected():
     by_key = _by_key(
         coverage.assess("HUBC",

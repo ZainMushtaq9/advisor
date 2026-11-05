@@ -23,7 +23,7 @@ from sqlalchemy.orm import Session
 from app.models.analysis import EconomicIndicator, SectorMetricProfile
 from app.models.governance import DataSource
 from app.models.macro import CompanyMacroExposure, MacroEvent, MacroRegime
-from app.models.reference import Security
+from app.models.reference import Sector, Security
 from app.services.macro_analysis import (
     EVENTS,
     EXPOSURES,
@@ -117,7 +117,8 @@ def run_macro(session: Session, commit: bool) -> dict:
         "indicators_registered": len(INDICATORS),
         "verified_observations": 0,
         "unverified_observations": 0,
-        "pending_companies": ["HBL"],
+        "pending_companies": [],
+        "profiles_sector_unresolved": 0,
         "not_stored": [
             "cpi_yoy_oct2026",
             "kibor_yields",
@@ -224,10 +225,19 @@ def run_macro(session: Session, commit: bool) -> dict:
         report["exposures_written"] += 1
 
     for prof in SECTOR_PROFILES:
+        # Sector ids are surrogate and shift across fresh imports, so
+        # the profile's sector NAME is resolved to the live id here
+        # (D-04 fix); an unresolvable name is recorded, never guessed.
+        sector = (
+            session.query(Sector).filter_by(name=prof["sector_name"]).one_or_none()
+        )
+        if sector is None:
+            report["profiles_sector_unresolved"] += 1
+            continue
         existing = (
             session.query(SectorMetricProfile)
             .filter_by(
-                sector_id=prof["sector_id"],
+                sector_id=sector.id,
                 metric_key=prof["metric_key"],
             )
             .one_or_none()
@@ -238,7 +248,7 @@ def run_macro(session: Session, commit: bool) -> dict:
         if commit:
             session.add(
                 SectorMetricProfile(
-                    sector_id=prof["sector_id"],
+                    sector_id=sector.id,
                     metric_key=prof["metric_key"],
                     applicability=prof["applicability"],
                     source_requirements=prof["source_requirements"],

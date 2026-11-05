@@ -16,7 +16,10 @@ test("home shows live registry figures and full navigation", async ({ page }) =>
   await expect(page.getByText("Foundation shell")).toHaveCount(0);
   // Primary navigation covers the Phase 23 IA.
   for (const label of ["Dashboard", "Companies", "Market", "Securities", "News", "Fundamentals", "Valuation", "Macro", "Technical", "Forecasts", "Risk", "Portfolio", "Screener", "Alerts", "Reports", "Research", "Admin"]) {
-    await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: label })).toBeVisible();
+    // exact name match: later phases added /admin/evaluation to the
+    // nav, and a substring match for "Valuation" resolves to both
+    // /valuation and /admin/evaluation (strict-mode violation).
+    await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: label, exact: true })).toBeVisible();
   }
   // Skip link exists for keyboard users.
   await expect(page.getByRole("link", { name: "Skip to main content" })).toBeAttached();
@@ -37,10 +40,18 @@ test("companies search finds HUBC and detail fundamentals assess", async ({ page
   await expect(page.getByText("0.4174", { exact: false }).first()).toBeVisible();
 });
 
-test("HBL detail honestly reports pending on fundamentals", async ({ page }) => {
+test("HBL detail shows computed bank-adapted fundamentals", async ({ page }) => {
+  // HBL re-run batch: HBL fundamentals are no longer pending (36
+  // bank-adapted metric rows, 20 computed). Gross margin stays
+  // insufficient for a bank (no cost-of-goods analogue) while the
+  // bank operating margin computes; the old "pending" premise
+  // retired with the batch.
   await page.goto("/companies/HBL");
   await page.getByRole("tab", { name: "Fundamentals" }).click();
-  await expect(page.getByText(/Status: pending/)).toBeVisible();
+  await expect(page.getByRole("cell", { name: "operating_margin", exact: true })).toBeVisible();
+  // fmtNum renders the stored decimal verbatim (0.4353668…), so the
+  // assertion uses the substring prefix, as the HUBC test does.
+  await expect(page.getByText("0.4353", { exact: false }).first()).toBeVisible();
 });
 
 test("market prices render and ticker search narrows to one row", async ({ page }) => {

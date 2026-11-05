@@ -277,6 +277,38 @@ def test_snippet_window_centres_on_matched_token():
     assert snippet.startswith("…")
 
 
+def test_extract_pages_strips_nul_bytes(tmp_path):
+    # HBL re-run batch: the HBL report's text layer carries NUL
+    # bytes (found on p.93); PostgreSQL text columns reject NUL,
+    # so unstripped chunks abort the whole index commit.
+    import fitz
+
+    pdf_path = tmp_path / "nul.pdf"
+    doc = fitz.open()
+    page = doc.new_page()
+    page.insert_text((72, 72), "ab\x00cd")
+    doc.save(str(pdf_path))
+    doc.close()
+    rows = index_document_pages(str(pdf_path), "HBL")
+    assert rows
+    assert all("\x00" not in r["text"] for r in rows)
+    assert "abcd" in rows[0]["text"]
+
+
+def test_hbl_seed_and_case_keys():
+    from app.services.rag import BENCHMARK_CASES, FACE_PAGES, SEED_DOCUMENTS
+
+    hbl_seeds = [s for s in SEED_DOCUMENTS if s["ticker"] == "HBL"]
+    assert len(hbl_seeds) == 1
+    assert hbl_seeds[0]["page_count"] == 411
+    assert FACE_PAGES["HBL"][76] == "profit_and_loss"
+    keys = [c["case_key"] for c in BENCHMARK_CASES]
+    assert "hbl_profit_cy2025" in keys
+    # The missing-data premise retired when HBL was indexed.
+    assert "hbl_missing_document" not in keys
+    assert len(BENCHMARK_CASES) == 6
+
+
 def test_face_pages_stay_whole_body_pages_split(tmp_path):
     import fitz
 

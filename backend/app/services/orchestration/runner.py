@@ -6,10 +6,15 @@ idempotently (a second --commit writes 0 new rows: the run is
 reused by graph_name, tasks by idempotency_key, evaluations by
 (run_id, case_name)).
 
-Production truth the runner derives live from the database:
+Production truth the runner derives live from the database
+(never assumed; these docstring figures are the batch-time
+values and move as phases land):
 - Statement companies: distinct companies with stored statements
-  (3: HUBC, NML, OGDC).
-- Statements: 88. Fundamental value rows: 108.
+  (4 after the HBL re-run batch: HUBC, NML, OGDC, HBL).
+- Statements: 118. Fundamental value rows: 144.
+- The hbl_ticker_resolution task (added by the HBL re-run
+  batch) resolves HBL by ticker and records its stored evidence;
+  the six original demo tasks are reused unchanged on re-run.
 - Stored HUBC close on 2026-11-03 is read before the injection
   probe and re-read after it; the deterministic-authority gate
   passes only if the row is unchanged.
@@ -39,6 +44,7 @@ from datetime import date
 
 from sqlalchemy.orm import Session
 
+from app.models.decision import Decision
 from app.models.financial import FinancialStatement, FundamentalMetricValue
 from app.models.market import MarketPrice
 from app.models.orchestration import (
@@ -96,6 +102,48 @@ def _live_counts(session: Session) -> dict:
         "statement_companies": statement_companies,
         "statements": statements,
         "fundamental_values": fundamental_values,
+    }
+
+
+def _hbl_evidence(session: Session) -> dict:
+    """HBL stored evidence resolved by ticker, never by hardcoded id."""
+    security = session.query(Security).filter(Security.ticker == "HBL").one_or_none()
+    if security is None:
+        return {"resolved": False}
+    statements = (
+        session.query(FinancialStatement)
+        .filter(FinancialStatement.company_id == security.company_id)
+        .count()
+    )
+    values = (
+        session.query(FundamentalMetricValue)
+        .filter(FundamentalMetricValue.company_id == security.company_id)
+        .count()
+    )
+    decision = (
+        session.query(Decision)
+        .filter(Decision.company_id == security.company_id)
+        .order_by(Decision.decision_date.desc())
+        .first()
+    )
+    close = _stored_close(session, "HBL")
+    return {
+        "resolved": True,
+        "company_id": security.company_id,
+        "close_2026_11_03": close,
+        "statements": statements,
+        "fundamental_values": values,
+        "latest_decision": (
+            {
+                "decision_date": str(decision.decision_date),
+                "screening": decision.screening_outcome,
+                "conclusion": decision.research_conclusion,
+                "user_facing": decision.user_facing,
+                "confidence": decision.confidence,
+            }
+            if decision is not None
+            else None
+        ),
     }
 
 
@@ -190,6 +238,14 @@ def run_orchestration(session: Session, commit: bool) -> dict:
                 summary = f"{counts['statements']} stored financial statements."
             elif key == "fundamentals_summary":
                 summary = f"{counts['fundamental_values']} stored fundamental value rows."
+            elif key == "hbl_ticker_resolution":
+                evidence = _hbl_evidence(session)
+                summary = (
+                    f"HBL resolved by ticker: close {evidence.get('close_2026_11_03')}, "
+                    f"{evidence.get('statements')} statements, "
+                    f"{evidence.get('fundamental_values')} fundamental values, "
+                    f"latest decision {evidence.get('latest_decision')}."
+                )
             else:  # audit_report
                 summary = "deterministic values verified unchanged after probe."
             task_results[key] = {
@@ -280,6 +336,17 @@ def run_orchestration(session: Session, commit: bool) -> dict:
             run_row = existing_run
             if run_row.status != run_status:
                 run_row.status = run_status
+            # Checkpoint counts are bookkeeping, updated in place
+            # when the task set grows (same precedent as the status
+            # update above): the HBL task raises completed 5 -> 6.
+            # Task rows themselves are never rewritten.
+            new_checkpoint = {
+                "quarantined_tasks": quarantined,
+                "completed_tasks": completed,
+                "all_evaluations_pass": all_evals_pass,
+            }
+            if run_row.checkpoint != new_checkpoint:
+                run_row.checkpoint = new_checkpoint
         task_rows: dict[str, OrchestrationTask] = {}
         for spec in DEMO_TASKS:
             key = spec["task_key"]

@@ -130,23 +130,15 @@ def _exceptions_for_measurements(measurements: list[dict]) -> list[dict]:
 
 
 def _known_state_exceptions() -> list[dict]:
+    # HBL re-run batch: the known_hbl_pending exception is
+    # RESOLVED and removed from the seed list. Its premise
+    # (HBL statements not yet loaded) ended: the CY2025 report
+    # was extracted (30 statements, 800 line items) and Phases
+    # 8-22 re-ran for HBL (dossier, earnings update, valuation
+    # report all DRAFT; chain measured in the new acceptance
+    # run). The Phase 27 run's exception row stays in the
+    # database as history (run-scoped rows are never edited).
     return [
-        {
-            "exception_key": "known_hbl_pending",
-            "severity": "medium",
-            "title": "HBL statements pending (PDF obtained, extraction in progress)",
-            "evidence": {
-                "reason": "HBL CY2025 annual report PDF obtained 2026-11-05 "
-                "via a live-browser visit (6,437,243 bytes, 411 pp., "
-                "gitignored); extraction runs separately under the "
-                "parent and has not loaded statements yet.",
-                "effect": "HBL has no dossier, earnings update, valuation report, "
-                "or statement-derived alert; it appears only in "
-                "market-wide figures.",
-            },
-            "status": "open",
-            "resolution_note": None,
-        },
         {
             "exception_key": "known_collection_jobs_paused",
             "severity": "info",

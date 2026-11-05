@@ -12,7 +12,9 @@ row is ever updated or deleted; a correction is a new method version.
 
 Valuation dates: PRICE_DATE (2026-11-03) for price-based and
 assumption-gated methods; the balance-sheet date for statement-date
-methods (book value, sum-of-parts). HBL gets no rows (pending).
+methods (book value, sum-of-parts). HBL is assessed under the bank
+model set (see coverage.assess): industrial EV/DCF methods are
+not_applicable to it by banking structure.
 """
 
 from __future__ import annotations

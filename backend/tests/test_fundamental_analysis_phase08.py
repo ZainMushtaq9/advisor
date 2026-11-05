@@ -140,6 +140,82 @@ OGDC_INPUTS = {
 }
 
 
+# HBL FY2025 fixture (thousands scale, from the extracted CY2025
+# consolidated statements; bank-adapted inputs: revenue = total_income,
+# operating profit = pre-provision profit_before_credit_loss_tax,
+# cash = cash_treasury_banks + balances_other_banks, ib_debt =
+# wholesale funding = borrowings + subordinated_debt +
+# lease_liabilities; industrial concepts are absent by design).
+HBL_INPUTS = {
+    "revenue_cur": D(361107247),
+    "revenue_prior": D(342134371),
+    "cost_cur": None,
+    "gross_cur": None,
+    "gross_prior": None,
+    "op_cur": D(157214123),
+    "fin_cur": None,
+    "pat_cur": D(66763916),
+    "pat_prior": D(57804659),
+    "owners_profit_cur": D(66716190),
+    "eps_cur": D("45.48"),
+    "eps_prior": D("39.85"),
+    "ocf_cur": D(1696472186),
+    "capex_cur": D(-33692872),
+    "div_cur": D(-26610622),
+    "ca_cur": None,
+    "cl_cur": None,
+    "cash_cur": D(618728825),
+    "inv_cur": None,
+    "inv_prior": None,
+    "td_cur": None,
+    "td_prior": None,
+    "pay_cur": None,
+    "pay_prior": None,
+    "ta_cur": D(7708144220),
+    "ta_prior": D(6055112877),
+    "te_cur": D(488614705),
+    "te_prior": D(410798094),
+    "oe_cur": D(486943716),
+    "oe_prior": D(409155712),
+    "ib_cur": D(1276509343),
+    "ib_prior": D(883126631),
+    "tl_cur": D(7219529515),
+    "period_days": 365,
+}
+
+
+def test_hbl_bank_adapted_ratios() -> None:
+    """HBL: bank-adapted metrics compute; industrial concepts stay
+    insufficient; interest coverage is not_applicable by structure."""
+    out = _by_key(coverage.assess("HBL", HBL_INPUTS))
+    assert out["net_margin"]["status"] == "computed"
+    assert _close(out["net_margin"]["value"], "0.184887")
+    assert out["operating_margin"]["status"] == "computed"
+    assert _close(out["operating_margin"]["value"], "0.435367")
+    assert out["roa"]["status"] == "computed"
+    assert _close(out["roa"]["value"], "0.009702")
+    assert out["roe_total"]["status"] == "computed"
+    assert _close(out["roe_total"]["value"], "0.148461")
+    assert out["roe_owners"]["status"] == "computed"
+    assert _close(out["roe_owners"]["value"], "0.148904")
+    assert out["debt_to_assets"]["status"] == "computed"
+    assert _close(out["debt_to_assets"]["value"], "0.936611")
+    assert out["debt_to_equity"]["status"] == "computed"
+    assert _close(out["debt_to_equity"]["value"], "14.7755", D("0.001"))
+    assert out["ib_debt_to_equity"]["status"] == "computed"
+    assert _close(out["ib_debt_to_equity"]["value"], "2.612497")
+    assert out["revenue_growth"]["status"] == "computed"
+    assert _close(out["revenue_growth"]["value"], "0.055454")
+    assert out["pat_growth"]["status"] == "computed"
+    assert _close(out["pat_growth"]["value"], "0.154992")
+    assert out["interest_coverage"]["status"] == "not_applicable"
+    assert out["gross_margin"]["status"] == "insufficient_inputs"
+    assert out["current_ratio"]["status"] == "insufficient_inputs"
+    assert out["receivables_days"]["status"] == "insufficient_inputs"
+    assert out["inventory_days"]["status"] == "insufficient_inputs"
+    assert out["roic"]["status"] == "insufficient_inputs"
+
+
 def test_formulas_never_return_zero_substitutes() -> None:
     assert formulas.div(10, 0) is None
     assert formulas.div(None, 5) is None

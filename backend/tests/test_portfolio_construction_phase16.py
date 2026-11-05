@@ -143,6 +143,13 @@ def test_eligibility_four_way_distinction() -> None:
 
 def test_mean_variance_gate_blocks_on_pipeline_state() -> None:
     status, reasons = mean_variance_gate(computed_forecasts=0, return_observations=0)
+    # Assessment total is caller-supplied (live count), never hardcoded:
+    # pre-batch 120, HBL re-run batch 156.
+    _, reasons156 = mean_variance_gate(
+        computed_forecasts=0, return_observations=0, assessments_total=156
+    )
+    assert "156 assessments" in reasons156[0]
+    assert "120 assessments" not in reasons156[0]
     assert status == "NOT_CALCULABLE"
     assert len(reasons) == 2
     assert any("expected returns" in r for r in reasons)

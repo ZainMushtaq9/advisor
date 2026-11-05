@@ -217,9 +217,11 @@ def test_golden_pure_checks_all_pass() -> None:
 
 
 def test_golden_stored_checks_pass_and_fail_honestly() -> None:
+    # HBL re-run batch: the HBL refusal premise retired (exactly
+    # one HBL document now) and the index totals moved to 4/2020.
     good = {
         "max_summary_length": 280,
-        "hbl_documents": 0,
+        "hbl_documents": 1,
         "decisions_total": 4,
         "decisions_withheld": 4,
         "injection_eval_result": "PASS",
@@ -227,8 +229,8 @@ def test_golden_stored_checks_pass_and_fail_honestly() -> None:
         "companies_total": 470,
         "companies_unverified": 470,
         "leap_rows": 61,
-        "rag_documents": 3,
-        "rag_chunks": 943,
+        "rag_documents": 4,
+        "rag_chunks": 2020,
         "hallucination_eval_result": "PASS",
         "hallucination_eval_verdict": "QUARANTINE_NO_EVIDENCE",
         "authority_eval_result": "PASS",
@@ -239,8 +241,8 @@ def test_golden_stored_checks_pass_and_fail_honestly() -> None:
             continue
         passed, _evidence = golden_suite.check_stored(case["case_key"], good)
         assert passed, case["case_key"]
-    bad = dict(good, hbl_documents=1, hubc_close=200.00)
-    assert golden_suite.check_stored("golden_refusal_hbl_missing", bad)[0] is False
+    bad = dict(good, hbl_documents=0, hubc_close=200.00)
+    assert golden_suite.check_stored("golden_hbl_indexed_evidence", bad)[0] is False
     assert golden_suite.check_stored("golden_deterministic_authority", bad)[0] is False
 
 
@@ -281,7 +283,8 @@ def _fixed_inputs() -> dict:
         "figures_total": 541,
         "figures_computed": 335,
         "hubc_close": 197.24,
-        "hbl_documents": 0,
+        # HBL re-run batch values (see the golden-case test above).
+        "hbl_documents": 1,
         "max_summary_length": 200,
         "companies_total": 470,
         "companies_unverified": 470,
@@ -289,8 +292,8 @@ def _fixed_inputs() -> dict:
         "injection_eval_result": "PASS",
         "injection_eval_quarantined": True,
         "authority_eval_result": "PASS",
-        "rag_documents": 3,
-        "rag_chunks": 943,
+        "rag_documents": 4,
+        "rag_chunks": 2020,
         "hallucination_eval_result": "PASS",
         "hallucination_eval_verdict": "QUARANTINE_NO_EVIDENCE",
         "drift_expected": {"companies": 470},

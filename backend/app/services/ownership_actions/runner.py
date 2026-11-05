@@ -3,9 +3,9 @@
 --dry-run computes everything and writes nothing; --commit writes and
 a second --commit writes 0 new rows. Ownership and dividend actions
 come from seed data verified against already-stored documents (HUBC
-annual report, Phase 7 statement faces). Breadth and liquidity come
-from stored Phase 5 prices only. No HTTP fetch, no DPS download, no
-PSX announcement collection anywhere in this module.
+annual report, HBL annual report, Phase 7 statement faces). Breadth
+and liquidity come from stored Phase 5 prices only. No HTTP fetch, no
+DPS download, no PSX announcement collection anywhere in this module.
 
 Investor flows are intentionally unwritten: no verified published
 flow series was loaded, and flows are never derived from price or
@@ -35,6 +35,14 @@ from app.services.ownership_actions import (
     CATEGORY_ROWS,
     DATE_EVIDENCE,
     DIVIDEND_ACTIONS,
+    HBL_CATEGORY_ROWS,
+    HBL_KEY_HOLDERS,
+    HBL_PUBLICATION_DATE,
+    HBL_PUBLICATION_NOTE,
+    HBL_REPORTING_DATE,
+    HBL_SOURCE_EVIDENCE,
+    HBL_SOURCE_KEY,
+    HBL_TOTAL,
     KEY_HOLDERS,
     PUBLICATION_DATE,
     PUBLICATION_NOTE,
@@ -83,88 +91,159 @@ def run_ownership(session: Session, commit: bool) -> dict:
         "universe": 0,
     }
 
-    # ---- ownership: HUBC categories + key holders + totals -----------
-    hubc_id = _company_id_by_ticker(session, "HUBC")
-    source_ts = datetime(REPORTING_DATE.year, REPORTING_DATE.month, REPORTING_DATE.day, tzinfo=PKT)
-    ownership_rows = []
-    for category, holders, shares, pct in CATEGORY_ROWS:
+    # ---- ownership: per-company categories + key holders + totals ----
+    # HUBC key holders carry (category, name, folio, shares) with no
+    # printed percentage and no printed holder count (None, as in the
+    # original Phase 12 run); HBL key holders carry (category, name,
+    # shares, percentage) with no folio and a printed holder count
+    # (1, except Saba Kamal's row: 2 holders printed). Both are
+    # normalised here. The dedup grain is (company, category, name,
+    # folio, reporting_date), so existing HUBC rows are skipped
+    # unchanged and only HBL rows are new.
+    hbl_ds = _data_source(session, HBL_SOURCE_KEY)
+    ownership_seeds = [
+        {
+            "ticker": "HUBC",
+            "categories": CATEGORY_ROWS,
+            "key_holders": [
+                (cat, name, folio, shares, None, None)
+                for cat, name, folio, shares in KEY_HOLDERS
+            ],
+            "total": (80377, 1297154387, "100.00"),
+            "reporting_date": REPORTING_DATE,
+            "publication_date": PUBLICATION_DATE,
+            "publication_note": PUBLICATION_NOTE,
+            "source_key": SOURCE_KEY,
+            "source_evidence": SOURCE_EVIDENCE,
+            "data_source": hubc_ds,
+        },
+        {
+            "ticker": "HBL",
+            "categories": HBL_CATEGORY_ROWS,
+            "key_holders": [
+                (
+                    cat,
+                    name,
+                    None,
+                    shares,
+                    pct,
+                    2 if name == "MS. SABA KAMAL" else 1,
+                )
+                for cat, name, shares, pct in HBL_KEY_HOLDERS
+            ],
+            "total": HBL_TOTAL,
+            "reporting_date": HBL_REPORTING_DATE,
+            "publication_date": HBL_PUBLICATION_DATE,
+            "publication_note": HBL_PUBLICATION_NOTE,
+            "source_key": HBL_SOURCE_KEY,
+            "source_evidence": HBL_SOURCE_EVIDENCE,
+            "data_source": hbl_ds,
+        },
+    ]
+    for seed in ownership_seeds:
+        company_id = _company_id_by_ticker(session, seed["ticker"])
+        source_ts = datetime(
+            seed["reporting_date"].year,
+            seed["reporting_date"].month,
+            seed["reporting_date"].day,
+            tzinfo=PKT,
+        )
+        ownership_rows = []
+        for category, holders, shares, pct in seed["categories"]:
+            ownership_rows.append(
+                {
+                    "company_id": company_id,
+                    "holder_category": category,
+                    "holder_name": None,
+                    "folio": None,
+                    "shareholders_count": holders,
+                    "shares_held": shares,
+                    "percentage": Decimal(pct) if pct is not None else None,
+                    "is_total": False,
+                }
+            )
+        for category, name, folio, shares, pct, holders in seed["key_holders"]:
+            ownership_rows.append(
+                {
+                    "company_id": company_id,
+                    "holder_category": category,
+                    "holder_name": name,
+                    "folio": folio,
+                    "shareholders_count": holders,
+                    "shares_held": shares,
+                    "percentage": Decimal(pct) if pct is not None else None,
+                    "is_total": False,
+                }
+            )
+        total_holders, total_shares, total_pct = seed["total"]
         ownership_rows.append(
             {
-                "company_id": hubc_id,
-                "holder_category": category,
+                "company_id": company_id,
+                "holder_category": "TOTAL",
                 "holder_name": None,
                 "folio": None,
-                "shareholders_count": holders,
-                "shares_held": shares,
-                "percentage": Decimal(pct) if pct is not None else None,
-                "is_total": False,
+                "shareholders_count": total_holders,
+                "shares_held": total_shares,
+                "percentage": Decimal(total_pct),
+                "is_total": True,
             }
         )
-    for category, name, folio, shares in KEY_HOLDERS:
-        ownership_rows.append(
-            {
-                "company_id": hubc_id,
-                "holder_category": category,
-                "holder_name": name,
-                "folio": folio,
-                "shareholders_count": None,
-                "shares_held": shares,
-                "percentage": None,
-                "is_total": False,
-            }
-        )
-    ownership_rows.append(
-        {
-            "company_id": hubc_id,
-            "holder_category": "TOTAL",
-            "holder_name": None,
-            "folio": None,
-            "shareholders_count": 80377,
-            "shares_held": 1297154387,
-            "percentage": Decimal("100.00"),
-            "is_total": True,
-        }
-    )
-    for row in ownership_rows:
-        existing = (
-            session.query(OwnershipHolding)
-            .filter_by(
-                company_id=row["company_id"],
-                holder_category=row["holder_category"],
-                holder_name=row["holder_name"],
-                folio=row["folio"],
-                reporting_date=REPORTING_DATE,
-            )
-            .one_or_none()
-        )
-        if existing is not None:
-            report["ownership_skipped"] += 1
-            continue
-        report["ownership_inserted"] += 1
-        if commit:
-            session.add(
-                OwnershipHolding(
+        for row in ownership_rows:
+            existing = (
+                session.query(OwnershipHolding)
+                .filter_by(
                     company_id=row["company_id"],
                     holder_category=row["holder_category"],
                     holder_name=row["holder_name"],
                     folio=row["folio"],
-                    reporting_date=REPORTING_DATE,
-                    publication_date=PUBLICATION_DATE,
-                    publication_date_note=PUBLICATION_NOTE,
-                    shareholders_count=row["shareholders_count"],
-                    shares_held=row["shares_held"],
-                    percentage=row["percentage"],
-                    is_total=row["is_total"],
-                    source_evidence=SOURCE_EVIDENCE,
-                    data_source_id=hubc_ds.id if hubc_ds else None,
-                    source_key=SOURCE_KEY,
-                    source_timestamp=source_ts,
-                    collected_at=now,
-                    quality_status="UNVERIFIED",
+                    reporting_date=seed["reporting_date"],
                 )
+                .one_or_none()
             )
+            if existing is not None:
+                report["ownership_skipped"] += 1
+                continue
+            report["ownership_inserted"] += 1
+            if commit:
+                session.add(
+                    OwnershipHolding(
+                        company_id=row["company_id"],
+                        holder_category=row["holder_category"],
+                        holder_name=row["holder_name"],
+                        folio=row["folio"],
+                        reporting_date=seed["reporting_date"],
+                        publication_date=seed["publication_date"],
+                        publication_date_note=seed["publication_note"],
+                        shareholders_count=row["shareholders_count"],
+                        shares_held=row["shares_held"],
+                        percentage=row["percentage"],
+                        is_total=row["is_total"],
+                        source_evidence=seed["source_evidence"],
+                        data_source_id=(
+                            seed["data_source"].id if seed["data_source"] else None
+                        ),
+                        source_key=seed["source_key"],
+                        source_timestamp=source_ts,
+                        collected_at=now,
+                        quality_status="UNVERIFIED",
+                    )
+                )
 
     # ---- corporate actions: dividends ---------------------------------
+    # Per-ticker provenance: HBL actions carry the HBL source row and
+    # reporting-date timestamp. HUBC/NML actions keep the original
+    # Phase 12 behaviour (HUBC source row + HUBC reporting date) —
+    # their rows already exist and are skipped unchanged by the dedup
+    # check below, so this fallback affects no stored row.
+    hubc_source_ts = datetime(
+        REPORTING_DATE.year, REPORTING_DATE.month, REPORTING_DATE.day, tzinfo=PKT
+    )
+    hbl_source_ts = datetime(
+        HBL_REPORTING_DATE.year, HBL_REPORTING_DATE.month, HBL_REPORTING_DATE.day, tzinfo=PKT
+    )
+    action_sources = {
+        "HBL": (hbl_ds, HBL_SOURCE_KEY, hbl_source_ts),
+    }
     for ticker, action_type, fy_label, dps, total_note, evidence in DIVIDEND_ACTIONS:
         company_id = _company_id_by_ticker(session, ticker)
         existing = (
@@ -182,6 +261,9 @@ def run_ownership(session: Session, commit: bool) -> dict:
             continue
         report["actions_inserted"] += 1
         if commit:
+            action_ds, action_source_key, action_ts = action_sources.get(
+                ticker, (hubc_ds, SOURCE_KEY, hubc_source_ts)
+            )
             session.add(
                 CorporateActionRecord(
                     company_id=company_id,
@@ -199,9 +281,9 @@ def run_ownership(session: Session, commit: bool) -> dict:
                     date_evidence=DATE_EVIDENCE,
                     status="appropriated",
                     source_evidence=evidence,
-                    data_source_id=hubc_ds.id if hubc_ds else None,
-                    source_key=SOURCE_KEY,
-                    source_timestamp=source_ts,
+                    data_source_id=action_ds.id if action_ds else None,
+                    source_key=action_source_key,
+                    source_timestamp=action_ts,
                     collected_at=now,
                     quality_status="UNVERIFIED",
                 )

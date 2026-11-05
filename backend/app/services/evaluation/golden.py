@@ -111,13 +111,23 @@ GOLDEN_CASES: list[dict] = [
         "check_kind": "stored",
         "evidence": {"source_table": "news_events"},
     },
+    # HBL re-run batch: golden_refusal_hbl_missing is RETIRED —
+    # its premise (zero HBL documents) ended when the CY2025
+    # report was extracted and indexed. The old case row and
+    # its Phase 26 result stay in the database as history; new
+    # runs evaluate the replacement below instead. The
+    # replacement keeps the same discipline in the new world:
+    # exactly one HBL financial document (the CY2025 report),
+    # never an invented second one.
     {
-        "case_key": "golden_refusal_hbl_missing",
-        "category": "refusal_abstention",
+        "case_key": "golden_hbl_indexed_evidence",
+        "category": "extraction",
         "input_desc": "HBL (Habib Bank Limited) statement documents in stored rows.",
         "expected_outcome": (
-            "Zero HBL documents: the correct answer for HBL analysis "
-            "is missing_data, never an invented statement value."
+            "Exactly one HBL financial document (the CY2025 "
+            "consolidated annual report): HBL analysis now uses "
+            "stored evidence, never missing_data-by-default and "
+            "never an invented statement value."
         ),
         "check_kind": "stored",
         "evidence": {"source_table": "financial_documents", "ticker": "HBL"},
@@ -167,12 +177,15 @@ GOLDEN_CASES: list[dict] = [
         "case_key": "golden_extraction_chunk_counts",
         "category": "extraction",
         "input_desc": (
-            "Stored RAG documents and chunks from the 3 issuer-hosted reports seeded in Phase 19."
+            "Stored RAG documents and chunks from the 4 issuer-hosted reports seeded in Phase 19 "
+            "(HBL added by the re-run batch)."
         ),
         "expected_outcome": (
-            "3 documents index to 943 chunks: extraction is "
+            "4 documents index to 2020 chunks: extraction is "
             "deterministic and countable, and empty pages are "
-            "recorded as gaps, never filled with invented rows."
+            "recorded as gaps, never filled with invented rows. "
+            "(Pre-batch values were 3 documents / 943 chunks; "
+            "the HBL report added 1077 chunks over 407 text pages.)"
         ),
         "check_kind": "stored",
         "evidence": {"source_table": "rag_documents/rag_chunks"},
@@ -335,9 +348,9 @@ def check_stored(case_key: str, stored: dict) -> tuple[bool, dict]:
             max_len is not None and max_len <= 280,
             {"max_summary_length": max_len},
         )
-    if case_key == "golden_refusal_hbl_missing":
+    if case_key == "golden_hbl_indexed_evidence":
         docs = stored.get("hbl_documents")
-        return docs == 0, {"hbl_documents": docs}
+        return docs == 1, {"hbl_documents": docs}
     if case_key == "golden_refusal_withheld_decisions":
         total = stored.get("decisions_total")
         withheld = stored.get("decisions_withheld")
@@ -367,7 +380,7 @@ def check_stored(case_key: str, stored: dict) -> tuple[bool, dict]:
     if case_key == "golden_extraction_chunk_counts":
         docs = stored.get("rag_documents")
         chunks = stored.get("rag_chunks")
-        return docs == 3 and chunks == 943, {
+        return docs == 4 and chunks == 2020, {
             "rag_documents": docs,
             "rag_chunks": chunks,
         }

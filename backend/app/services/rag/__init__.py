@@ -161,6 +161,22 @@ SEED_DOCUMENTS: tuple[dict, ...] = (
         ),
         "access_level": "issuer_internal",
     },
+    {
+        "ticker": "HBL",
+        "title": "HBL Annual Report 2025",
+        "document_type": "annual_report",
+        "storage_location": ("storage/financial_reports/HBL_Annual_Report_2025.pdf"),
+        "page_count": 411,
+        "publication_date": date(2026, 3, 3),
+        "publication_date_kind": "proxy",
+        "publication_date_note": (
+            "Consolidated auditor-report date (KPMG Taseer Hadi "
+            "& Co., UDIN AR202510201HsNS5gUWD) used as "
+            "publication proxy; added by the HBL re-run batch "
+            "after the Phase 7 HBL extraction."
+        ),
+        "access_level": "issuer_internal",
+    },
 )
 
 # Face pages (Phase 7 page maps) used as section labels so a
@@ -181,6 +197,15 @@ FACE_PAGES: dict[str, dict[int, str]] = {
     "OGDC": {
         8: "profit_and_loss",
         7: "statement_of_financial_position",
+    },
+    # HBL face pages from the Phase 7 HBL page maps (PDF pages):
+    # auditor report p.74, SFP p.75, P&L p.76, CE p.78, CF p.79.
+    "HBL": {
+        74: "auditor_opinion",
+        75: "statement_of_financial_position",
+        76: "profit_and_loss",
+        78: "changes_in_equity",
+        79: "cash_flow",
     },
 }
 
@@ -231,12 +256,19 @@ BENCHMARK_CASES: tuple[dict, ...] = (
         "expected_fragment": "gross_margin",
         "expected_kind": "derived_calculation",
     },
+    # HBL re-run batch: the hbl_missing_document case is RETIRED —
+    # its premise (no indexed HBL document) no longer holds now
+    # that the 411-page report is indexed. It stays in the
+    # database as history (its r3 result stands) but is no
+    # longer evaluated: run_benchmark evaluates only current
+    # code cases and reports retired ones as skipped. The
+    # replacement case below uses only stored Phase 7 figures.
     {
-        "case_key": "hbl_missing_document",
+        "case_key": "hbl_profit_cy2025",
         "query_text": "What was HBL profit for the year ended 31 December 2025?",
         "expected_ticker": "HBL",
-        "expected_page": None,
-        "expected_fragment": "",
-        "expected_kind": "missing_data",
+        "expected_page": 76,
+        "expected_fragment": "66,763,916",
+        "expected_kind": "direct_evidence",
     },
 )

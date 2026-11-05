@@ -165,7 +165,7 @@ def _conflicts(
     return conflicts
 
 
-def _company_decision(session: Session, ticker: str) -> dict:
+def _company_decision(session: Session, ticker: str, decision_d: date = DECISION_D) -> dict:
     """Build (not yet write) one company's decision record."""
     security = session.query(Security).filter(Security.ticker == ticker).one_or_none()
     company = None
@@ -191,7 +191,7 @@ def _company_decision(session: Session, ticker: str) -> dict:
         latest_publication = sorted(pubs)[0] if pubs else None
         if len(pubs) > 1:
             latest_publication = None
-    statement_age_days = (DECISION_D - latest_period_end).days if latest_period_end else None
+    statement_age_days = (decision_d - latest_period_end).days if latest_period_end else None
 
     health: dict[str, Decimal | None] = {}
     health_rows: dict[str, int] = {}
@@ -362,20 +362,20 @@ def _company_decision(session: Session, ticker: str) -> dict:
     # --- No-look-ahead verification: every dated evidence item
     # must be on or before the decision date.
     look_ahead_violations = []
-    if latest_publication is not None and latest_publication > DECISION_D:
+    if latest_publication is not None and latest_publication > decision_d:
         look_ahead_violations.append("statement publication after decision date")
     if (
         news_row is not None
         and news_row.event_date is not None
-        and news_row.event_date > DECISION_D
+        and news_row.event_date > decision_d
     ):
         look_ahead_violations.append("news event after decision date")
-    if regime is not None and regime.observation_date > DECISION_D:
+    if regime is not None and regime.observation_date > decision_d:
         look_ahead_violations.append("regime observation after decision date")
     assert not look_ahead_violations, f"Look-ahead violation for {ticker}: {look_ahead_violations}"
 
     snapshot = {
-        "decision_date": DECISION_DATE,
+        "decision_date": decision_d.isoformat(),
         "price_date": PRICE_DATE,
         "rules_version": RULES_VERSION,
         "company_id": company.id if company is not None else None,
@@ -452,11 +452,23 @@ def _company_decision(session: Session, ticker: str) -> dict:
 
 
 def run_decisions(
-    session: Session, commit: bool = False, company_filter: str | None = None
+    session: Session,
+    commit: bool = False,
+    company_filter: str | None = None,
+    decision_date: str | None = None,
 ) -> dict:
-    """Build decisions for the universe; write only with --commit."""
+    """Build decisions for the universe; write only with --commit.
+
+    decision_date defaults to DECISION_DATE (2026-11-04). A later
+    date creates a NEW decision grain (company, date, rules version)
+    instead of overwriting: the HBL re-run batch uses 2026-11-05
+    because the 2026-11-04 v1 HBL row predates its statements and
+    the grain forbids overwriting it — the old row stays as history
+    and the new row is the current decision.
+    """
+    decision_d = date.fromisoformat(decision_date) if decision_date else DECISION_D
     tickers = [company_filter] if company_filter else list(UNIVERSE_TICKERS)
-    built = [_company_decision(session, ticker) for ticker in tickers]
+    built = [_company_decision(session, ticker, decision_d) for ticker in tickers]
 
     rules_written = 0
     rules_skipped = 0
@@ -476,7 +488,7 @@ def run_decisions(
         existing = (
             session.query(Decision)
             .filter(Decision.company_id == item["company_id"])
-            .filter(Decision.decision_date == DECISION_D)
+            .filter(Decision.decision_date == decision_d)
             .filter(Decision.rules_version == RULES_VERSION)
             .one_or_none()
         )
@@ -488,7 +500,7 @@ def run_decisions(
                 Decision(
                     company_id=item["company_id"],
                     security_id=item["security_id"],
-                    decision_date=DECISION_D,
+                    decision_date=decision_d,
                     rules_version=RULES_VERSION,
                     screening_outcome=item["screening_outcome"],
                     research_conclusion=item["research_conclusion"],

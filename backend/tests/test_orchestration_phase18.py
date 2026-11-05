@@ -131,6 +131,20 @@ def test_untrusted_classification():
     assert wrapped["source"] == "demo_probe_input"
 
 
+def test_hbl_task_resolves_after_discover():
+    # HBL re-run batch: the demo graph gains one task that resolves
+    # HBL by ticker; it must run after discover and never by id.
+    keys = {t["task_key"]: t for t in DEMO_TASKS}
+    assert "hbl_ticker_resolution" in keys
+    assert keys["hbl_ticker_resolution"]["depends_on"] == ["discover"]
+    assert keys["hbl_ticker_resolution"]["agent_name"] == "company_discovery"
+    order = topological_order(
+        [{"task_key": t["task_key"], "depends_on": t["depends_on"]} for t in DEMO_TASKS]
+    )
+    assert order.index("discover") < order.index("hbl_ticker_resolution")
+    assert len(DEMO_TASKS) == 7
+
+
 def test_topological_order_and_cycle():
     order = topological_order(
         [{"task_key": t["task_key"], "depends_on": t["depends_on"]} for t in DEMO_TASKS]
@@ -179,7 +193,8 @@ def test_ready_and_blocked_tasks():
     statuses = {t["task_key"]: "PENDING" for t in DEMO_TASKS}
     assert ready_tasks(specs, statuses) == ["discover"]
     statuses["discover"] = "COMPLETED"
-    assert ready_tasks(specs, statuses) == ["statements_check"]
+    # HBL re-run batch: hbl_ticker_resolution also depends on discover.
+    assert ready_tasks(specs, statuses) == ["statements_check", "hbl_ticker_resolution"]
     statuses["statements_check"] = "QUARANTINED"
     # fundamentals_summary is blocked by the quarantined dependency.
     assert blocked_tasks(specs, statuses) == ["fundamentals_summary"]

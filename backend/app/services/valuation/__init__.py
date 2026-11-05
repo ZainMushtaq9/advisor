@@ -41,11 +41,17 @@ per method instead of as a block:
 
 Financial-company rule (brief): industrial enterprise-value DCF is
 never applied to a bank, and residual-income models are bank
-models. HBL (Habib Bank Limited) has no statements loaded (pending
-PDF download, running separately), so it gets no valuation rows at
-all — it is reported as PENDING, never as zero. Every structure
-below accepts a 4th company by adding one PERIODS entry (reused from
-Phase 8) and one price row; no redesign is needed.
+models. HBL (Habib Bank Limited) joined the valuation set in the
+post-Phase-30 HBL re-run batch, once its CY2025 consolidated audited
+statements were extracted (branch phase-07-hbl-extraction 42bd8e2):
+it is assessed under the BANK model set — trailing P/E (valid dated
+EPS, published 2026-03-03) and statement-date book values compute;
+industrial EV multiples and industrial DCF are not_applicable by
+banking structure; the bank residual-income model APPLIES to HBL but
+stays insufficient_inputs because no source-backed cost of equity,
+forecast residual-income series, or book-value growth assumption
+exists in the data (assumptions must not be invented, so no
+residual-income value is computed).
 """
 
 from __future__ import annotations
@@ -67,9 +73,9 @@ PRICE_DATE = date(2026, 11, 3)
 HUBC = "HUBC"  # The Hub Power Company Limited — POWER GENERATION & DISTRIBUTION
 NML = "NML"  # Nishat Mills Limited — TEXTILE COMPOSITE
 OGDC = "OGDC"  # Oil & Gas Development Company Limited — OIL & GAS EXPLORATION
-HBL = "HBL"  # Habib Bank Limited — COMMERCIAL BANKS (PENDING input)
+HBL = "HBL"  # Habib Bank Limited — COMMERCIAL BANKS (bank model set)
 
-PENDING_COMPANIES = {HBL: "statements not yet loaded (HBL CY2025 PDF blocked at download)"}
+PENDING_COMPANIES: dict[str, str] = {}
 
 # Method registry v1.0: (family, model, formula_text, unit).
 # Families match the valuations.method vocabulary (Phase 3 model
@@ -174,7 +180,8 @@ METHODS: dict[str, tuple[str, str, str, str]] = {
         "sum of segment values; needs segment-level statements",
         "PKR",
     ),
-    # Bank model — not applicable to industrials; HBL pending.
+    # Bank model — not applicable to industrials; applies to HBL but
+    # stays insufficient_inputs without source-backed assumptions.
     "residual_income:bank": (
         "residual_income",
         "bank",

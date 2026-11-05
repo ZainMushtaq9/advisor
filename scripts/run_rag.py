@@ -1,6 +1,6 @@
 """Phase 19 RAG CLI.
 
-Indexes the three permitted issuer PDFs, answers grounded
+Indexes the four permitted issuer PDFs (HBL added by the re-run batch), answers grounded
 questions, runs the retrieval benchmark, and records the
 access-control audit. Writes nothing by default (--dry-run);
 --commit writes idempotently for index / answers / benchmark

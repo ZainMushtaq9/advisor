@@ -17,6 +17,14 @@ later clean re-derivation in the correct order (news fixed before
 decisions and reports) resolves them legitimately — that is a
 rebuild from source after a total loss, not a hand-edit of stored
 rows, and the mechanism is recorded in the run report.
+
+D-03 is MEASURED the same way (HBL re-run batch):
+resolve_d03_status() reads the live HBL chain links; it is
+"fixed" only when HBL fundamentals, valuations, a decision,
+and reports all exist. D-04 is fixed in the batch by code:
+macro profiles keyed by sector NAME with run-time id
+resolution, news publication-date maps keyed by TICKER,
+both with fixture tests (see the batch run report).
 """
 
 from __future__ import annotations
@@ -55,7 +63,9 @@ DEFECTS: list[dict] = [
         "impact": "HBL statements are loaded (30 statements, 800 line "
         "items) but no fundamentals, valuations, "
         "decision-with-evidence, or reports exist for HBL; the "
-        "HBL chain is BLOCKED.",
+        "HBL chain is BLOCKED. (Status is MEASURED at run time "
+        "by resolve_d03_status(); the static entry stays "
+        "'accepted' and is overridden only on measured evidence.)",
         "unblocker": "Post-Phase-30 HBL re-run batch, starting from a "
         "branch containing both the phase lineage and the "
         "phase-07-hbl-extraction code. Banking rule: Phase 9 "
@@ -64,15 +74,16 @@ DEFECTS: list[dict] = [
     {
         "defect_key": "D-04",
         "severity": "medium",
-        "status": "open",
+        "status": "fixed",
         "title": "Surrogate-id traps: macro sector ids, news publication-date maps",
-        "impact": "Fresh imports shift surrogate ids; the macro seed "
-        "and the news seed still key by pre-replacement ids. "
-        "Workaround documented (temporary patch + revert + "
-        "re-run); no committed code changed on their account.",
-        "unblocker": "Permanent name-based sector resolution and "
+        "impact": "Fixed in the HBL re-run batch: macro sector profiles "
+        "are keyed by sector NAME and resolved to the live id "
+        "at run time, and news publication-date maps are keyed "
+        "by TICKER, both with fixture tests. Fresh imports can "
+        "shift surrogate ids without breaking either seed.",
+        "unblocker": "Done — permanent name-based sector resolution and "
         "ticker-based news publication-date mapping, with "
-        "fixture tests. Fix only if a phase brief covers it.",
+        "fixture tests, in the HBL re-run batch.",
     },
     {
         "defect_key": "D-05",
@@ -225,14 +236,63 @@ def resolve_d05_status(session) -> tuple[str, str]:
     return "open", evidence
 
 
+def resolve_d03_status(session) -> tuple[str, str]:
+    """Measure D-03 against the live database.
+
+    Returns (status, evidence): "fixed" only when HBL carries
+    fundamentals, valuations, a decision, and reports — the
+    four links the HBL re-run batch added. Otherwise the
+    static "accepted" stands.
+    """
+    hbl_id = session.execute(
+        text(
+            "SELECT company_id FROM securities WHERE ticker = 'HBL'"
+        )
+    ).scalar()
+    if hbl_id is None:
+        return "accepted", "HBL has no security row."
+    fundamentals = session.execute(
+        text(
+            "SELECT COUNT(*) FROM fundamental_metric_values "
+            "WHERE company_id = :cid"
+        ),
+        {"cid": hbl_id},
+    ).scalar() or 0
+    valuations = session.execute(
+        text(
+            "SELECT COUNT(*) FROM valuations WHERE security_id = "
+            "(SELECT id FROM securities WHERE company_id = :cid)"
+        ),
+        {"cid": hbl_id},
+    ).scalar() or 0
+    decisions = session.execute(
+        text("SELECT COUNT(*) FROM decisions WHERE company_id = :cid"),
+        {"cid": hbl_id},
+    ).scalar() or 0
+    reports = session.execute(
+        text("SELECT COUNT(*) FROM reports WHERE subject_key = 'HBL'")
+    ).scalar() or 0
+    evidence = (
+        f"HBL fundamentals={fundamentals} valuations={valuations} "
+        f"decisions={decisions} reports={reports}"
+    )
+    if fundamentals and valuations and decisions and reports:
+        return "fixed", evidence + " — HBL chain complete in this run."
+    return "accepted", evidence
+
+
 def build_register(session):
-    """Return the defect register with D-05 status measured live."""
-    status, evidence = resolve_d05_status(session)
+    """Return the defect register with D-03/D-05 status measured live."""
+    d05_status, d05_evidence = resolve_d05_status(session)
+    d03_status, d03_evidence = resolve_d03_status(session)
     register = []
     for defect in DEFECTS:
         entry = dict(defect)
         if entry["defect_key"] == "D-05":
-            entry["status"] = status
-            entry["impact"] = entry["impact"] + " Measured now: " + evidence
+            entry["status"] = d05_status
+            entry["impact"] = entry["impact"] + " Measured now: " + d05_evidence
+        if entry["defect_key"] == "D-03":
+            entry["status"] = d03_status
+            entry["impact"] = entry["impact"] + " Measured now: " + d03_evidence
         register.append(entry)
     return register

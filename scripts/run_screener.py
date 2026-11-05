@@ -49,6 +49,13 @@ def main() -> int:
         default=None,
         help="Run one seed screen by name (default: all).",
     )
+    parser.add_argument(
+        "--as-of",
+        type=str,
+        default=None,
+        help="Snapshot date ISO (default 2026-11-04). A later date creates a new "
+        "run snapshot; the HBL re-run batch uses 2026-11-05 for dividend_payers only.",
+    )
     args = parser.parse_args()
     commit = bool(args.commit)
     database_url = os.environ.get("DATABASE_URL")
@@ -65,7 +72,13 @@ def main() -> int:
             if not screens:
                 print(f"Unknown screen: {args.screen}", file=sys.stderr)
                 return 2
-        runs = [screener_runner.run_screen(session, s, commit=commit) for s in screens]
+        from datetime import date as _date
+
+        as_of = _date.fromisoformat(args.as_of) if args.as_of else None
+        runs = [
+            screener_runner.run_screen(session, s, commit=commit, as_of=as_of)
+            for s in screens
+        ]
         report = {"seeded": seeded, "runs": runs, "committed": commit}
         print(json.dumps(report, indent=2, default=str))
         if commit:

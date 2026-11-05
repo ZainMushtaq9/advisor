@@ -33,11 +33,13 @@ def source_for_document(source_url: str | None) -> str:
 def build_seed_events(documents: list[dict], macro_events: list[dict]) -> list[dict]:
     """Build seed event dicts from already-stored DB rows.
 
-    ``documents``: [{id, company_id, document_type, title, source_url,
-    company_name}]. ``macro_events``: [{id, event_date (ISO str),
-    event_type, title, quality_status}]. Unknown document/macro types
-    are skipped and counted by the runner via the ``skipped`` list
-    mechanism (returned as a second value).
+    ``documents``: [{id, company_id, ticker, document_type, title,
+    source_url, company_name}]. ``macro_events``: [{id, event_date
+    (ISO str), event_type, title, quality_status}]. Unknown
+    document/macro types are skipped and counted by the runner via the
+    ``skipped`` list mechanism (returned as a second value).
+    Publication dates and summaries resolve by TICKER (never by
+    document id — ids shift across fresh imports).
     """
     events: list[dict] = []
     skipped: list[str] = []
@@ -46,7 +48,10 @@ def build_seed_events(documents: list[dict], macro_events: list[dict]) -> list[d
         if event_type is None:
             skipped.append(f"document {doc['id']}: unknown type {doc['document_type']}")
             continue
-        pub_date, pub_note = PUBLICATION_DATES.get(doc["id"], (None, "no publication mapping"))
+        ticker = doc.get("ticker")
+        pub_date, pub_note = PUBLICATION_DATES.get(
+            ticker, (None, f"no publication mapping for ticker {ticker}")
+        )
         source_key = source_for_document(doc.get("source_url"))
         events.append(
             {
@@ -54,7 +59,7 @@ def build_seed_events(documents: list[dict], macro_events: list[dict]) -> list[d
                 "date_status": "known" if pub_date else "unknown",
                 "event_type": event_type,
                 "headline": doc["title"],
-                "summary": SEED_SUMMARIES.get(doc["id"]),
+                "summary": SEED_SUMMARIES.get(ticker),
                 "canonical_url": doc.get("source_url"),
                 "publisher": doc.get("company_name") or "issuer",
                 "source_key": source_key,
@@ -70,7 +75,7 @@ def build_seed_events(documents: list[dict], macro_events: list[dict]) -> list[d
                 "match_confidence": 1.0,
                 "match_evidence": (
                     f"seed link: Phase 7 document {doc['id']} belongs to "
-                    f"company {doc['company_id']}; {pub_note}"
+                    f"company {doc['company_id']} (ticker {ticker}); {pub_note}"
                 ),
             }
         )

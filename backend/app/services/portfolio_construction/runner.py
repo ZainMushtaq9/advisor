@@ -26,6 +26,7 @@ from decimal import Decimal
 from sqlalchemy.orm import Session
 
 from app.models.decision import Decision
+from app.models.forecasting import ForecastAssessment
 from app.models.market import MarketPrice
 from app.models.portfolio import (
     PortfolioComparison,
@@ -55,8 +56,15 @@ PRICE_DAY = date(2026, 11, 3)
 DECISION_DAY = date(2026, 11, 4)
 
 # Analysis universe for this run: the statement companies plus
-# HBL, which carries an explicit Phase 15 abstention. HBL is
-# eligibility-checked (it has a valid quote) but rule-excluded.
+# HBL, which since the re-run batch has statements loaded and a
+# current Phase 15 decision (2026-11-05 SCREEN_PASS). HBL is
+# eligibility-checked (it has a valid quote) but remains outside
+# the portfolio universes below: the baseline is defined over the
+# 3 original statement companies (methods.md), and the rule
+# portfolios take SCREEN_PASS companies among those three only.
+# Expanding either universe to a 4th name is a new portfolio
+# design (new portfolio names + Phase 17 ledger re-derivation),
+# not a re-run, and needs its own brief.
 STATEMENT_TICKERS = ["HUBC", "NML", "OGDC"]
 ANALYSIS_TICKERS = ["HUBC", "NML", "OGDC", "HBL"]
 
@@ -478,10 +486,13 @@ def run_portfolios(
                 "ticker": "HBL",
                 "reason_code": "SCREEN_NOT_RUNNABLE",
                 "reason_detail": (
-                    "Baseline scope is the statement companies; HBL has "
-                    "no statements loaded (Phase 15 SCREEN_NOT_RUNNABLE) "
-                    "and is therefore out of baseline scope, not out of "
-                    "the universe. HBL's quote itself is ELIGIBLE."
+                    "Baseline scope is the 3 original statement companies "
+                    "(HUBC, NML, OGDC); HBL has statements loaded since "
+                    "the re-run batch and a current Phase 15 decision "
+                    "(2026-11-05 SCREEN_PASS), but it is still out of "
+                    "baseline scope by definition, not out of the "
+                    "universe. HBL's quote itself is ELIGIBLE. Expanding "
+                    "the baseline universe needs a new portfolio brief."
                 ),
             }
         ],
@@ -586,7 +597,10 @@ def run_portfolios(
     # 4. Mean-variance: gated, never constructed.
     computed_forecasts = 0  # Phase 13 computed 0 forecasts.
     return_observations = 0  # 1 price date gives 0 returns.
-    gate_status, gate_reasons = mean_variance_gate(computed_forecasts, return_observations)
+    assessments_total = session.query(ForecastAssessment).count()
+    gate_status, gate_reasons = mean_variance_gate(
+        computed_forecasts, return_observations, assessments_total
+    )
     report["mean_variance"] = {"status": gate_status, "reasons": gate_reasons}
     _store_comparison(
         session,

@@ -40,14 +40,18 @@ NML = "NML"  # Nishat Mills Limited — TEXTILE COMPOSITE
 OGDC = "OGDC"  # Oil & Gas Development Company Limited — OIL & GAS EXPLORATION
 HBL = "HBL"  # Habib Bank Limited — COMMERCIAL BANKS (PENDING input, see below)
 
-# HBL is a pending 4th company: its CY2025 annual report PDF could not
-# be fetched (issuer-site bot-management challenge on the PDF asset)
-# and a live-browser download runs separately. Every structure below
-# accepts a new company by adding one PERIODS entry and one KEY_MAP
-# entry; no redesign is needed. Until its statements exist, HBL has
-# no ratios, no health row, and no warning row — it is reported as
-# PENDING, never as zero or NOT_CALCULABLE-by-missing-data confusion.
-PENDING_COMPANIES = {HBL: "statements not yet loaded (HBL CY2025 PDF blocked at download)"}
+# HBL was a pending 4th company until 2026-11-05, when its CY2025
+# annual report was obtained via a normal browser visit and its
+# consolidated audited statements were extracted (branch
+# phase-07-hbl-extraction 42bd8e2: 30 statements, 800 line items).
+# HBL is now a computed company with a BANK-ADAPTED key map (see the
+# HBL entry in KEY_MAPS): bank lines are used only where they are a
+# genuine analogue, and industrial concepts with no bank analogue
+# (cost of revenue, gross profit, current assets/liabilities,
+# inventory, trade receivables/payables, finance cost) map to None so
+# their metrics stay insufficient_inputs — never an industrial number
+# dressed as a bank ratio. HBL has no pending entry anymore.
+PENDING_COMPANIES: dict[str, str] = {}
 
 # ---------------------------------------------------------------------------
 # Period configuration. BS dates are point-in-time statement dates;
@@ -76,6 +80,13 @@ PERIODS = {
         "flow_prior": ("2024-07-01", "2024-12-31", "half_yearly"),
         "bs_current": "2025-12-31",
         "bs_prior": "2025-06-30",
+    },
+    HBL: {
+        "label": "FY2025 annual (audited, consolidated)",
+        "flow_current": ("2025-01-01", "2025-12-31", "annual"),
+        "flow_prior": ("2024-01-01", "2024-12-31", "annual"),
+        "bs_current": "2025-12-31",
+        "bs_prior": "2024-12-31",
     },
 }
 
@@ -170,6 +181,61 @@ KEY_MAPS = {
         "total_equity": "total_equity",
         "owners_equity": None,  # no NCI split on the extracted balance sheet
         "ib_debt": ("long_term_lease_liability", "short_term_lease_liability"),
+    },
+    # HBL — BANK-ADAPTED map. Every mapping is documented; None means
+    # the industrial concept has no bank analogue in the extracted
+    # faces, so dependent metrics stay insufficient_inputs:
+    #   revenue = total_income (the bank's top line: net markup income
+    #     + total non-markup income).
+    #   cost / gross_profit = None (a bank has no cost of revenue or
+    #     gross profit; gross_margin, inventory_days, payables_days and
+    #     gross_margin_change_pp stay insufficient — never derived).
+    #   operating_profit = profit_before_credit_loss_tax (pre-provision
+    #     operating profit, the standard bank operating-profit
+    #     analogue; operating_margin and roce use it, labelled as such).
+    #   finance_cost = None (markup_expensed is interest expense — a
+    #     core cost of funds for a bank, not a financing cost; see
+    #     NOT_APPLICABLE for interest_coverage).
+    #   owners_profit = pat_equity_holders, loaded from the income face
+    #     via the runner fallback: HBL's changes-in-equity faces are
+    #     component-scoped (no scope-NULL face), so the equity-face
+    #     load returns nothing for HBL (see runner.load_period_inputs).
+    #   cash = cash_treasury_banks + balances_other_banks (the bank's
+    #     cash-and-bank-balances analogue; current_ratio/quick_ratio/
+    #     cash_ratio still stay insufficient because banks do not
+    #     classify current assets/liabilities in the extracted faces).
+    #   current_assets / current_liabilities / inventory / trade_debts
+    #     / payables = None (no such classification or concept for a
+    #     bank in these faces; advances are the loan book, not trade
+    #     receivables, and deposits are funding, not trade payables).
+    #   ib_debt = borrowings + subordinated_debt + lease_liabilities
+    #     (wholesale funding leverage, NOT classic industrial
+    #     interest-bearing debt; deposits are excluded because for a
+    #     bank they are operating liabilities, and they already enter
+    #     debt_to_assets/debt_to_equity via total_liabilities).
+    HBL: {
+        "revenue": "total_income",
+        "cost": None,
+        "gross_profit": None,
+        "operating_profit": "profit_before_credit_loss_tax",
+        "finance_cost": None,
+        "pat": "profit_after_taxation",
+        "owners_profit": "pat_equity_holders",
+        "eps": "eps_basic_diluted",
+        "ocf": "cf_net_operating",
+        "capex": ("ppe_investment", "intangible_investment"),
+        "dividends": ("dividend_paid",),
+        "cash": ("cash_treasury_banks", "balances_other_banks"),
+        "current_assets": None,
+        "current_liabilities": None,
+        "inventory": None,
+        "trade_debts": None,
+        "payables": None,
+        "total_assets": "total_assets",
+        "total_liabilities": "total_liabilities",
+        "total_equity": "total_equity",
+        "owners_equity": "equity_attributable",
+        "ib_debt": ("borrowings", "subordinated_debt", "lease_liabilities"),
     },
 }
 
@@ -317,5 +383,13 @@ NOT_APPLICABLE = {
         "not_applicable_by_structure: no finance-cost line and no "
         "interest-bearing loans in the extracted statements (lease "
         "liabilities only); a coverage ratio has no denominator by design"
+    ),
+    # For a bank, markup_expensed (interest expense) is a core cost of
+    # funds, not a financing cost: an interest-coverage ratio has no
+    # meaning for HBL by structure, not merely missing data.
+    ("interest_coverage", HBL): (
+        "not_applicable_by_structure: a bank's markup expense is the "
+        "cost of funds (an operating cost), not a financing cost, so "
+        "an interest-coverage ratio has no denominator by design"
     ),
 }

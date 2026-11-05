@@ -8,7 +8,7 @@ rows idempotently (a second --commit writes 0 new rows).
 
 Usage (DATABASE_URL must be set, e.g. from database/.env):
   python scripts/run_fundamental_analysis.py --dry-run
-  python scripts/run_fundamental_analysis.py --commit [--company HUBC,NML,OGDC]
+  python scripts/run_fundamental_analysis.py --commit [--company HUBC,NML,OGDC,HBL]
 
 Exit codes: 0 ok; 1 operational failure; 2 bad arguments / missing
 DATABASE_URL. The report is JSON on stdout; the summary line goes
