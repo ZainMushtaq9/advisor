@@ -196,6 +196,11 @@ def test_no_execution_path_and_get_only_endpoints():
     for path in root.rglob("*.py"):
         if "test" in path.parts:
             continue
+        # Phase 29 allowlist: the acceptance auditor holds these
+        # identifiers as SEARCH patterns for its own scan; it
+        # contains no execution code and never calls them.
+        if "acceptance" in path.parts and path.name == "audits.py":
+            continue
         text = path.read_text(encoding="utf-8")
         for token in forbidden:
             if token in text:

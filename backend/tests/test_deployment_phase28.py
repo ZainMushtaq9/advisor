@@ -31,6 +31,12 @@ ALLOWED_BACKEND_DEPS = {
     "pytest",
     "ruff",
     "fpdf2",
+    # Phase 29 (defect D-13): extraction dependencies, recorded late
+    # with licences in backend/LICENCES.md. PyMuPDF is AGPL-3.0-or-
+    # commercial (defect D-14 review item before public hosted
+    # distribution); pdfplumber is MIT.
+    "pymupdf",
+    "pdfplumber",
 }
 
 # Known-free frontend packages (all MIT/ISC/Apache-2.0/BSD as published).

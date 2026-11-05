@@ -38,7 +38,25 @@ never described as free.
 ## Deliberately NOT included in Phase 2 foundation
 
 pandas, NumPy, scikit-learn, statsmodels, Celery, Redis clients,
-PyMuPDF, Ollama clients and PyTorch are Phase 1 stack items for later
+Ollama clients and PyTorch are Phase 1 stack items for later
 phases/tasks — they are not installed here, so no licence or cost
 claim is made for them in this phase. When a later phase adds one, its
 shipped licence must be recorded here first, per Phase 1 gate G-02/G-04.
+
+## Phase 29 (defect D-13 fix): extraction dependencies recorded late
+
+PyMuPDF and pdfplumber were used by Phase 7 extraction but were
+absent from requirements.txt (unpinned) and from this file, against
+the Phase 1 gate G-02/G-04 rule quoted above. Recorded here in
+Phase 29 with the installed versions; the pins are in
+requirements.txt. No behaviour changed.
+
+| Package | Version | Licence |
+|---|---|---|
+| PyMuPDF | 2.1 | Dual Licensed — GNU AFFERO GPL 3.0 or Artifex Commercial License |
+| pdfplumber | 0.11.10 | MIT (per its METADATA licence classifier) |
+
+Review item (defect D-14): PyMuPDF's AGPL-3.0 option must be
+reviewed before any public hosted deployment or redistribution of
+this project. This is not a current violation claim: the project is
+local research, not a distributed network service.

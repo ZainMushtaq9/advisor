@@ -167,6 +167,11 @@ def test_no_execution_path_in_application_source() -> None:
         for path in root.rglob("*.py"):
             if "test" in path.name:
                 continue
+            # Phase 29 allowlist: the acceptance auditor holds these
+            # identifiers as SEARCH patterns for its own scan; it
+            # contains no execution code and never calls them.
+            if "acceptance" in path.parts and path.name == "audits.py":
+                continue
             text = path.read_text(encoding="utf-8")
             for identifier in EXECUTION_IDENTIFIERS:
                 if identifier in text:

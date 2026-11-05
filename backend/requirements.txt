@@ -15,3 +15,12 @@ ruff==0.17.3
 # Phase 22: fpdf2 (free, pure Python) for PDF report exports.
 # Installed and verified 2026-11-04/05 in backend/.venv (2.9.0).
 fpdf2==2.9.0
+# Phase 29 (defect D-13 fix): PyMuPDF and pdfplumber were used by
+# Phase 7 extraction (PyMuPDF imported lazily as `pymupdf` in
+# financial_statements/extract.py and as `fitz` in rag/indexing.py;
+# pdfplumber for the independent cross-read) but were unpinned and
+# unrecorded. Installed versions verified 2026-11-05 in backend/.venv.
+# PyMuPDF is dual-licensed AGPL-3.0-or-commercial: see LICENCES.md
+# (defect D-14 — review before any public hosted distribution).
+PyMuPDF==2.1
+pdfplumber==0.11.10

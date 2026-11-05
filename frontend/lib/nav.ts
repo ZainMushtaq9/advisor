@@ -127,4 +127,10 @@ export const NAV_ITEMS: NavItem[] = [
     description:
       "System health, data-quality SLOs, source freshness, exception queue, incident reports, and performance baselines. Read-only; runs execute through the CLI.",
   },
+  {
+    href: "/admin/acceptance",
+    label: "Acceptance",
+    description:
+      "End-to-end integration, system acceptance and independent audit: scenario results, recomputations, gate evaluation, and the defect register. Read-only; runs execute through the CLI.",
+  },
 ];

@@ -230,6 +230,11 @@ def test_no_execution_path_in_codebase():
     )
     hits = []
     for path in app_root.rglob("*.py"):
+        # Phase 29 allowlist: the acceptance auditor holds these
+        # identifiers as SEARCH patterns for its own scan; it
+        # contains no execution code and never calls them.
+        if "acceptance" in path.parts and path.name == "audits.py":
+            continue
         text = path.read_text()
         for token in forbidden:
             if token in text:
