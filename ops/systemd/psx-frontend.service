@@ -1,0 +1,25 @@
+# PSX Intelligence AI — frontend service (Phase 28).
+# Instantiated by ops/install.sh: @INSTALL_PATH@ = repo checkout root,
+# @SERVICE_USER@ = service user. Do NOT edit the installed copy by hand —
+# re-run ops/install.sh instead.
+# Serves the PRODUCTION build only (`next start`). If frontend/.next is
+# missing, this service fails fast — build first (cd frontend && npm run build).
+# NEXT_PUBLIC_API_URL is baked into the build at build time, not read at
+# runtime: changing the API URL requires a rebuild, not a restart.
+# Backend CORS allows only port 3000 origins by default: keep this service
+# on port 3000, or set CORS_ORIGINS in the backend environment first.
+[Unit]
+Description=PSX Intelligence AI frontend (Next.js production server)
+After=network.target psx-backend.service
+Wants=psx-backend.service
+
+[Service]
+Type=simple
+User=@SERVICE_USER@
+WorkingDirectory=@INSTALL_PATH@/frontend
+ExecStart=@INSTALL_PATH@/frontend/node_modules/.bin/next start --hostname 127.0.0.1 --port 3000
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

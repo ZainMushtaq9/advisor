@@ -1,0 +1,28 @@
+# PSX Intelligence AI — backend service (Phase 28).
+# Instantiated by ops/install.sh: @INSTALL_PATH@ = repo checkout root,
+# @SERVICE_USER@ = service user. Do NOT edit the installed copy by hand —
+# re-run ops/install.sh instead.
+# No Docker, no paid service: plain uvicorn from the backend venv.
+# The database password is NOT in this file: it comes from
+# @INSTALL_PATH@/database/.env (gitignored, mode 0600) via EnvironmentFile.
+# NEXT_PUBLIC_* values are irrelevant here (they are baked into the
+# frontend build, not read at backend runtime).
+[Unit]
+Description=PSX Intelligence AI backend (FastAPI/uvicorn)
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=simple
+User=@SERVICE_USER@
+WorkingDirectory=@INSTALL_PATH@/backend
+EnvironmentFile=@INSTALL_PATH@/database/.env
+ExecStart=@INSTALL_PATH@/backend/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000
+Restart=on-failure
+RestartSec=5
+# Loopback-only binding: no firewall rule needed, no TLS termination here.
+# If the API is ever exposed beyond loopback, put a TLS reverse proxy in
+# front first — that proxy is NOT configured by this project.
+
+[Install]
+WantedBy=multi-user.target

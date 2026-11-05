@@ -33,6 +33,21 @@ if [ "$TARGET_DB" = "psx_intelligence" ] && [ "${ALLOW_LIVE_RESTORE:-0}" != "1" 
   echo "restore: only after taking a verified backup of the live database." >&2
   exit 2
 fi
+# PHASE 28 EXTENSION — encrypted backups: if plaintext is absent but the
+# .gpg files are present, decrypt in place first (requires the private key
+# in the operator's keyring). Decryption happens only inside the backup
+# directory the operator explicitly named; nothing is decrypted elsewhere.
+if [ ! -f "$BACKUP_DIR/database.dump" ] && [ -f "$BACKUP_DIR/database.dump.gpg" ]; then
+  command -v gpg >/dev/null 2>&1 || { echo "restore: FAIL — encrypted backup but gpg not installed" >&2; exit 2; }
+  echo "restore: decrypting database.dump.gpg (private key required)..."
+  gpg --batch --yes --output "$BACKUP_DIR/database.dump" --decrypt "$BACKUP_DIR/database.dump.gpg" \
+    || { echo "restore: FAIL — database.dump decryption failed" >&2; exit 2; }
+fi
+if [ ! -f "$BACKUP_DIR/files.tar.gz" ] && [ -f "$BACKUP_DIR/files.tar.gz.gpg" ]; then
+  echo "restore: decrypting files.tar.gz.gpg (private key required)..."
+  gpg --batch --yes --output "$BACKUP_DIR/files.tar.gz" --decrypt "$BACKUP_DIR/files.tar.gz.gpg" \
+    || { echo "restore: FAIL — files.tar.gz decryption failed" >&2; exit 2; }
+fi
 [ -f "$BACKUP_DIR/database.dump" ] || { echo "restore: no database.dump in $BACKUP_DIR" >&2; exit 2; }
 [ -f "$BACKUP_DIR/manifest.json" ] || { echo "restore: no manifest.json in $BACKUP_DIR" >&2; exit 2; }
 
