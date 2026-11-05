@@ -38,6 +38,7 @@ from app.models.jobs import (
     JobRun,
 )
 from app.services.jobs import calendar as cal
+from app.services.jobs.registry import JOB_DEFINITIONS
 from app.services.jobs import handlers as job_handlers
 from app.services.jobs import runner as jobs_runner
 
@@ -158,8 +159,13 @@ def test_register_inserts_and_preserves_operator_status(tmp_path) -> None:
     engine = _engine(tmp_path)
     session = _session(engine)
     result = jobs_runner.register_definitions(session)
-    assert len(result["inserted"]) == 8
-    assert session.query(JobDefinition).count() == 8
+    # Count derives from the registry, not a hardcoded number: the
+    # News Intelligence Engine adds 3 definitions (8 Phase 25 + 3
+    # news), and the test's intent is "register inserts everything".
+    assert len(result["inserted"]) == len(JOB_DEFINITIONS)
+    assert session.query(JobDefinition).count() == len(JOB_DEFINITIONS)
+    assert "news_collection_daily" in result["inserted"]
+    assert "news_digest" in result["inserted"]
     # Operator pauses an active job; re-register must NOT re-enable it.
     health = jobs_runner.get_definition(session, "system_health")
     health.status = "paused"
@@ -693,12 +699,14 @@ def test_jobs_api_endpoints(tmp_path, monkeypatch) -> None:
     with TestClient(app, raise_server_exceptions=False) as client:
         defs = client.get("/api/v1/jobs/definitions")
         assert defs.status_code == 200
-        assert len(defs.json()["definitions"]) == 8
+        assert len(defs.json()["definitions"]) == len(JOB_DEFINITIONS)
         paused = [d for d in defs.json()["definitions"] if d["status"] == "paused"]
         assert {d["job_key"] for d in paused} == {
             "market_post_close",
             "filing_check",
             "macro_release_check",
+            "news_collection_daily",
+            "news_reconciliation_post_close",
         }
         runs = client.get("/api/v1/jobs/runs")
         assert runs.status_code == 200

@@ -186,6 +186,17 @@ JOB_DEFINITIONS: list[dict] = [
     },
 ]
 
+# News Intelligence Engine jobs (single source of truth:
+# app.services.news_intelligence.jobs_spec.NEWS_JOB_DEFINITIONS).
+# Appended here so scripts/run_jobs.py register seeds them
+# idempotently alongside the Phase 25 jobs, preserving any
+# operator-changed status on re-registration.
+from app.services.news_intelligence.jobs_spec import (  # noqa: E402
+    NEWS_JOB_DEFINITIONS,
+)
+
+JOB_DEFINITIONS.extend(NEWS_JOB_DEFINITIONS)
+
 # Row counts verified live at the end of Phase 24
 # (2026-11-05, migration 20261104_0020). The drift_check
 # handler compares the live database against these and

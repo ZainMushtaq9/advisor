@@ -40,6 +40,11 @@ from sqlalchemy.orm import Session
 
 from app.models.jobs import JobRun
 from app.services.jobs.registry import EXPECTED_COUNTS
+from app.services.news_intelligence.jobs_handlers import (
+    handle_news_collection_daily,
+    handle_news_digest,
+    handle_news_reconciliation_post_close,
+)
 
 # Retention policy (Phase 24): auth audit logs are kept 12
 # months. Job tables are NEVER purged by this handler: they
@@ -305,6 +310,9 @@ HANDLERS: dict[str, Callable[[JobContext], dict]] = {
     "collection_market_post_close": handle_collection_market_post_close,
     "collection_filing_check": handle_collection_filing_check,
     "collection_macro_release_check": handle_collection_macro_release_check,
+    "news_collection_daily": handle_news_collection_daily,
+    "news_reconciliation_post_close": handle_news_reconciliation_post_close,
+    "news_digest": handle_news_digest,
 }
 
 # Errors that must NOT be retried: retrying cannot fix them.

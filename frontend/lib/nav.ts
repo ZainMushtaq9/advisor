@@ -42,6 +42,12 @@ export const NAV_ITEMS: NavItem[] = [
       "Seed events from stored rows only; live collection is Terms-gated.",
   },
   {
+    href: "/news-intelligence",
+    label: "News Intelligence",
+    description:
+      "Processed articles, impact dashboard and news assistant — stored rows only, no live collection.",
+  },
+  {
     href: "/fundamentals",
     label: "Fundamentals",
     description: "Statement-derived ratios and health for HUBC, NML and OGDC.",
