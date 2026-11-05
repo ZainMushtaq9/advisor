@@ -14,12 +14,13 @@ Rules enforced here:
 
 from __future__ import annotations
 
+import json
 import os
 from functools import lru_cache
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import field_validator, model_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 # Names of settings the /config/status endpoint may report on, by name only.
 # Keep this list in sync with the fields on Settings.
@@ -54,7 +55,13 @@ class Settings(BaseSettings):
     # Optional on purpose: unset means "no database configured yet".
     # Never put a real credential in a default value.
     DATABASE_URL: str | None = None
-    CORS_ORIGINS: tuple[str, ...] = DEFAULT_CORS_ORIGINS
+    # NoDecode: the documented env format is comma-separated
+    # (see .env.example), but pydantic-settings JSON-decodes complex
+    # fields from env before validators run, so a plain origin string
+    # crashed boot with SettingsError. NoDecode delivers the raw
+    # string to _split_cors_origins below, which handles both the
+    # comma-separated form and a JSON list.
+    CORS_ORIGINS: Annotated[tuple[str, ...], NoDecode] = DEFAULT_CORS_ORIGINS
     # Phase 24 authentication. "off" is the development default so the
     # Phase 23 dashboard (credential-less GET calls) keeps working;
     # production refuses to boot with enforcement off (see validator).
@@ -72,6 +79,14 @@ class Settings(BaseSettings):
     @classmethod
     def _split_cors_origins(cls, value: object) -> object:
         if isinstance(value, str):
+            stripped = value.strip()
+            if stripped.startswith("["):
+                try:
+                    parsed = json.loads(stripped)
+                except json.JSONDecodeError:
+                    parsed = None
+                if isinstance(parsed, list):
+                    return tuple(str(o).strip() for o in parsed if str(o).strip())
             return tuple(o.strip() for o in value.split(",") if o.strip())
         return value
 
