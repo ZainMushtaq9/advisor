@@ -1,5 +1,32 @@
 # PSX Intelligence AI
 
+## Release status — Phase 30 handover (2026-11-05) — READ THIS FIRST
+
+**System verdict: PARTIALLY COMPLETE.** Phases 1–3 are COMPLETE; Phases
+4–29 are PARTIALLY COMPLETE; Phase 30 is the release + handover snapshot
+(tag `v0.2.0-handover` on branch `phase-30-release`). This is NOT a production release and NOT a merge to `main` (remote `main` is README-only, unrelated history; no merge without a separate approval).
+
+**What actually exists:** 470-company registry (Main Board / Normal
+Counter only, all UNVERIFIED); 444 price rows on ONE trading date
+(2026-11-03, all UNVERIFIED, previous_close NULL); statements for 4
+companies (HUBC, NML, OGDC, HBL at statement level only — HBL ratios,
+valuations, and decisions do not exist yet; the Phases 8+ HBL re-runs
+are sequenced after Phase 30); 22 DRAFT reports (0 approved, 0
+published); 89 in-app alerts; 3 SIMULATED portfolios; 0 forecasts
+(all 120 assessments abstained); all user-facing decisions WITHHELD;
+all backtests NOT_RUNNABLE; no live auth accounts; no external
+notifications; no broker/order path; no real trades, ever.
+
+**Corrections to the Phase 2-era text below:** the sections describing
+Phase 2 as "this foundation" are historical (Phases 3–30 followed; see
+`docs/phase-30/handover_report.md` for the current state). Docker is
+NOT used anywhere in this project (user decision 2026-11-04); the
+Phase 2 Docker definitions below are history only, and the ops scripts
+contain no docker invocations (enforced by test). Full current state,
+limitations, and roadmap: `docs/phase-30/handover_report.md`. User
+guide: `docs/phase-30/user_guide.md`. Developer guide:
+`docs/phase-30/developer_guide.md`.
+
 **Budget: PKR 0 absolute.** No paid hosting, database, storage, monitoring, or
 AI subscription in any configuration. Local hardware, electricity, and internet
 are external operating expenses — disclosed, never called free. No permanent
@@ -46,7 +73,7 @@ Playwright E2E is a documented follow-up (see PHASE_2_TEST_REPORT.md).
 | Local AI | Ollama, LOCAL inference only. No external AI API, no Ollama Cloud, no `:cloud` models, no API key |
 | Testing | pytest (backend) + Playwright (frontend E2E, local dev only) |
 | Version control / CI | Git + GitHub Free + GitHub Actions (within free limits); local git + local tests are the fallback |
-| Containers | Docker Engine (Linux) + Dockerfile / Compose (definition, Phase 2); local dev also has a no-Docker path |
+| Containers | NOT USED — Docker definitions exist from Phase 2 only as history; user decision 2026-11-04 bans Docker anywhere; ops scripts contain no docker invocations (enforced by test) |
 
 Full decisions: `docs/phase-01/TECH_STACK_DECISIONS.md` and the ADRs in
 `docs/phase-01/ADR/`. Licence status for every planned dependency:
@@ -99,7 +126,7 @@ pip install -r requirements.txt
 # 5. Frontend
 cd frontend && npm install && npm run dev   # http://localhost:3000
 
-# 6. Full local stack (no Docker — Docker is definition-only on this VM)
+# 6. Full local stack (no Docker — Docker is not used by this project)
 bash scripts/dev.sh
 bash scripts/healthcheck.sh
 bash scripts/stop_dev.sh
