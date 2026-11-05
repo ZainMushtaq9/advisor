@@ -18,7 +18,11 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker
 
 from app.database import Base
-from app.models.news_intelligence import NewsArticle, NewsSentimentAssessment
+from app.models.news_intelligence import (
+    NewsArticle,
+    NewsArticleEntity,
+    NewsSentimentAssessment,
+)
 from app.services.news_events.collectors import PolicyBlocked
 from app.services.news_intelligence import (
     assistant as assistant_mod,
@@ -632,6 +636,150 @@ def test_registry_includes_news_jobs():
     keys = {d["job_key"] for d in JOB_DEFINITIONS}
     assert "news_collection_daily" in keys
     assert "news_digest" in keys
+
+
+# --- API smoke tests (TestClient + SQLite, established jobs-test pattern) ---
+
+API_TABLES = (
+    "news_sources",
+    "news_articles",
+    "news_article_entities",
+    "news_sentiment_assessments",
+    "news_impact_assessments",
+    "news_market_reactions",
+    "news_collection_runs",
+    "news_events",
+    "news_event_companies",
+    "companies",
+    "securities",
+    "sectors",
+)
+
+
+def _api_client(tmp_path, monkeypatch):
+    from fastapi.testclient import TestClient
+
+    from app.config import get_settings
+    from app.main import create_app
+    from app.models.news_events import NewsSource
+    from app.models.reference import Company, Security
+
+    monkeypatch.setenv("DATABASE_URL", f"sqlite:///{tmp_path}/news_api.db")
+    get_settings.cache_clear()
+    app = create_app()
+    engine = app.state.engine
+    assert engine is not None
+    tables = [t for n, t in Base.metadata.tables.items() if n in API_TABLES]
+    Base.metadata.create_all(engine, tables=tables)
+    factory = sessionmaker(bind=engine)
+    with factory() as session:
+        # Explicit ids: reference models use IdMixin Identity, which
+        # does not auto-generate on SQLite (pre-existing design).
+        session.add(
+            Company(id=10, legal_name="Hub Power Company Limited")
+        )
+        session.add(Security(id=100, company_id=10, ticker="HUBC"))
+        session.add(
+            NewsSource(
+                id=1,
+                source_key="psx_announcements",
+                name="PSX Announcements",
+                source_type="official",
+                collection_policy="TERMS_GATED",
+                terms_note="Written permission required.",
+            )
+        )
+        article = NewsArticle(
+            article_id="api-1",
+            title="HUBC announces dividend",
+            source="Test",
+            canonical_url="https://example.invalid/1",
+            summary="HUBC announces dividend",
+            content_hash="api-hash-1",
+            processor="RULE_BASED",
+            status="REVIEW",
+            quality_status="UNVERIFIED",
+        )
+        session.add(article)
+        session.flush()
+        session.add(
+            NewsArticleEntity(
+                article_id=article.id,
+                company_id=10,
+                ticker="HUBC",
+                match_type="TICKER",
+                match_confidence=1.0,
+                needs_review=False,
+            )
+        )
+        session.add(
+            NewsSentimentAssessment(
+                article_id=article.id,
+                sentiment="positive",
+                event_category="dividends",
+                relevance_score=0.6,
+                impact_score=0.7,
+                confidence_score=0.7,
+                potential_impact_horizon="short_term",
+                extracted_facts=["HUBC announces dividend"],
+                supporting_evidence=[],
+                uncertainty_notes=[],
+                risk_factors=[],
+                processor="RULE_BASED",
+            )
+        )
+        session.commit()
+    return TestClient(app, raise_server_exceptions=False)
+
+
+def test_api_feed_and_company_news(tmp_path, monkeypatch):
+    client = _api_client(tmp_path, monkeypatch)
+    feed = client.get("/api/v1/news-intelligence/feed")
+    assert feed.status_code == 200
+    assert len(feed.json()["articles"]) == 1
+    assert feed.json()["articles"][0]["tickers"] == ["HUBC"]
+    filtered = client.get("/api/v1/news-intelligence/feed?ticker=OGDC")
+    assert filtered.json()["articles"] == []
+    company = client.get("/api/v1/news-intelligence/companies/HUBC/news")
+    assert company.status_code == 200
+    assert len(company.json()["articles"]) == 1
+    unknown = client.get("/api/v1/news-intelligence/companies/FAKE/news")
+    assert unknown.status_code == 404
+
+
+def test_api_impact_sources_quality(tmp_path, monkeypatch):
+    client = _api_client(tmp_path, monkeypatch)
+    assert client.get("/api/v1/news-intelligence/impact").status_code == 200
+    sources = client.get("/api/v1/news-intelligence/sources")
+    assert sources.status_code == 200
+    assert sources.json()["sources"][0]["collection_policy"] == "TERMS_GATED"
+    quality = client.get("/api/v1/news-intelligence/quality")
+    assert quality.status_code == 200
+    assert quality.json()["articles_by_status"] == {"REVIEW": 1}
+
+
+def test_api_assistant_shapes(tmp_path, monkeypatch):
+    client = _api_client(tmp_path, monkeypatch)
+    dividends = client.get(
+        "/api/v1/news-intelligence/assistant",
+        params={"q": "Show me HUBC dividends"},
+    )
+    assert dividends.status_code == 200
+    assert dividends.json()["answer_kind"] == "direct_evidence"
+    assert len(dividends.json()["citations"]) == 1
+    assert dividends.json()["retrieval"] == "FULL_TEXT_FALLBACK"
+    rec = client.get(
+        "/api/v1/news-intelligence/assistant",
+        params={"q": "Should I buy HUBC?"},
+    )
+    assert rec.json()["answer_kind"] == "uncertainty"
+    assert rec.json()["citations"] == []
+    missing = client.get(
+        "/api/v1/news-intelligence/assistant",
+        params={"q": "Show me LUCK dividends"},
+    )
+    assert missing.json()["answer_kind"] == "missing_data"
+    assert missing.json()["citations"] == []
 
 
 # --- SQLite model tests ------------------------------------------------------
