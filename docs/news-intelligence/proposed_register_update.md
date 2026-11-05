@@ -18,8 +18,9 @@ Verdict: PARTIALLY COMPLETE.
   tables); CLI `scripts/run_news_intelligence.py`; 6 GET-only API
   endpoints; 3 frontend pages + nav entry; 3 Phase 25 jobs (2
   paused, 1 active read-only digest).
-- Evidence: backend suite 520 passed (468 post-batch + 52 net
-  new); frontend vitest 11 passed; webpack build 30 static pages;
+- Evidence: backend suite 526 passed (468 post-batch + 58 new
+  tests in the news-intelligence file); frontend vitest 11 passed;
+  webpack build 30 static pages;
   scratch seed chain reproduced (470 companies, 444 prices, 118
   statements, 8 news events incl. HBL); scratch engine runs: 20
   evaluation articles stored, 8 refused collection runs, 8

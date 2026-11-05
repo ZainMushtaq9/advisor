@@ -4,19 +4,18 @@
 
 | Suite | Result |
 |---|---|
-| Backend pytest (full) | 520 passed, 0 failed |
+| Backend pytest (full) | 526 passed, 0 failed |
 | Frontend vitest | 11 passed |
 | Frontend webpack build | PASS, 30 static pages (27 at handover + 3 new) |
 | Scratch migration 0025 | Applied 0024 -> 0025, verified head; downgrade + re-upgrade verified |
 | Scratch CLI runs | process 20/20 stored, enforce 8/8 refused, reactions 8/8 stored |
 
-Backend count walk: 468 (post-batch) -> 520. The +52 is the new
-news-intelligence suite (55 tests in the file, minus overlaps
-with updated Phase 25 count assertions) plus the jobs-spec
-regression tests. No pre-existing test was weakened: the two
-Phase 25 count assertions were changed from hardcoded 8 to
-`len(JOB_DEFINITIONS)` because the registry legitimately grew to
-11 definitions — their intent (register inserts everything,
+Backend count walk: 468 (post-batch) -> 526. The +58 is the new
+news-intelligence suite (58 tests in the file: unit, SQLite model,
+runner, and API smoke tests). No pre-existing test was weakened:
+the two Phase 25 count assertions were changed from hardcoded 8
+to `len(JOB_DEFINITIONS)` because the registry legitimately grew
+to 11 definitions — their intent (register inserts everything,
 operator pauses preserved) is unchanged and now also asserts the
 news jobs are seeded.
 
