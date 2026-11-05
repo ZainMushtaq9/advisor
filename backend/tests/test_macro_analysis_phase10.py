@@ -154,17 +154,31 @@ def test_every_exposure_cites_statement_evidence():
         assert exp["evidence_type"] == "statement_line_item"
         assert exp["evidence_ref"]
         assert "sector_membership" not in exp["evidence_type"]
-    assert len(EXPOSURES) == 6
+    assert len(EXPOSURES) == 9
 
 
-def test_hbl_has_no_exposure_rows():
+def test_hbl_has_bank_exposures():
     # Exposures are seeded by ticker (never by surrogate company id).
-    assert all(exp["ticker"] != HBL for exp in EXPOSURES)
+    # HBL joined in the HBL re-run batch with bank-adapted exposures.
+    hbl = [exp for exp in EXPOSURES if exp["ticker"] == HBL]
+    assert {exp["exposure_key"] for exp in hbl} == {
+        "rates_markup_income",
+        "rates_funding_cost",
+        "fx_income",
+    }
+    assert all("income:" in exp["evidence_ref"] for exp in hbl)
 
 
 def test_sector_profiles_cover_four_sectors():
-    sectors = {p["sector_id"] for p in SECTOR_PROFILES}
-    assert sectors == {16, 8, 36, 4}
+    # Profiles are keyed by sector NAME (D-04 fix): surrogate ids shift
+    # across fresh registry imports and must never be hardcoded.
+    sectors = {p["sector_name"] for p in SECTOR_PROFILES}
+    assert sectors == {
+        "POWER GENERATION & DISTRIBUTION",
+        "TEXTILE COMPOSITE",
+        "OIL & GAS EXPLORATION COMPANIES",
+        "COMMERCIAL BANKS",
+    }
     assert all(p["metric_key"].startswith("macro:") for p in SECTOR_PROFILES)
     assert len(SECTOR_PROFILES) == 12
 

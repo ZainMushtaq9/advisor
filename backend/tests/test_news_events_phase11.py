@@ -219,6 +219,7 @@ def test_seed_builder_shapes_and_skips():
         {
             "id": 13,
             "company_id": 289,
+            "ticker": "HUBC",
             "document_type": "annual_report",
             "title": "HUBCO Integrated Annual Report 2026",
             "source_url": "https://hubpower.com/x.pdf",
@@ -227,14 +228,25 @@ def test_seed_builder_shapes_and_skips():
         {
             "id": 14,
             "company_id": 394,
+            "ticker": "NML",
             "document_type": "quarterly_report",
             "title": "Nishat Mills 3rd Quarter Report 2025",
             "source_url": "https://nishatmillsltd.com/x.pdf",
             "company_name": "Nishat Mills Limited",
         },
         {
+            "id": 8,
+            "company_id": 747,
+            "ticker": "HBL",
+            "document_type": "annual_report",
+            "title": "HBL Annual Report 2025",
+            "source_url": "https://www.hbl.com/assets/documents/HBL_Annual_Report_2025.pdf",
+            "company_name": "Habib Bank Limited",
+        },
+        {
             "id": 99,
             "company_id": 1,
+            "ticker": "XXX",
             "document_type": "mystery_type",
             "title": "Mystery",
             "source_url": None,
@@ -258,13 +270,17 @@ def test_seed_builder_shapes_and_skips():
         },
     ]
     events, skipped = build_seed_events(docs, macros)
-    assert len(events) == 3  # 2 docs + 1 macro; 2 skipped
+    assert len(events) == 4  # 3 docs + 1 macro; 2 skipped
     assert len(skipped) == 2
     hubc = next(e for e in events if e["document_id"] == 13)
     assert hubc["event_date"] == "2026-09-21" and hubc["date_status"] == "known"
     assert hubc["source_key"] == "issuer_ir"
     nml = next(e for e in events if e["document_id"] == 14)
     assert nml["event_date"] is None and nml["date_status"] == "unknown"
+    # HBL resolves by ticker (never by document id, which shifts).
+    hbl = next(e for e in events if e["document_id"] == 8)
+    assert hbl["event_date"] == "2026-03-03" and hbl["date_status"] == "known"
+    assert hbl["summary"] is not None and "66,763,916" in hbl["summary"]
     macro = next(e for e in events if e["macro_event_id"] == 1)
     assert macro["event_type"] == "macro_release" and macro["primary_company_id"] is None
     assert macro["quality_status"] == "VERIFIED"

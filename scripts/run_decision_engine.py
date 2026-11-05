@@ -41,6 +41,12 @@ def main() -> int:
     )
     mode.add_argument("--commit", action="store_true", help="Actually write Phase 15 rows.")
     parser.add_argument("--company", default=None, help="Limit to one ticker (e.g. HUBC).")
+    parser.add_argument(
+        "--decision-date",
+        default=None,
+        help="Decision date ISO (default 2026-11-04). A later date creates a new "
+        "decision grain instead of overwriting; the HBL re-run batch uses 2026-11-05.",
+    )
     args = parser.parse_args()
     database_url = os.environ.get("DATABASE_URL")
     if not database_url:
@@ -53,7 +59,10 @@ def main() -> int:
     session = sessionmaker(bind=engine)()
     try:
         report = runner.run_decisions(
-            session, commit=bool(args.commit), company_filter=args.company
+            session,
+            commit=bool(args.commit),
+            company_filter=args.company,
+            decision_date=args.decision_date,
         )
         if args.commit:
             session.commit()

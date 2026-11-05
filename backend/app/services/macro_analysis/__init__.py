@@ -38,11 +38,13 @@ interest coverage is not_applicable by structure), and any
 commodity-level split of OGDC sales (sales_net carries no commodity
 breakdown in the loaded statements).
 
-HBL (Habib Bank Limited, company 277, COMMERCIAL BANKS) is PENDING:
-its CY2025 statements are not loaded (PDF blocked at download; a
-live-browser download runs separately). It has no exposure rows and no
-computed sector values; the banking sector profile exists as framework
-only, marked pending.
+HBL (Habib Bank Limited, COMMERCIAL BANKS) joined the macro set in
+the post-Phase-30 HBL re-run batch, once its CY2025 consolidated
+audited statements were extracted (branch phase-07-hbl-extraction
+42bd8e2). It now carries three issuer-evidenced exposures (markup
+income, funding cost, FX income — see EXPOSURES); the banking sector
+profiles are framework notes as for the other sectors, now with HBL
+evidence behind them instead of a pending marker.
 """
 
 from __future__ import annotations
@@ -58,15 +60,19 @@ REGIME_METHOD_VERSION = "regime-v1"
 HUBC = "HUBC"  # The Hub Power Company Limited
 NML = "NML"  # Nishat Mills Limited
 OGDC = "OGDC"  # Oil & Gas Development Company Limited
-HBL = "HBL"  # Habib Bank Limited (PENDING input)
+HBL = "HBL"  # Habib Bank Limited (bank exposures, HBL re-run batch)
 
-PENDING_COMPANIES = {HBL: "statements not yet loaded (HBL CY2025 PDF blocked at download)"}
+PENDING_COMPANIES: dict[str, str] = {}
 
-# Sector ids in the live registry.
-SECTOR_POWER = 16  # POWER GENERATION & DISTRIBUTION
-SECTOR_TEXTILE = 8  # TEXTILE COMPOSITE
-SECTOR_EP = 36  # OIL & GAS EXPLORATION COMPANIES
-SECTOR_BANKS = 4  # COMMERCIAL BANKS
+# Sector names in the live registry (verbatim). Sector ids are
+# SURROGATE and shift across fresh registry imports (the original
+# import used 16/8/36/4; the post-VM-replacement import uses
+# 53/45/73/41), so profiles are keyed by sector NAME and resolved to
+# the live id at run time — never by a hardcoded id (D-04 fix).
+SECTOR_POWER = "POWER GENERATION & DISTRIBUTION"
+SECTOR_TEXTILE = "TEXTILE COMPOSITE"
+SECTOR_EP = "OIL & GAS EXPLORATION COMPANIES"
+SECTOR_BANKS = "COMMERCIAL BANKS"
 
 # ---------------------------------------------------------------------------
 # Indicator registry. Keys are stable; units and frequencies are part of
@@ -381,6 +387,66 @@ EXPOSURES = [
         ),
         "quality_status": "UNVERIFIED",
     },
+    # HBL — bank exposures, issuer-evidenced from its CY2025
+    # consolidated statements. A bank is the transmission channel, so
+    # the policy rate is split into its two genuine directions
+    # (markup income vs funding cost) instead of one industrial
+    # "borrowing-cost" row: markup_expensed is a bank's cost of funds,
+    # not a financing cost, and advances/deposits are the loan book
+    # and funding base, not trade receivables/payables.
+    {
+        "ticker": HBL,
+        "exposure_key": "rates_markup_income",
+        "exposure_name": "Interest-rate / markup-income exposure",
+        "direction": "income",
+        "evidence_type": "statement_line_item",
+        "evidence_ref": (
+            "income:markup_earned; income:net_markup_income; "
+            "balance_sheet:advances; balance_sheet:investments"
+        ),
+        "note": (
+            "The policy rate reprices the bank's earning assets: the "
+            "income statement carries markup earned and net markup "
+            "income, and the balance sheet carries advances and "
+            "investments. Higher rates raise markup income where assets "
+            "reprice faster than funding — direction only, no margin "
+            "claim is made."
+        ),
+        "quality_status": "UNVERIFIED",
+    },
+    {
+        "ticker": HBL,
+        "exposure_key": "rates_funding_cost",
+        "exposure_name": "Interest-rate / funding-cost exposure",
+        "direction": "cost",
+        "evidence_type": "statement_line_item",
+        "evidence_ref": (
+            "income:markup_expensed; balance_sheet:deposits_other_accounts; "
+            "balance_sheet:borrowings"
+        ),
+        "note": (
+            "The policy rate reprices the bank's funding: the income "
+            "statement carries markup expensed, and the balance sheet "
+            "carries deposits and borrowings. Higher rates raise funding "
+            "costs — direction only, no margin claim is made."
+        ),
+        "quality_status": "UNVERIFIED",
+    },
+    {
+        "ticker": HBL,
+        "exposure_key": "fx_income",
+        "exposure_name": "Foreign-exchange exposure via FX income",
+        "direction": "income",
+        "evidence_type": "statement_line_item",
+        "evidence_ref": "income:foreign_exchange_income",
+        "note": (
+            "The income statement carries foreign-exchange income — "
+            "treasury FX flows through earnings, which is itself "
+            "evidence of FX exposure. Direction only; no FX position or "
+            "sensitivity amount is claimed."
+        ),
+        "quality_status": "UNVERIFIED",
+    },
 ]
 
 # ---------------------------------------------------------------------------
@@ -388,12 +454,12 @@ EXPOSURES = [
 # "macro:<indicator_code>"). These are framework notes — which indicators
 # matter for the sector and why — not company exposure claims. The
 # "latest value" pointer in source_requirements names the stored
-# observation; HBL's sector row is framework only (HBL pending).
+# observation; HBL's sector row is framework, now with HBL exposures.
 # ---------------------------------------------------------------------------
 
 SECTOR_PROFILES = [
     {
-        "sector_id": SECTOR_POWER,
+        "sector_name": SECTOR_POWER,
         "metric_key": "macro:sbp_policy_rate",
         "applicability": (
             "Power generation is capital-intensive and debt-funded: the "
@@ -405,7 +471,7 @@ SECTOR_PROFILES = [
         " 2026-10-27 (SBP MPS 2026-10-26, VERIFIED).",
     },
     {
-        "sector_id": SECTOR_POWER,
+        "sector_name": SECTOR_POWER,
         "metric_key": "macro:cpi_yoy",
         "applicability": (
             "Energy and wheat prices drive headline CPI and feed back into "
@@ -418,7 +484,7 @@ SECTOR_PROFILES = [
         " review was not directly read.",
     },
     {
-        "sector_id": SECTOR_POWER,
+        "sector_name": SECTOR_POWER,
         "metric_key": "macro:sbp_fx_reserves",
         "applicability": (
             "Import cover context for fuel imports: reserves near 3 months "
@@ -430,7 +496,7 @@ SECTOR_PROFILES = [
         " (SBP MPS 2026-10-26, VERIFIED).",
     },
     {
-        "sector_id": SECTOR_TEXTILE,
+        "sector_name": SECTOR_TEXTILE,
         "metric_key": "macro:sbp_policy_rate",
         "applicability": (
             "Textiles carry large working-capital borrowings: the policy "
@@ -443,7 +509,7 @@ SECTOR_PROFILES = [
         " 2026-10-27 (SBP MPS 2026-10-26, VERIFIED).",
     },
     {
-        "sector_id": SECTOR_TEXTILE,
+        "sector_name": SECTOR_TEXTILE,
         "metric_key": "macro:lsm_growth",
         "applicability": (
             "LSM is the closest official output proxy for manufacturing "
@@ -455,7 +521,7 @@ SECTOR_PROFILES = [
         " (PBS homepage, VERIFIED).",
     },
     {
-        "sector_id": SECTOR_TEXTILE,
+        "sector_name": SECTOR_TEXTILE,
         "metric_key": "macro:cpi_mom",
         "applicability": (
             "Monthly CPI momentum proxies input-cost and wage pressure "
@@ -466,7 +532,7 @@ SECTOR_PROFILES = [
         " homepage, VERIFIED).",
     },
     {
-        "sector_id": SECTOR_EP,
+        "sector_name": SECTOR_EP,
         "metric_key": "macro:current_account_deficit",
         "applicability": (
             "E&P earnings are dollar-linked while the external account sets "
@@ -478,7 +544,7 @@ SECTOR_PROFILES = [
         " for Q1-FY27 (SBP MPS 2026-10-26, UNVERIFIED).",
     },
     {
-        "sector_id": SECTOR_EP,
+        "sector_name": SECTOR_EP,
         "metric_key": "macro:sbp_fx_reserves",
         "applicability": (
             "Reserve cover frames how much external shock the economy can "
@@ -490,7 +556,7 @@ SECTOR_PROFILES = [
         " (SBP MPS 2026-10-26, VERIFIED).",
     },
     {
-        "sector_id": SECTOR_EP,
+        "sector_name": SECTOR_EP,
         "metric_key": "macro:cpi_yoy",
         "applicability": (
             "Energy prices are a first-order CPI driver, so CPI is both a "
@@ -502,37 +568,39 @@ SECTOR_PROFILES = [
         " MPS citing PBS, VERIFIED).",
     },
     {
-        "sector_id": SECTOR_BANKS,
+        "sector_name": SECTOR_BANKS,
         "metric_key": "macro:sbp_policy_rate",
         "applicability": (
             "Banks are the transmission channel itself: the policy rate "
             "sets the corridor (floor/ceiling) and reprices assets and "
-            "liabilities. Framework only — HBL has no loaded statements, "
-            "so no HBL exposure or margin claim is made."
+            "liabilities. HBL's markup-income and funding-cost exposures "
+            "are issuer-evidenced (see EXPOSURES); no margin claim is "
+            "made from sector membership alone."
         ),
         "source_requirements": "Latest stored observation: sbp_policy_rate 12.00% p.a. effective"
-        " 2026-10-27 (SBP MPS 2026-10-26, VERIFIED). HBL PENDING.",
+        " 2026-10-27 (SBP MPS 2026-10-26, VERIFIED).",
     },
     {
-        "sector_id": SECTOR_BANKS,
+        "sector_name": SECTOR_BANKS,
         "metric_key": "macro:m2_growth",
         "applicability": (
             "M2 growth proxies system liquidity and deposit growth, which "
-            "frame bank funding conditions. Framework only — no HBL "
-            "deposit or advance claim is made."
+            "frame bank funding conditions. HBL's deposit base is "
+            "issuer-evidenced (balance_sheet:deposits_other_accounts); "
+            "no deposit-growth amount is claimed from M2 alone."
         ),
         "source_requirements": "Latest stored observation: m2_growth 12.7% y/y as of 2026-10-09"
-        " (SBP MPS 2026-10-26, UNVERIFIED). HBL PENDING.",
+        " (SBP MPS 2026-10-26, UNVERIFIED).",
     },
     {
-        "sector_id": SECTOR_BANKS,
+        "sector_name": SECTOR_BANKS,
         "metric_key": "macro:current_account_deficit",
         "applicability": (
             "External deficits drive FX and reserve dynamics that feed bank "
             "treasury and trade-finance conditions. Framework only."
         ),
         "source_requirements": "Latest stored observation: current_account_deficit US$874 million"
-        " for Q1-FY27 (SBP MPS 2026-10-26, UNVERIFIED). HBL PENDING.",
+        " for Q1-FY27 (SBP MPS 2026-10-26, UNVERIFIED).",
     },
 ]
 

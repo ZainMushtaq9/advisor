@@ -112,13 +112,18 @@ def section_label_for(ticker: str, page_number: int) -> str:
 def extract_pages(pdf_path: str) -> list[tuple[int, str]]:
     """Extract (1-based page number, text) pairs via PyMuPDF.
     Pages with no extractable text return empty text and are
-    skipped by the caller (a gap, never invented content)."""
+    skipped by the caller (a gap, never invented content).
+    NUL bytes are stripped: the HBL report's text layer carries
+    them (found on p.93 during the re-run batch) and PostgreSQL
+    text columns reject NUL outright, so an unstripped chunk
+    aborts the whole index commit. NULs are control artifacts,
+    not content, so stripping them changes no figure or word."""
     import fitz  # PyMuPDF; already a backend dependency (Phase 12)
 
     pages: list[tuple[int, str]] = []
     with fitz.open(pdf_path) as doc:
         for index, page in enumerate(doc, start=1):
-            pages.append((index, page.get_text()))
+            pages.append((index, page.get_text().replace("\x00", "")))
     return pages
 
 

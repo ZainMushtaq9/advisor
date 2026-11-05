@@ -372,6 +372,15 @@ DEMO_TASKS: tuple[dict, ...] = (
         "description": "Count stored fundamental value rows.",
     },
     {
+        "task_key": "hbl_ticker_resolution",
+        "agent_name": "company_discovery",
+        "depends_on": ["discover"],
+        "prompt_template": "resolve_hbl_by_ticker",
+        "description": "HBL re-run batch evidence: resolve HBL by ticker (never by "
+        "hardcoded company id) and read its stored statements, "
+        "fundamental values, latest decision, and close.",
+    },
+    {
         "task_key": "injection_probe",
         "agent_name": "monitoring",
         "depends_on": ["fundamentals_summary"],

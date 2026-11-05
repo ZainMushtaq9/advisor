@@ -300,6 +300,35 @@ def test_technical_momentum_matches_nothing():
     assert all("NOT_CALCULABLE" in r["reason_codes"] for r in results)
 
 
+def test_evaluate_screen_stamps_as_of_date():
+    # HBL re-run batch: a later as-of creates a new run snapshot;
+    # result evidence must carry that snapshot's date, not the default.
+    screen = [s for s in SEED_SCREENS if s["name"] == "dividend_payers"][0]
+    row = {
+        "ticker": "HBL",
+        "security_id": 1,
+        "company_id": 1,
+        "sector": "COMMERCIAL BANKS",
+        "close_price": None,
+        "price_date": None,
+        "volume": None,
+        "volume_share_pct": None,
+        "fundamentals": {},
+        "valuations": {},
+        "dividend_per_share": Decimal("5.00"),
+        "dividend_dates_known": False,
+        "dividend_amount_note": "Maximum stored dividend per share.",
+        "news_event_count": 0,
+        "risk_flag_count": 0,
+        "statement_age_days": 309,
+        "statement_period_end": "2025-12-31",
+        "decision": None,
+    }
+    results = evaluate_screen(screen, [row], as_of_date="2026-11-05")
+    assert results[0]["outcome"] == "MATCH"
+    assert results[0]["evidence"]["as_of_date"] == "2026-11-05"
+
+
 def test_dividend_payers_fixture_outcomes():
     results = {
         r["ticker"]: r for r in evaluate_screen(_screen("dividend_payers"), [HUBC, OGDC, NML, HBL])

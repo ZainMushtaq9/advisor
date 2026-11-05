@@ -140,9 +140,10 @@ METRIC_DEFINITIONS: tuple[tuple, ...] = (
         "pct",
         "market",
     ),
-    # Concentration — ownership (HUBC only; other companies have no
-    # ownership rows) and sector volume HHI (needs per-sector volume
-    # shares, which Phase 12 did not store).
+    # Concentration — ownership (per company with ownership rows;
+    # HUBC from Phase 12 run 1, HBL from the HBL re-run batch) and
+    # sector volume HHI (needs per-sector volume shares, which
+    # Phase 12 did not store).
     (
         "largest_holder_share",
         "concentration",
@@ -280,6 +281,19 @@ SENSITIVITY_ROWS: tuple[tuple[str, str, str], ...] = (
         "balance split is not stored, so no coefficient can be computed.",
     ),
     (
+        "HBL",
+        "rate_sensitivity_coeff",
+        "Markup-income and funding-cost exposures evidenced (Phase 10), "
+        "but the repricing split of advances/deposits is not stored, so "
+        "no coefficient can be computed.",
+    ),
+    (
+        "HBL",
+        "fx_sensitivity_coeff",
+        "FX income exposure evidenced (Phase 10), but no FX-denominated "
+        "amount is stored, so no coefficient can be computed.",
+    ),
+    (
         "OGDC",
         "commodity_sensitivity_coeff",
         "Oil/gas revenue exposure is structural, but no revenue elasticity "
@@ -358,12 +372,23 @@ STRESS_SCENARIOS: tuple[tuple[str, str, str, str], ...] = (
 
 # The simulated reference portfolio: equal-weight HUBC/NML/OGDC,
 # the statement companies. Stated here, used by the runner and the
-# API, never presented as a real holding.
+# API, never presented as a real holding. HBL is NOT added to it by
+# the HBL re-run batch: portfolio inclusion follows the Phase 15/16
+# rules, not availability (its quote is eligible evidence, not an
+# automatic inclusion).
 REFERENCE_PORTFOLIO: tuple[tuple[str, str], ...] = (
     ("HUBC", "33.333333"),
     ("NML", "33.333333"),
     ("OGDC", "33.333333"),
 )
+
+# Per-company risk universe: the statement companies including HBL
+# (HBL re-run batch). Per-company sections (series, liquidity,
+# ownership concentration, sensitivity, staleness, volume checks,
+# rate/FX stress) run over this universe; portfolio sections
+# (single-name/sector caps, portfolio shocks) stay on
+# REFERENCE_PORTFOLIO.
+RISK_TICKERS = ("HUBC", "NML", "OGDC", "HBL")
 
 ANALYSIS_DATE = "2026-11-04"
 PRICE_DATE = "2026-11-03"

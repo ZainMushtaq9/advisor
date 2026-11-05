@@ -106,6 +106,24 @@ def test_top_n_share_hubc_categories():
     assert top_n_share(pcts, 3) == D("69.45")
 
 
+def test_top_n_share_hbl_partition():
+    # HBL re-run batch: largest printed holding AKFED 56.58; top-3
+    # over the printed partition = 56.58 + 10.21 (Foreign Companies)
+    # + 9.73 (Others) = 76.52.
+    pcts = [D("56.58"), D("10.21"), D("9.73"), D("7.82"), D("4.99")]
+    assert top_n_share(pcts, 1) == D("56.58")
+    assert top_n_share(pcts, 3) == D("76.52")
+    # HBL volume tier: 525,393 vs median 54,631.5 -> MEDIUM.
+    assert volume_tier(525393, D("54631.5")) == "MEDIUM"
+
+
+def test_risk_universe_includes_hbl_but_portfolio_unchanged():
+    from app.services.risk_analytics import REFERENCE_PORTFOLIO, RISK_TICKERS
+
+    assert RISK_TICKERS == ("HUBC", "NML", "OGDC", "HBL")
+    assert [t for t, _ in REFERENCE_PORTFOLIO] == ["HUBC", "NML", "OGDC"]
+
+
 def test_hhi_two_equal_shares():
     assert hhi([D(50), D(50)]) == D(5000)
 
@@ -120,7 +138,7 @@ def test_portfolio_shock_impacts():
 def test_registries_complete():
     assert len(METRIC_DEFINITIONS) == 22
     assert len(SERIES_METRICS) == 8
-    assert len(SENSITIVITY_ROWS) == 6
+    assert len(SENSITIVITY_ROWS) == 8  # +2 HBL rows (rate, FX) in the re-run batch
     assert len(CONTROLS_V1) == 5
     assert len(STRESS_SCENARIOS) == 5
     keys = [m[0] for m in METRIC_DEFINITIONS]

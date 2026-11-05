@@ -448,7 +448,16 @@ def run_benchmark(
     Citation precision = matching citations / all citations
     (1.0 when no citation is given for a missing-data case)."""
     seed_benchmark_cases(session, commit=commit)
-    cases = session.query(RagBenchmarkCase).order_by(RagBenchmarkCase.id).all()
+    # Evaluate only the CURRENT code case set. A case retired
+    # from code (e.g. hbl_missing_document, whose no-document
+    # premise ended when HBL was indexed) stays in the database
+    # as history with its old-run results intact, but is never
+    # re-evaluated against a premise that no longer holds;
+    # retired cases are reported explicitly, never hidden.
+    current_keys = {c["case_key"] for c in BENCHMARK_CASES}
+    all_cases = session.query(RagBenchmarkCase).order_by(RagBenchmarkCase.id).all()
+    cases = [c for c in all_cases if c.case_key in current_keys]
+    retired_cases = [c.case_key for c in all_cases if c.case_key not in current_keys]
     corpus_chunks, _ = load_corpus(session, caller_role)
     chunk_text_by_id = {c["id"]: c["text"] for c in corpus_chunks}
     results: list[dict] = []
@@ -538,6 +547,7 @@ def run_benchmark(
         "passed": passed_count,
         "recall_at_k": round(recall, 4),
         "results": results,
+        "retired_cases_skipped": retired_cases,
     }
 
 

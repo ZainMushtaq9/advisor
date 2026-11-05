@@ -9,9 +9,9 @@ in dry-run mode. In commit mode it writes, idempotently:
     category, health-v1) — score, or NULL for insufficient data;
   * one FundamentalWarningEvent row per (company, event_date,
     warning_type);
-  * one SectorMetricProfile row per (sector, metric_key) for the
-    three computed sectors (HBL's COMMERCIAL BANKS gets no profile
-    until its statements exist).
+  * one SectorMetricProfile row per (sector, metric_key) for each
+    computed sector (HBL's COMMERCIAL BANKS gets its profiles once
+    its statements are assessed, as in the HBL re-run batch).
 A second --commit writes 0 new rows (skipped_existing) — the
 idempotency guard. All written rows are UNVERIFIED: calculation
 never upgrades input quality. No row is ever updated or deleted;
@@ -149,6 +149,12 @@ def load_period_inputs(session: Session, ticker: str) -> tuple[dict, list[int], 
     cf_prior, id4 = _load_face(session, company_id, "cash_flow", pe, ps, pfreq)
     bs_cur, id5 = _load_face(session, company_id, "balance_sheet", cfg["bs_current"])
     bs_prior, id6 = _load_face(session, company_id, "balance_sheet", cfg["bs_prior"])
+    # The equity face loader matches scope-NULL faces only. HBL's
+    # changes-in-equity faces are component-scoped (no scope-NULL
+    # face), so eq_cur is empty for HBL; the owners_profit fallback
+    # below (income face) covers exactly that case and no other:
+    # HUBC's scope-NULL equity face still wins, and NML/OGDC map
+    # owners_profit to None so no fallback applies to them.
     eq_cur, id7 = _load_face(session, company_id, "changes_in_equity", fe, fs, freq)
     stmt_ids = [i for i in (id1, id2, id3, id4, id5, id6, id7) if i is not None]
     notes: list[str] = []
@@ -175,7 +181,17 @@ def load_period_inputs(session: Session, ticker: str) -> tuple[dict, list[int], 
     inputs["fin_prior"] = pick(inc_prior, keymap["finance_cost"])
     inputs["pat_cur"] = pick(inc_cur, keymap["pat"])
     inputs["pat_prior"] = pick(inc_prior, keymap["pat"])
-    inputs["owners_profit_cur"] = pick(eq_cur, keymap["owners_profit"])
+    owners_profit = pick(eq_cur, keymap["owners_profit"])
+    if owners_profit is None and keymap["owners_profit"] is not None:
+        # HBL only (see the equity-face note above): its attributable
+        # profit lives on the income face as pat_equity_holders.
+        owners_profit = pick(inc_cur, keymap["owners_profit"])
+        if owners_profit is not None:
+            notes.append(
+                "owners_profit loaded from the income face "
+                "(no scope-NULL changes-in-equity face for this company)"
+            )
+    inputs["owners_profit_cur"] = owners_profit
     inputs["eps_cur"] = pick(inc_cur, keymap["eps"])
     inputs["eps_prior"] = pick(inc_prior, keymap["eps"])
     inputs["ocf_cur"] = pick(cf_cur, keymap["ocf"])

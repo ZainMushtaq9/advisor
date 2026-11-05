@@ -1,14 +1,14 @@
 """Phase 13 runner: registry + feature store + assessments. No HTTP fetch.
 
 Scope decision (documented, not hidden): the analysis universe is
-the 3 statement companies (HUBC, NML, OGDC) — the same scope as
-Phases 8–12. HBL has a price row but no statements, so its
-assessments are pending the Phase 7 load and are recorded as a
-pending note, not as rows; the other 467 registry companies have
-neither statements nor a price series longer than one row, and
-assessing 444 of them would add 15,984 identical abstention rows
-without information. When Phase 7 expands, re-running this script
-adds companies without redesign (the grain is per security).
+the 4 statement companies (HUBC, NML, OGDC, HBL) — the same scope as
+Phases 8–12. HBL joined in the post-Phase-30 HBL re-run batch, once
+its CY2025 statements were extracted; before that it had a price row
+but no statements, so its assessments were pending. The other 466
+registry companies have neither statements nor a price series longer
+than one row, and assessing 444 of them would add identical
+abstention rows without information. When Phase 7 expands, re-running
+this script adds companies without redesign (the grain is per security).
 
 Series lengths are READ from the database, never assumed:
 - close_price / volume: count of market_prices rows per security.
@@ -47,7 +47,7 @@ from app.models.reference import Company, Security
 from . import HORIZONS, TARGETS, method_requirements
 from .coverage import assess
 
-COMPANY_TICKERS = ("HUBC", "NML", "OGDC")
+COMPANY_TICKERS = ("HUBC", "NML", "OGDC", "HBL")
 COMPANY_TARGETS = ("close_price", "return", "direction", "volatility", "volume", "earnings")
 MACRO_TARGETS = {
     "macro_policy_rate": "sbp_policy_rate",
@@ -158,6 +158,7 @@ def run_forecasting(session, commit: bool = False, company_filter: str | None = 
             report["targets_written"] += 1
 
     tickers = [company_filter] if company_filter else list(COMPANY_TICKERS)
+    report["hbl_pending"] = "HBL" not in tickers
     macro_lengths = _macro_series_lengths(session)
 
     for ticker in tickers:

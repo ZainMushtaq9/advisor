@@ -187,6 +187,45 @@ def test_confidence_caps():
     assert confidence("BUY_CANDIDATE", D(1), D(1), "VERIFIED", True, 0) == "HIGH"
 
 
+def test_hbl_batch_decision_shape():
+    # HBL re-run batch (measured 2026-11-05): fundamentals 0
+    # (profitability 73.3333 but solvency 20.0000 < strong_at 70),
+    # valuation 1 (P/E 6.291996 < 10), news 0 (earnings known),
+    # macro -1 (tightening), liquidity 0 (MEDIUM tier),
+    # risk 0 (no warning-severity flag), technical ABSENT.
+    scores = {
+        "fundamentals": fundamentals_score(D("73.3333"), D("20.0000"), False),
+        "valuation": valuation_score(D("6.291996")),
+        "technical": ABSENT,
+        "news_event": news_score(True),
+        "macro": macro_score("tightening"),
+        "liquidity": liquidity_score("MEDIUM"),
+        "risk": risk_score(False),
+    }
+    assert scores == {
+        "fundamentals": 0,
+        "valuation": 1,
+        "technical": ABSENT,
+        "news_event": 0,
+        "macro": -1,
+        "liquidity": 0,
+        "risk": 0,
+    }
+    total, scored = aggregate(scores)
+    assert (total, scored) == (0, 6)
+    assert map_conclusion(scores, []) == "HOLD_CANDIDATE"
+    conf = confidence(
+        "HOLD_CANDIDATE",
+        completeness(scored),
+        agreement(scores, "HOLD_CANDIDATE"),
+        "UNVERIFIED",
+        False,
+        1,
+    )
+    assert conf == "LOW"
+    assert user_facing("HOLD_CANDIDATE", conf)[0] == "WITHHELD"
+
+
 def test_user_facing_withheld_below_medium():
     assert user_facing("HOLD_CANDIDATE", "LOW")[0] == "WITHHELD"
     assert user_facing("INSUFFICIENT_EVIDENCE", "NONE")[0] == "WITHHELD"

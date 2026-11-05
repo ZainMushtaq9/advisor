@@ -38,7 +38,7 @@ def evaluate_gate(scenarios, recomputations, audits, defects):
         "chain_hubc_full",
         "chain_ogdc_full",
         "chain_nml_full",
-        "chain_hbl_partial",
+        "chain_hbl_full",
     ]
     chain_outcomes = [by_scenario.get(k) for k in chain_keys]
     if all(o == "pass" for o in chain_outcomes):
@@ -46,11 +46,14 @@ def evaluate_gate(scenarios, recomputations, audits, defects):
     elif any(o == "fail" for o in chain_outcomes):
         g1 = ("not_met", f"Chain outcomes: {dict(zip(chain_keys, chain_outcomes))}.")
     else:
+        # HBL re-run batch: the old else text cited D-03
+        # ("blocked at statements"); the HBL chain is now
+        # measured by chain_hbl_full, so a non-pass/non-fail
+        # outcome is reported generically, never as D-03.
         g1 = (
             "not_met",
-            "HBL chain is blocked at statements (D-03); HUBC/OGDC/NML "
-            "chains pass. Chain outcomes: "
-            f"{dict(zip(chain_keys, chain_outcomes))}.",
+            "A company chain outcome is blocked or not_evaluable. "
+            f"Chain outcomes: {dict(zip(chain_keys, chain_outcomes))}.",
         )
 
     # G2: critical/high defects resolved.

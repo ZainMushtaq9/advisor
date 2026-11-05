@@ -4,8 +4,8 @@ For one company, every registered method gets exactly one verdict:
 ``computed`` (a Decimal value), ``insufficient_inputs`` (value None
 + the exact missing input or methodological reason), or
 ``not_applicable`` (the method has no meaning for this company's
-structure — currently only the bank residual-income model for
-industrial companies). No verdict ever carries a substituted zero
+structure — the bank residual-income model for industrial companies,
+and industrial EV/DCF models for banks). No verdict ever carries a substituted zero
 or an estimate, and no method is ever averaged with an incompatible
 one: each row stands alone with its own method, inputs, and reason.
 
@@ -133,17 +133,17 @@ def assess(ticker: str, inputs: dict) -> list[dict]:
     out: list[dict] = []
     sector = inputs.get("sector")
     peers = inputs.get("peers") or []
+    # Banking branch: the financial-company rule (brief) — industrial
+    # enterprise-value multiples and industrial DCF are never applied
+    # to a bank. The sector name is the Phase 4 registry sector,
+    # verbatim; COMMERCIAL BANKS is the only bank sector in scope.
+    is_bank = sector == "COMMERCIAL BANKS"
 
     out.append(_assess_pe(inputs))
 
     for key, reason in (
         ("multiples:pb", NO_SHARES_REASON),
         ("multiples:ps", NO_SHARES_REASON),
-        (
-            "multiples:ev_ebitda",
-            NO_SHARES_REASON + "; and no EBITDA line in the extracted statements",
-        ),
-        ("multiples:ev_ebit", NO_SHARES_REASON + " (market cap unavailable)"),
         (
             "multiples:div_yield",
             "no dividend-per-share series: dividends_paid totals exist "
@@ -160,6 +160,39 @@ def assess(ticker: str, inputs: dict) -> list[dict]:
         ),
     ):
         out.append(_insufficient(key, reason))
+    # EV multiples keep their registered position in the method order
+    # (after ps, before div_yield); for banks they are
+    # not_applicable by structure, not merely missing data.
+    if is_bank:
+        ev_entries = [
+            _na(
+                "multiples:ev_ebitda",
+                "not_applicable_by_structure: enterprise-value multiples "
+                "are industrial models; for a bank, debt is raw material "
+                "and enterprise value has no meaning",
+            ),
+            _na(
+                "multiples:ev_ebit",
+                "not_applicable_by_structure: enterprise-value multiples "
+                "are industrial models; for a bank, debt is raw material "
+                "and enterprise value has no meaning",
+            ),
+        ]
+    else:
+        ev_entries = [
+            _insufficient(
+                "multiples:ev_ebitda",
+                NO_SHARES_REASON + "; and no EBITDA line in the extracted statements",
+            ),
+            _insufficient(
+                "multiples:ev_ebit",
+                NO_SHARES_REASON + " (market cap unavailable)",
+            ),
+        ]
+    # out currently holds pe, pb, ps, div_yield, market_cap,
+    # enterprise_value, cf_yield; splice the EV entries back into
+    # their registered position (index 3, after ps).
+    out[3:3] = ev_entries
 
     if not peers:
         out.append(
@@ -189,8 +222,26 @@ def assess(ticker: str, inputs: dict) -> list[dict]:
             )
         )
 
-    out.append(_insufficient("dcf:fcff", NO_DCF_ASSUMPTIONS))
-    out.append(_insufficient("dcf:fcfe", NO_DCF_ASSUMPTIONS))
+    if is_bank:
+        out.append(
+            _na(
+                "dcf:fcff",
+                "not_applicable_by_structure: industrial enterprise-value "
+                "DCF is never applied to a bank; free cash flow to the "
+                "firm has no meaning when debt is raw material",
+            )
+        )
+        out.append(
+            _na(
+                "dcf:fcfe",
+                "not_applicable_by_structure: industrial DCF is never "
+                "applied to a bank; the bank intrinsic model is "
+                "residual income (assessed below), not FCFE",
+            )
+        )
+    else:
+        out.append(_insufficient("dcf:fcff", NO_DCF_ASSUMPTIONS))
+        out.append(_insufficient("dcf:fcfe", NO_DCF_ASSUMPTIONS))
     out.append(
         _insufficient(
             "dividend:ddm",
@@ -244,11 +295,28 @@ def assess(ticker: str, inputs: dict) -> list[dict]:
             "no segment-level statements",
         )
     )
-    out.append(
-        _na(
-            "residual_income:bank",
-            "residual-income model is bank-appropriate; the company "
-            f"is industrial (sector {sector})",
+    if is_bank:
+        # The bank model APPLIES to HBL, but it cannot compute: a
+        # residual-income value needs a source-backed cost of equity,
+        # a forecast residual-income series, and a book-value growth
+        # assumption — none exists in the data, and none may be
+        # invented. insufficient_inputs, never a fabricated value and
+        # never not_applicable (the model is the right model for a bank).
+        out.append(
+            _insufficient(
+                "residual_income:bank",
+                "bank residual-income model applies, but no source-backed "
+                "cost of equity, forecast residual-income series, or "
+                "book-value growth assumption exists in the data; "
+                "assumptions must not be invented",
+            )
         )
-    )
+    else:
+        out.append(
+            _na(
+                "residual_income:bank",
+                "residual-income model is bank-appropriate; the company "
+                f"is industrial (sector {sector})",
+            )
+        )
     return out

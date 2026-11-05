@@ -507,15 +507,32 @@ def measure_slos(session, run_date: date | None = None) -> list[dict]:
     emit(
         "drift_difference_count",
         Decimal(len(differences)),
-        (
-            "Live business counts match the Phase 24 baseline."
-            if not differences
-            else f"{len(differences)} count(s) differ from baseline: {differences}."
-        ),
+        _drift_reason(differences),
         {"differences": differences},
     )
 
     return out
+
+
+def _drift_reason(differences: list[dict]) -> str:
+    """Display reason for the drift SLO, capped for VARCHAR(1000).
+
+    The full expected/live pairs live in evidence (JSON, uncapped)
+    and in the drift exception's evidence, so capping the display
+    reason never hides a difference. (The HBL re-run batch grew
+    the list past 1000 chars and the observability commit
+    failed on StringDataRightTruncation.)
+    """
+    if not differences:
+        return "Live business counts match the Phase 24 baseline."
+    table_list = ", ".join(d["table"] for d in differences)
+    reason = (
+        f"{len(differences)} count(s) differ from baseline "
+        f"({table_list}); full expected/live pairs in evidence."
+    )
+    if len(reason) > 990:
+        reason = reason[:987] + "..."
+    return reason
 
 
 def _drift_differences(session) -> list[dict]:

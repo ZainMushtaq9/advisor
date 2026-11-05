@@ -35,6 +35,19 @@ When a later phase legitimately changes a count (new
 company load, HBL statements, a new phase's tables), that
 phase updates this baseline explicitly with its evidence —
 a drift report is then a finding, not an error to hide.
+
+HBL re-run batch baseline update (2026-11-05): the 17
+differences reported by drift_check run 72 and by the
+Phase 26 evaluation run phase26-evaluation-2026-11-05-hbl
+are the HBL Phases 8-22 re-runs (HBL CY2025 statements,
+fundamentals, valuations, macro, news, ownership,
+forecasts, risk, the 2026-11-05 decision, RAG index,
+screener, reports) — all recorded with their evidence in
+the batch run report. The data_sources correction 19 -> 20
+is NOT a batch change: the pre-batch backup
+2026-11-05T0642-PKT manifest already lists 20, so the
+Phase 24 baseline undercounted by one and is corrected
+here with that manifest as evidence.
 """
 
 from __future__ import annotations
@@ -184,32 +197,32 @@ EXPECTED_COUNTS: dict[str, int] = {
     "securities": 470,
     "registry_evidence": 1001,
     "market_prices": 444,
-    "financial_documents": 3,
-    "financial_statements": 88,
-    "financial_statement_line_items": 1316,
-    "auditor_opinions": 3,
+    "financial_documents": 4,
+    "financial_statements": 118,
+    "financial_statement_line_items": 2116,
+    "auditor_opinions": 4,
     "technical_calculation_runs": 1,
     "technical_calculation_errors": 124,
     "technical_indicator_values": 0,
-    "fundamental_metric_values": 108,
-    "sector_metric_profiles": 120,
-    "valuations": 51,
+    "fundamental_metric_values": 144,
+    "sector_metric_profiles": 156,
+    "valuations": 68,
     "economic_indicators": 12,
-    "news_events": 7,
-    "ownership_holdings": 34,
-    "forecast_assessments": 120,
-    "risk_metric_values": 81,
-    "decisions": 4,
+    "news_events": 8,
+    "ownership_holdings": 112,
+    "forecast_assessments": 156,
+    "risk_metric_values": 95,
+    "decisions": 5,
     "simulated_portfolios": 3,
     "backtest_runs": 5,
     "orchestration_runs": 1,
-    "rag_chunks": 943,
-    "screen_results": 1418,
+    "rag_chunks": 2020,
+    "screen_results": 1422,
     "alerts": 89,
     "alert_deliveries": 89,
-    "reports": 22,
-    "report_figures": 541,
-    "data_sources": 19,
+    "reports": 25,
+    "report_figures": 649,
+    "data_sources": 20,
     "auth_users": 0,
     "auth_tokens": 0,
     "auth_audit_logs": 0,

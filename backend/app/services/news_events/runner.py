@@ -139,6 +139,7 @@ def run_news(session: Session, commit: bool) -> dict:
         {
             "id": d.id,
             "company_id": d.company_id,
+            "ticker": tickers.get(d.company_id),
             "document_type": d.document_type,
             "title": d.title,
             "source_url": d.source_url,

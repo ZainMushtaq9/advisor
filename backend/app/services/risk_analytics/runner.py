@@ -43,6 +43,7 @@ from app.services.risk_analytics import (
     METRIC_DEFINITIONS,
     PRICE_DATE,
     REFERENCE_PORTFOLIO,
+    RISK_TICKERS,
     SENSITIVITY_ROWS,
     SERIES_METRICS,
     STRESS_SCENARIOS,
@@ -113,7 +114,10 @@ def run_risk(session: Session, commit: bool = False, company_filter: str | None 
         )
 
     # --- Inputs ------------------------------------------------------------
-    tickers = [t for t, _ in REFERENCE_PORTFOLIO]
+    # Per-company sections run over RISK_TICKERS (statement companies
+    # incl. HBL); the simulated reference portfolio stays 3-name (see
+    # the portfolio stress block, which filters closes to its names).
+    tickers = list(RISK_TICKERS)
     if company_filter:
         tickers = [company_filter] if company_filter in tickers else []
     securities = {
@@ -319,42 +323,54 @@ def run_risk(session: Session, commit: bool = False, company_filter: str | None 
         {"price_date": PRICE_DATE},
     )
 
-    # --- 2d. Ownership concentration (HUBC categories) ----------------------
-    hubc = securities.get("HUBC")
-    if hubc is not None:
-        cats = (
+    # --- 2d. Ownership concentration (per company with rows) --------------
+    # For HUBC the rows are holder categories (key-holder rows carry
+    # no percentage and are excluded by the filter, as in the original
+    # run); for HBL every body row carries a printed percentage, so
+    # the same computation runs over the printed shareholding
+    # partition (named holders + categories). Reporting dates are
+    # read from the rows, never hardcoded.
+    for ticker, sec in securities.items():
+        holdings = (
             session.query(OwnershipHolding)
             .filter(
-                OwnershipHolding.company_id == hubc.company_id,
+                OwnershipHolding.company_id == sec.company_id,
                 OwnershipHolding.is_total.is_(False),
                 OwnershipHolding.percentage.isnot(None),
             )
             .all()
         )
-        pcts = [Decimal(str(c.percentage)) for c in cats]
-        if pcts:
-            value_row(
-                "largest_holder_share",
-                "HUBC",
-                hubc.id,
-                max(pcts),
-                "computed",
-                "Largest holder category (INDIVIDUAL_LOCAL) share of HUBC shares as at 2026-06-30.",
-                {
-                    "basis": "holder categories",
-                    "reporting_date": "2026-06-30",
-                    "categories_count": len(pcts),
-                },
-            )
-            value_row(
-                "top3_holder_share",
-                "HUBC",
-                hubc.id,
-                top_n_share(pcts, 3),
-                "computed",
-                "Top-3 holder categories' combined share of HUBC shares as at 2026-06-30.",
-                {"basis": "holder categories", "reporting_date": "2026-06-30"},
-            )
+        pcts = [Decimal(str(c.percentage)) for c in holdings]
+        if not pcts:
+            continue
+        reporting_dates = sorted({str(c.reporting_date) for c in holdings})
+        basis = (
+            "holder categories"
+            if ticker == "HUBC"
+            else "printed shareholding partition (named holders + categories)"
+        )
+        value_row(
+            "largest_holder_share",
+            ticker,
+            sec.id,
+            max(pcts),
+            "computed",
+            f"Largest holder share of {ticker} shares as at {reporting_dates[-1]}.",
+            {
+                "basis": basis,
+                "reporting_date": reporting_dates[-1],
+                "rows_count": len(pcts),
+            },
+        )
+        value_row(
+            "top3_holder_share",
+            ticker,
+            sec.id,
+            top_n_share(pcts, 3),
+            "computed",
+            f"Top-3 holder shares' combined share of {ticker} shares as at {reporting_dates[-1]}.",
+            {"basis": basis, "reporting_date": reporting_dates[-1]},
+        )
 
     # --- 2e. Sensitivity coefficients: all insufficient ----------------------
     for ticker, metric_key, reason in SENSITIVITY_ROWS:
@@ -730,7 +746,15 @@ def run_risk(session: Session, commit: bool = False, company_filter: str | None 
         else:
             counters["stress_insufficient"] += 1
 
-    closes = {t: prices[t].close_price for t in prices if prices[t].close_price is not None}
+    # Portfolio shocks run over the 3-name reference portfolio only,
+    # even though per-company sections now cover 4 tickers (HBL is
+    # not in the simulated portfolio — see RISK_TICKERS note).
+    ref_names = [t for t, _ in REFERENCE_PORTFOLIO]
+    closes = {
+        t: prices[t].close_price
+        for t in ref_names
+        if t in prices and prices[t].close_price is not None
+    }
     if len(closes) == n_names:
         weights = [Decimal(100) / Decimal(n_names)] * n_names
         impact = portfolio_shock_impact(weights, [Decimal(-10)] * n_names)
@@ -773,6 +797,17 @@ def run_risk(session: Session, commit: bool = False, company_filter: str | None 
                 "but not computed.",
                 {"coefficient_stored": False},
             )
+    if "HBL" in securities:
+        stress_row(
+            "rate_plus_100bps",
+            "HBL",
+            None,
+            "insufficient_inputs",
+            "No rate sensitivity coefficient is stored (repricing split "
+            "of advances/deposits unknown); the scenario is defined "
+            "but not computed.",
+            {"coefficient_stored": False},
+        )
     for ticker in ("NML", "OGDC"):
         if ticker in securities:
             stress_row(
@@ -784,6 +819,16 @@ def run_risk(session: Session, commit: bool = False, company_filter: str | None 
                 "amounts unknown); the scenario is defined but not computed.",
                 {"coefficient_stored": False},
             )
+    if "HBL" in securities:
+        stress_row(
+            "fx_pkr_minus_10",
+            "HBL",
+            None,
+            "insufficient_inputs",
+            "No FX sensitivity coefficient is stored (FX-denominated "
+            "amounts unknown); the scenario is defined but not computed.",
+            {"coefficient_stored": False},
+        )
     if "OGDC" in securities:
         stress_row(
             "commodity_oil_minus_10",

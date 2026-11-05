@@ -204,12 +204,28 @@ def test_runner_dry_run_writes_nothing_then_commit_then_idempotent(obs_session) 
     assert obs_session.query(ObservabilityRun).count() == 1
 
 
+def test_drift_reason_capped_for_varchar_1000() -> None:  # type: ignore[no-untyped-def]
+    # The HBL re-run batch grew the drift list past 1000 chars
+    # and the observability commit failed on truncation; the
+    # display reason must stay within the column while the
+    # full pairs live in evidence.
+    many = [{"table": f"table_{i:03d}_with_a_long_name", "expected": 0, "live": 1} for i in range(60)]
+    reason = slo_lib._drift_reason(many)
+    assert len(reason) <= 1000
+    assert reason.endswith("...")
+    assert slo_lib._drift_reason([]) == "Live business counts match the Phase 24 baseline."
+    short = slo_lib._drift_reason([{"table": "financial_documents", "expected": 3, "live": 4}])
+    assert "financial_documents" in short and "1 count(s)" in short
+
+
 def test_runner_exceptions_include_known_states(obs_session) -> None:  # type: ignore[no-untyped-def]
     from app.models.observability import ObservabilityException
 
     obs_runner.observe(obs_session, run_id="test-obs-2", commit=True)
     keys = {row.exception_key for row in obs_session.query(ObservabilityException).all()}
-    assert "known_hbl_pending" in keys
+    # HBL re-run batch: known_hbl_pending RESOLVED (HBL statements
+    # loaded, Phases 8-22 re-run), so it is no longer seeded.
+    assert "known_hbl_pending" not in keys
     assert "known_collection_jobs_paused" in keys
     assert "slo_unmet_previous_close_completeness" in keys
     assert all(row.status == "open" for row in obs_session.query(ObservabilityException).all())

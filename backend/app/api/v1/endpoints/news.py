@@ -36,7 +36,7 @@ from app.models.reference import Company, Security
 router = APIRouter(tags=["news"])
 
 SCOPE_NOTE = (
-    "Scope: seed events only, derived from Phase 7 documents (3 "
+    "Scope: seed events only, derived from Phase 7 documents (4 "
     "companies) and Phase 10 macro events (4). No live PSX announcement "
     "or news-site collection runs in Phase 11 (PSX TERMS_GATED; news "
     "terms unreviewed). Scores are review-worthiness, never buy/sell "

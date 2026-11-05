@@ -194,43 +194,52 @@ def scenario_chain_nml(session):
     )
 
 
-def scenario_chain_hbl_partial(session):
+def scenario_chain_hbl_full(session):
+    # HBL re-run batch: the chain_hbl_partial scenario is
+    # RETIRED — its premise (chain stops at statements pending
+    # the post-Phase-30 re-runs) ended when Phases 8-22 re-ran
+    # for HBL. The replacement measures the full live chain.
+    # Core analysis links gate the outcome; risk_flags,
+    # portfolio_holdings, and alerts are informational only
+    # for HBL by design (no flags raised, out of the Phase 16
+    # portfolio baseline scope, no HBL alerts stored).
     links, _present, missing = _chain_scenario(session, "HBL")
-    if links["statements"] == 0:
-        return "fail", links, "HBL statements are missing after extraction."
-    return (
-        "blocked",
-        links,
-        "HBL chain stops at statements: fundamentals, valuations, "
-        "decision-with-evidence, and reports are pending the "
-        f"post-Phase-30 HBL re-runs. Missing links: {missing}.",
-    )
-
-
-def scenario_missing_source(session):
-    hbl = _chain(session, "HBL")
-    evidence = {
-        "hbl_statements": hbl["statements"],
-        "hbl_fundamentals": hbl["fundamentals"],
-        "hbl_valuations": hbl["valuations"],
-        "hbl_reports": hbl["reports"],
-        "hbl_decision": hbl["decision"],
-    }
-    if hbl["fundamentals"] or hbl["valuations"] or hbl["reports"]:
-        return (
-            "fail",
-            evidence,
-            "HBL analysis exists before its re-runs — unexpected.",
+    core_missing = [
+        k
+        for k in (
+            "registry",
+            "price",
+            "statements",
+            "fundamentals",
+            "valuations",
+            "macro_exposures",
+            "decision",
+            "reports",
         )
+        if links.get(k) in (False, 0, None)
+    ]
+    if core_missing:
+        return "fail", links, f"HBL chain core links missing: {core_missing}."
     return (
         "pass",
-        evidence,
-        "A company with no analysis shows pending states (0 fundamentals, "
-        "0 valuations, 0 reports; decision INSUFFICIENT_EVIDENCE from "
-        "before its statements), never an error or a fabricated value.",
+        links,
+        "Every HBL core chain link is present (registry, price, "
+        "statements, fundamentals, valuations, macro exposures, "
+        "decision, reports). Insufficiencies inside links "
+        "(abstained forecasts, WITHHELD user-facing value) are "
+        "honest states, not missing links. Informational only: "
+        f"risk_flags={links['risk_flags']}, "
+        f"portfolio_holdings={links['portfolio_holdings']}, "
+        f"alerts={links['alerts']}.",
     )
 
 
+# scenario_missing_source is RETIRED by the HBL re-run batch:
+# its premise (HBL has no analysis yet) ended when Phases 8-22
+# re-ran for HBL. Its rows from earlier runs stay in the
+# database as history; new runs evaluate the remaining
+# scenarios only. The no-fabrication-for-unanalyzed-companies
+# discipline is still covered by no_quote and point_in_time.
 def scenario_delayed_data(session):
     latest = _one(session, "SELECT MAX(trading_date) FROM market_prices")
     stale = _one(
@@ -305,7 +314,10 @@ def scenario_corporate_action(session):
         "actions_with_dates": dated,
         "adjustment_rules_applied": applied,
     }
-    if actions != 5 or dated != 0 or applied != 0:
+    # HBL re-run batch: the pinned 5 was the Phase 12 action
+    # count; HBL's 4 dividends moved it to 9. The invariant is
+    # NULL dates (never invented) and no applied adjustments.
+    if actions == 0 or dated != 0 or applied != 0:
         return (
             "fail",
             evidence,
@@ -314,7 +326,7 @@ def scenario_corporate_action(session):
     return (
         "pass",
         evidence,
-        "5 dividend actions, all dates NULL (never invented), no "
+        f"{actions} dividend actions, all dates NULL (never invented), no "
         "adjusted series stored (rules defined_not_applied).",
     )
 
@@ -440,7 +452,11 @@ def scenario_model_failure(session):
             evidence,
             "A model produced output where the phase record says it abstained.",
         )
-    if assessments != 120 or withheld != decisions or backtest_runs != 5:
+    # HBL re-run batch: the pinned 120 was the Phase 29
+    # assessment count; HBL's 36 abstentions moved it to 156.
+    # The invariant is abstention (0 computed, every decision
+    # WITHHELD, 5 un-runnable backtest runs), not the total.
+    if assessments == 0 or withheld != decisions or backtest_runs != 5:
         return (
             "fail",
             evidence,
@@ -509,7 +525,10 @@ def scenario_provenance_warnings(session):
         "reports_draft": draft,
         "reports_published": published,
     }
-    if total_reports != 22 or draft != 22 or published != 0:
+    # HBL re-run batch: the pinned 22 was the Phase 22 report
+    # count; HBL's 3 reports moved it to 25. The invariant is
+    # every report DRAFT and 0 published externally.
+    if total_reports == 0 or draft != total_reports or published != 0:
         return (
             "fail",
             evidence,
@@ -518,9 +537,9 @@ def scenario_provenance_warnings(session):
     return (
         "pass",
         evidence,
-        "Provenance and warnings are user-visible at every stage: 22 "
-        "reports DRAFT, 0 published externally, QA gate on every draft, "
-        "dashboard honesty layer with quality badges.",
+        f"Provenance and warnings are user-visible at every stage: "
+        f"{total_reports} reports DRAFT, 0 published externally, QA gate "
+        "on every draft, dashboard honesty layer with quality badges.",
     )
 
 
@@ -587,8 +606,9 @@ SCENARIOS: list[tuple[str, str, object]] = [
     ("chain_hubc_full", "HUBC end-to-end chain", scenario_chain_hubc),
     ("chain_ogdc_full", "OGDC end-to-end chain", scenario_chain_ogdc),
     ("chain_nml_full", "NML end-to-end chain", scenario_chain_nml),
-    ("chain_hbl_partial", "HBL end-to-end chain", scenario_chain_hbl_partial),
-    ("missing_source", "Missing source (HBL analysis)", scenario_missing_source),
+    # HBL re-run batch: chain_hbl_partial replaced by
+    # chain_hbl_full; missing_source retired (see notes above).
+    ("chain_hbl_full", "HBL end-to-end chain", scenario_chain_hbl_full),
     ("delayed_data", "Delayed data (stale prices)", scenario_delayed_data),
     ("ticker_rename", "Ticker rename (ENGRO/ICI/CNERGYICO)", scenario_ticker_rename),
     ("corporate_action", "Corporate action (dividends, NULL dates)", scenario_corporate_action),

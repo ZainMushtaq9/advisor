@@ -155,16 +155,23 @@ MACRO_EVENT_SOURCE = {
     "budget": "pbs",
 }
 
-# Publication dates for the three Phase 7 documents, with evidence.
+# Publication dates for the Phase 7 documents, with evidence.
+# Keyed by TICKER, never by document id: document ids are surrogate
+# and shift across fresh imports (the original import used 13/14/15;
+# the post-VM-replacement import uses 4/5/6), and id-keyed maps
+# silently stopped matching after that shift (D-04 fix).
 # HUBC: auditor report dated 21 Sep 2026 (Phase 7 run-1 report) — used
 # as the publication proxy and labelled as such in the event note.
 # OGDC: RNS publication date 2026-02-23 (Phase 9 report).
 # NML: publication date NULL in the Phase 7 record — date unknown, and
 # the event is forced to review rather than guessed.
+# HBL: consolidated auditor report dated 03 Mar 2026 (Phase 7 HBL
+# extraction; the income statement's publication_date is 2026-03-03).
 PUBLICATION_DATES = {
-    13: ("2026-09-21", "auditor report dated 21 Sep 2026 (publication proxy)"),
-    14: (None, "publication date NULL in Phase 7 record; date unknown"),
-    15: ("2026-02-23", "RNS publication date 2026-02-23"),
+    "HUBC": ("2026-09-21", "auditor report dated 21 Sep 2026 (publication proxy)"),
+    "NML": (None, "publication date NULL in Phase 7 record; date unknown"),
+    "OGDC": ("2026-02-23", "RNS publication date 2026-02-23"),
+    "HBL": ("2026-03-03", "consolidated auditor report dated 03 Mar 2026 (Phase 7 HBL extraction)"),
 }
 
 # ---------------------------------------------------------------- scoring
@@ -189,33 +196,37 @@ NOT_COLLECTED = {
     "reputable_news": "per-outlet terms review for at least one outlet",
     "secp_announcements": "a documented SECP announcements route (public pages only)",
     "wider_company_coverage": "Phase 7 expansion beyond the 3-company sample",
-    "hbl_events": "HBL CY2025 statements (live-browser PDF download, then Phase 7 load)",
 }
 
-# Seed summaries for the three Phase 7 documents, keyed by document id.
+# Seed summaries for the Phase 7 documents, keyed by TICKER (same
+# D-04 reason as PUBLICATION_DATES above).
 # Every figure below is already stored in Phase 7 (statements / line
 # items); nothing here is new research. All summaries are <= 280 chars
 # (the schema cap) and carry no sentiment and no recommendation.
 SEED_SUMMARIES = {
-    13: (
+    "HUBC": (
         "FY2026 consolidated audited results: net profit Rs 56,257,178 "
         "thousand; EPS Rs 38.26 basic / 35.56 diluted; auditor "
         "A. F. Ferguson & Co., unmodified opinion."
     ),
-    14: (
+    "NML": (
         "Nine months ended 31 Mar 2025, consolidated condensed interim, "
         "unaudited: loss after tax Rs 1,182,815 thousand."
     ),
-    15: (
+    "OGDC": (
         "Six months ended 31 Dec 2025, condensed interim consolidated, "
         "unaudited: profit after tax Rs 73,019,248 thousand; EPS Rs 16.98."
     ),
+    "HBL": (
+        "FY2025 consolidated audited results: profit after tax "
+        "Rs 66,763,916 thousand; EPS Rs 45.48; auditor KPMG Taseer "
+        "Hadi & Co., unmodified opinion."
+    ),
 }
 
-# HBL (Habib Bank Limited, COMMERCIAL BANKS) is PENDING. Pending
-# companies are keyed by ticker, never by surrogate company id (ids
-# shift across fresh registry imports).
+# HBL (Habib Bank Limited, COMMERCIAL BANKS) joined the news set in
+# the post-Phase-30 HBL re-run batch, once its CY2025 statements were
+# extracted. Pending companies are keyed by ticker, never by surrogate
+# company id (ids shift across fresh registry imports).
 HBL = "HBL"
-PENDING_COMPANIES = {
-    HBL: "statements not yet loaded (HBL CY2025 PDF blocked at download)",
-}
+PENDING_COMPANIES: dict[str, str] = {}

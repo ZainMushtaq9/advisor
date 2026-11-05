@@ -5,7 +5,14 @@ No database, no network. Hand-calculated expectations throughout.
 
 from decimal import Decimal
 
-from app.services.ownership_actions import CATEGORY_ROWS, KEY_HOLDERS
+from app.services.ownership_actions import (
+    CATEGORY_ROWS,
+    DIVIDEND_ACTIONS,
+    HBL_CATEGORY_ROWS,
+    HBL_KEY_HOLDERS,
+    HBL_TOTAL,
+    KEY_HOLDERS,
+)
 from app.services.ownership_actions.adjustments import (
     apply_factor,
     bonus_factor,
@@ -68,6 +75,34 @@ def test_key_holder_seed_matches_categories():
     assert len(mega) == 2 and mega[0][2] != mega[1][2]
     kamal = [row for row in KEY_HOLDERS if row[1] == "MUHAMMAD KAMRAN KAMAL"]
     assert len(kamal) == 2 and kamal[0][2] != kamal[1][2]
+
+
+def test_hbl_seed_reconciles_to_totals():
+    # HBL re-run batch: 8 single-row categories + 69 named rows =
+    # 77 body rows; holders and shares sum exactly to the printed
+    # totals; percentages sum to 99.96 (0.04 rounding, as documented).
+    cat_h = sum(row[1] for row in HBL_CATEGORY_ROWS)
+    named_h = sum(2 if row[1] == "MS. SABA KAMAL" else 1 for row in HBL_KEY_HOLDERS)
+    assert cat_h + named_h == HBL_TOTAL[0] == 91413
+    cat_s = sum(row[2] for row in HBL_CATEGORY_ROWS)
+    named_s = sum(row[2] for row in HBL_KEY_HOLDERS)
+    assert cat_s + named_s == HBL_TOTAL[1] == 1466852508
+    pct = sum(Decimal(row[3]) for row in HBL_CATEGORY_ROWS) + sum(
+        Decimal(row[3]) for row in HBL_KEY_HOLDERS
+    )
+    assert pct == Decimal("99.96")
+    assert len(HBL_KEY_HOLDERS) == 69
+    assert sum(1 for row in HBL_KEY_HOLDERS if row[0] == "MODARABA_MUTUAL_FUND") == 54
+    assert len({row[1] for row in HBL_KEY_HOLDERS}) == 69  # no duplicate names
+    hbl_divs = [a for a in DIVIDEND_ACTIONS if a[0] == "HBL"]
+    assert [a[2] for a in hbl_divs] == [
+        "FY2025 final",
+        "FY2025 first interim",
+        "FY2025 second interim",
+        "FY2025 third interim",
+    ]
+    assert [a[3] for a in hbl_divs] == ["4.25", "4.50", "4.50", "5.00"]
+    assert len(DIVIDEND_ACTIONS) == 9
 
 
 def test_breadth_fixture():
