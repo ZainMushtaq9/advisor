@@ -1,7 +1,12 @@
 # Phase 29 — Run report
 
 Branch: `phase-29-acceptance`, from `phase-28-deployment` tip
-`b791b7d`. Verdict: **PARTIALLY COMPLETE**. This phase made no
+`b791b7d`, commit `2334df7` (36 files, +4,264/−1), pushed with
+remote SHA verified equal to the local tip. Base
+`phase-28-deployment` unmoved at `b791b7d`; main untouched at
+`eb6025b` (remote) — no merge to main. No CSV, PDF, .env,
+venv, or test-results file in the commit. Verdict:
+**PARTIALLY COMPLETE**. This phase made no
 business database write: the only committed database rows are the
 acceptance tables (1 run, 15 scenarios, 15 recomputations,
 14 defects). All other counts below are reads.
