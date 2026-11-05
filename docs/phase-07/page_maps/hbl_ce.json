@@ -1,0 +1,323 @@
+{
+  "audited_status": "audited",
+  "balance_checks": [
+    {
+      "components": [
+        "share_capital",
+        "statutory_reserve_bank",
+        "statutory_reserve_subsidiary",
+        "exchange_translation_reserve",
+        "capital_reserve",
+        "common_control_acquisition_reserve",
+        "surplus_revaluation_investments",
+        "surplus_revaluation_fixed_assets",
+        "unappropriated_profit"
+      ],
+      "total": "attributable_total"
+    },
+    {
+      "components": [
+        "attributable_total",
+        "non_controlling_interest"
+      ],
+      "total": "total"
+    }
+  ],
+  "blocks": [
+    {
+      "closing_key": "balance_closing_2024",
+      "opening_key": "balance_opening_2023",
+      "period_end": "2024-12-31",
+      "period_start": "2024-01-01",
+      "reporting_frequency": "annual",
+      "specs": [
+        {
+          "key": "balance_opening_2023",
+          "label": "Balance as at December 31, 2023"
+        },
+        {
+          "key": "policy_change_2024",
+          "label": "Change in accounting policy as at January 01, 2024"
+        },
+        {
+          "key": "balance_restated_2024",
+          "label": "Balance as at January 01, 2024 - as restated",
+          "subtotal": true
+        },
+        {
+          "key": "profit_2024",
+          "label": "Profit after taxation for the year ended December 31, 2024"
+        },
+        {
+          "key": "oci_translation_2024",
+          "label": "Effect of translation of net investment in foreign branches, subsidiaries, joint venture and associates - net of tax"
+        },
+        {
+          "key": "oci_translation_associates_2024",
+          "label": "Decrease in share of exchange translation reserve of associates - net of tax"
+        },
+        {
+          "key": "oci_equity_investments_2024",
+          "label": "Movement in surplus / deficit on revaluation of equity investments - net of tax",
+          "blank_columns": [
+            10
+          ],
+          "original_label": "Movement in surplus / deficit on revaluation of equity investments - net of tax [NCI cell blank in source \u2014 no dash printed; verified by word x-positions on PDF p.78]"
+        },
+        {
+          "key": "oci_debt_investments_2024",
+          "label": "Movement in surplus / deficit on revaluation of debt investments - net of tax"
+        },
+        {
+          "key": "oci_remeasurement_2024",
+          "label": "Remeasurement (loss) / gain on defined benefit obligations - net of tax"
+        },
+        {
+          "key": "oci_remeasurement_associates_2024",
+          "label": "Share of remeasurement gain on defined benefit obligations of associates - net of tax"
+        },
+        {
+          "key": "oci_property_2024",
+          "label": "Movement in surplus on revaluation of property and equipment - net of tax"
+        },
+        {
+          "key": "oci_nonbanking_2024",
+          "label": "Movement in surplus on revaluation of non-banking assets - net of tax"
+        },
+        {
+          "key": "oci_share_surplus_associates_2024",
+          "label": "Movement in share of surplus / deficit on revaluation of assets of associates - net of tax"
+        },
+        {
+          "key": "tci_2024",
+          "label": null,
+          "original_label": "(section subtotal, label not printed)",
+          "subtotal": true
+        },
+        {
+          "key": "transfer_statutory_2024",
+          "label": "Transferred to statutory reserves"
+        },
+        {
+          "key": "realised_gain_fvoci_2024",
+          "label": "Net realised gain on equity investments designated at FVOCI - net of tax"
+        },
+        {
+          "key": "transfer_from_surplus_2024",
+          "label": "Transferred from surplus on revaluation of assets - net of tax"
+        },
+        {
+          "key": "exchange_gain_branches_2024",
+          "label": "Exchange gain realised on the closure / sale of Bank's branches - net of tax"
+        },
+        {
+          "key": "acquisition_subsidiary_2024",
+          "label": "Acquisition of additional interest in subsidiary"
+        },
+        {
+          "key": "div_final_2024",
+          "label": "Final cash dividend - Rs 4.00 per share declared subsequent to the year ended December 31, 2023"
+        },
+        {
+          "key": "div_interim1_2024",
+          "label": "1st interim cash dividend - Rs 4.00 per share"
+        },
+        {
+          "key": "div_interim2_2024",
+          "label": "2nd interim cash dividend - Rs 4.00 per share"
+        },
+        {
+          "key": "div_interim3_2024",
+          "label": "3rd interim cash dividend - Rs 4.00 per share"
+        },
+        {
+          "key": "distributions_total_2024",
+          "label": null,
+          "original_label": "(section subtotal, label not printed)",
+          "subtotal": true
+        },
+        {
+          "key": "balance_closing_2024",
+          "label": "Balance as at December 31, 2024"
+        }
+      ]
+    },
+    {
+      "closing_key": "balance_closing_2025",
+      "opening_from_previous_close": true,
+      "period_end": "2025-12-31",
+      "period_start": "2025-01-01",
+      "reporting_frequency": "annual",
+      "specs": [
+        {
+          "key": "policy_change_2025",
+          "label": "Change in accounting policy as at January 01, 2025 - note 4.1.3"
+        },
+        {
+          "key": "balance_restated_2025",
+          "label": "Balance as at January 01, 2025 - as restated",
+          "subtotal": true
+        },
+        {
+          "key": "profit_2025",
+          "label": "Profit after taxation for the year ended December 31, 2025"
+        },
+        {
+          "key": "oci_translation_2025",
+          "label": "Effect of translation of net investment in foreign branches, subsidiaries and associates - net of tax"
+        },
+        {
+          "key": "oci_translation_associates_2025",
+          "label": "Decrease in share of exchange translation reserve of associates - net of tax"
+        },
+        {
+          "key": "oci_equity_investments_2025",
+          "label": "Movement in surplus / deficit on revaluation of equity investments - net of tax"
+        },
+        {
+          "key": "oci_debt_investments_2025",
+          "label": "Movement in surplus / deficit on revaluation of debt investments - net of tax"
+        },
+        {
+          "key": "oci_remeasurement_2025",
+          "label": "Remeasurement (loss) / gain on defined benefit obligations - net of tax"
+        },
+        {
+          "key": "oci_remeasurement_associates_2025",
+          "label": "Share of remeasurement gain on defined benefit obligations of associates - net of tax"
+        },
+        {
+          "key": "oci_property_2025",
+          "label": "Movement in surplus on revaluation of property and equipment - net of tax"
+        },
+        {
+          "key": "oci_nonbanking_2025",
+          "label": "Movement in surplus on revaluation of non-banking assets - net of tax"
+        },
+        {
+          "key": "oci_share_surplus_associates_2025",
+          "label": "Movement in share of surplus / deficit on revaluation of assets of associates - net of tax"
+        },
+        {
+          "key": "tci_2025",
+          "label": null,
+          "original_label": "(section subtotal, label not printed)",
+          "subtotal": true
+        },
+        {
+          "key": "transfer_statutory_2025",
+          "label": "Transferred to statutory reserves"
+        },
+        {
+          "key": "realised_loss_fvoci_2025",
+          "label": "Net realised loss on sale of equity investments - net of tax"
+        },
+        {
+          "key": "transfer_from_surplus_2025",
+          "label": "Transferred from surplus on revaluation of assets - net of tax"
+        },
+        {
+          "key": "exchange_gain_branch_2025",
+          "label": "Exchange gain realised on closure of the Bank's branch - net of tax"
+        },
+        {
+          "key": "acquisition_subsidiary_2025",
+          "label": "Acquisition of additional interest in subsidiary"
+        },
+        {
+          "key": "div_final_2025",
+          "label": "Final cash dividend - Rs 4.25 per share declared subsequent to the year ended December 31, 2024"
+        },
+        {
+          "key": "div_interim1_2025",
+          "label": "1st interim cash dividend - Rs 4.50 per share"
+        },
+        {
+          "key": "div_interim2_2025",
+          "label": "2nd interim cash dividend - Rs 4.50 per share"
+        },
+        {
+          "key": "div_interim3_2025",
+          "label": "3rd interim cash dividend - Rs 5.00 per share"
+        },
+        {
+          "key": "distributions_total_2025",
+          "label": null,
+          "original_label": "(section subtotal, label not printed)",
+          "subtotal": true
+        },
+        {
+          "key": "balance_closing_2025",
+          "label": "Balance as at December 31, 2025"
+        }
+      ]
+    }
+  ],
+  "company_symbol": "HBL",
+  "components": [
+    {
+      "key": "share_capital",
+      "label": "Share capital"
+    },
+    {
+      "key": "statutory_reserve_bank",
+      "label": "Statutory reserve - Bank (note 21.5.1)"
+    },
+    {
+      "key": "statutory_reserve_subsidiary",
+      "label": "Statutory reserve - Subsidiary (note 21.5.2)"
+    },
+    {
+      "key": "exchange_translation_reserve",
+      "label": "Exchange translation reserve (note 21.6)"
+    },
+    {
+      "key": "capital_reserve",
+      "label": "Non-distributable capital reserve (header fragment)"
+    },
+    {
+      "key": "common_control_acquisition_reserve",
+      "label": "On acquisition of common control entity"
+    },
+    {
+      "key": "surplus_revaluation_investments",
+      "label": "Surplus / (deficit) on revaluation of investments"
+    },
+    {
+      "key": "surplus_revaluation_fixed_assets",
+      "label": "Surplus / (deficit) on revaluation of fixed / non-banking assets"
+    },
+    {
+      "key": "unappropriated_profit",
+      "label": "Unappropriated profit"
+    },
+    {
+      "key": "attributable_total",
+      "label": "Sub Total (attributable to shareholders of the Bank)"
+    },
+    {
+      "key": "non_controlling_interest",
+      "label": "Non-controlling interest"
+    },
+    {
+      "key": "total",
+      "label": "Total"
+    }
+  ],
+  "consolidated_status": "consolidated",
+  "currency": "PKR",
+  "document_type": "annual_report",
+  "layout_note": "True matrix face: one page (PDF p.78, printed p.76) holds both the 2024 and 2025 movement blocks. Block 1 opens at the December 31, 2023 balance, includes the January 01, 2024 accounting-policy change as a movement, and treats the as-restated January 01, 2024 balance as a displayed subtotal (not a movement) so the roll-forward is not double-counted. Block 2 opens from block 1's closing balance, includes the January 01, 2025 policy change as a movement, and likewise treats the as-restated January 01, 2025 balance as a subtotal. The total-comprehensive-income and total-distributions rows carry no printed label and are recorded as bare subtotals. The statement of comprehensive income (PDF p.77) is NOT a separate face here, matching the Phase 7 four-face scope (SFP, P&L, CF, CE).",
+  "matrix": true,
+  "method": "layout_text",
+  "pages": [
+    78
+  ],
+  "pdf": "storage/financial_reports/HBL_Annual_Report_2025.pdf",
+  "publication_date": "2026-03-03",
+  "publication_date_note": "Consolidated auditor report date (PDF p.74, printed p.72).",
+  "source_url": "https://www.hbl.com/assets/documents/HBL_Annual_Report_2025.pdf",
+  "statement_type": "changes_in_equity",
+  "title": "HBL Annual Report 2025",
+  "unit_scale": "thousands"
+}

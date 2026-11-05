@@ -502,3 +502,100 @@ def test_validate_opinion_record_present_and_absent():
     assert any("requires absence_note" in e for e in errors)
     errors = validate_opinion_record({**present, "opinion_type": "glowing"})
     assert any("unknown opinion_type" in e for e in errors)
+
+
+def test_bare_row_skip_values_collects_pkr_after_usd():
+    # HBL dual-currency faces print USD columns before PKR columns
+    # in content-stream order. A bare row with skip_values=2 must
+    # collect the PKR pair, not the USD pair.
+    lines = [
+        (75, "Other assets"),
+        (75, "373,155,122"),
+        (75, "312,582,486"),
+        (75, "27,516,990"),
+        (75, "21,615,898"),
+        (75, "7,708,144,220"),
+        (75, "6,055,112,877"),
+    ]
+    specs = [
+        {"label": "Other assets", "key": "other_assets"},
+        {"label": None, "key": "total_assets", "skip_values": 2},
+    ]
+    rows, _ = extract_face_from(lines, specs, 2, 0)
+    assert rows[0]["values"] == [Decimal("373155122"), Decimal("312582486")]
+    assert rows[1]["values"] == [Decimal("7708144220"), Decimal("6055112877")]
+    assert "subtotal_position_inferred" in rows[1]["flags"]
+
+
+def test_labeled_row_blank_columns_inserts_none_at_position():
+    # HBL CE 2024 equity row: the NCI cell (index 2 of 4 here) is
+    # blank in the source — no dash printed — while the total
+    # column carries a value. blank_columns=[2] records None for
+    # the blank cell instead of shifting the total into NCI.
+    lines = [
+        (78, "Movement in surplus on revaluation of equity investments - net of tax"),
+        (78, "-"),
+        (78, "3,278,951"),
+        (78, "3,278,951"),
+    ]
+    specs = [
+        {
+            "label": "Movement in surplus on revaluation of equity investments - net of tax",
+            "key": "oci_equity_investments",
+            "blank_columns": [2],
+        },
+    ]
+    rows, _ = extract_face_from(lines, specs, 4, 0)
+    assert rows[0]["values"] == [None, Decimal("3278951"), None, Decimal("3278951")]
+    assert "blank_column_recorded" in rows[0]["flags"]
+    assert "incomplete_values" not in rows[0]["flags"]
+
+
+def test_blank_columns_wrong_count_leaves_row_incomplete():
+    # blank_columns applies only on an exact token fit; a row
+    # that is short for another reason must still gate out.
+    lines = [
+        (78, "Movement in surplus on revaluation of equity investments - net of tax"),
+        (78, "3,278,951"),
+    ]
+    specs = [
+        {
+            "label": "Movement in surplus on revaluation of equity investments - net of tax",
+            "key": "oci_equity_investments",
+            "blank_columns": [2],
+        },
+    ]
+    rows, _ = extract_face_from(lines, specs, 4, 0)
+    assert "incomplete_values" in rows[0]["flags"]
+    assert "blank_column_recorded" not in rows[0]["flags"]
+
+
+def test_label_parts_matches_value_interleaved_split_label():
+    # HBL CF translation row: the label prints in two halves with
+    # the USD value pair between them. label_parts matches each
+    # half in order and collects the PKR pair after the last half.
+    lines = [
+        (79, "Proceeds from sale of property and equipment"),
+        (79, "498,467"),
+        (79, "550,830"),
+        (79, "Effect of translation of net investment in foreign branches, subsidiaries"),
+        (79, "17,119"),
+        (79, "(9,818)"),
+        (79, "and associates - net of tax"),
+        (79, "4,795,377"),
+        (79, "(2,750,167)"),
+    ]
+    specs = [
+        {"label": "Proceeds from sale of property and equipment", "key": "ppe_sale_proceeds"},
+        {
+            "label": "Effect of translation of net investment in foreign branches, subsidiaries and associates - net of tax",
+            "key": "translation_effect_investing",
+            "label_parts": [
+                "Effect of translation of net investment in foreign branches, subsidiaries",
+                "and associates - net of tax",
+            ],
+        },
+    ]
+    rows, _ = extract_face_from(lines, specs, 2, 0)
+    assert rows[1]["values"] == [Decimal("4795377"), Decimal("-2750167")]
+    assert rows[1]["flags"] == []
