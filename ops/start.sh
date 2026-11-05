@@ -60,15 +60,21 @@ else
 fi
 
 # 2. Backend.
+# NOTE (caught live in the fresh-environment test, fixed here): the
+# background job MUST use `exec` inside the subshell and redirect stdin
+# from /dev/null. Without `exec`, $! is the wrapper subshell's pid, not
+# the server's — so ops/stop.sh would kill the wrapper and orphan the
+# server. Without the stdin redirect, the background server holds the
+# caller's pipes open and the calling session never completes.
 if answering "$BACKEND_PORT"; then
   say "backend: already answering on $BACKEND_PORT, not restarted"
 elif [ -x "$ROOT/backend/.venv/bin/uvicorn" ]; then
-  (cd "$ROOT/backend" && "$ROOT/backend/.venv/bin/uvicorn" app.main:app \
-    --host "$BACKEND_HOST" --port "$BACKEND_PORT" >"$RUN_DIR/backend.log" 2>&1 & echo $! >"$RUN_DIR/backend.pid")
+  (cd "$ROOT/backend" && exec "$ROOT/backend/.venv/bin/uvicorn" app.main:app \
+    --host "$BACKEND_HOST" --port "$BACKEND_PORT" >"$RUN_DIR/backend.log" 2>&1 < /dev/null & echo $! >"$RUN_DIR/backend.pid")
   say "backend: started (pid $(cat "$RUN_DIR/backend.pid"), log $RUN_DIR/backend.log)"
 elif command -v uvicorn >/dev/null 2>&1; then
-  (cd "$ROOT/backend" && uvicorn app.main:app \
-    --host "$BACKEND_HOST" --port "$BACKEND_PORT" >"$RUN_DIR/backend.log" 2>&1 & echo $! >"$RUN_DIR/backend.pid")
+  (cd "$ROOT/backend" && exec uvicorn app.main:app \
+    --host "$BACKEND_HOST" --port "$BACKEND_PORT" >"$RUN_DIR/backend.log" 2>&1 < /dev/null & echo $! >"$RUN_DIR/backend.pid")
   say "backend: started with system uvicorn (pid $(cat "$RUN_DIR/backend.pid"))"
 else
   say "backend: SKIPPED — no backend/.venv uvicorn and no system uvicorn found"
@@ -78,8 +84,8 @@ fi
 if answering "$FRONTEND_PORT"; then
   say "frontend: already answering on $FRONTEND_PORT, not restarted"
 elif [ -d "$ROOT/frontend/.next" ] && [ -x "$ROOT/frontend/node_modules/.bin/next" ]; then
-  (cd "$ROOT/frontend" && "$ROOT/frontend/node_modules/.bin/next" start \
-    --hostname "$FRONTEND_HOST" --port "$FRONTEND_PORT" >"$RUN_DIR/frontend.log" 2>&1 & echo $! >"$RUN_DIR/frontend.pid")
+  (cd "$ROOT/frontend" && exec "$ROOT/frontend/node_modules/.bin/next" start \
+    --hostname "$FRONTEND_HOST" --port "$FRONTEND_PORT" >"$RUN_DIR/frontend.log" 2>&1 < /dev/null & echo $! >"$RUN_DIR/frontend.pid")
   say "frontend: started (pid $(cat "$RUN_DIR/frontend.pid"), log $RUN_DIR/frontend.log)"
 elif [ -d "$ROOT/frontend/.next" ]; then
   say "frontend: SKIPPED — .next build exists but node_modules/.bin/next is missing (run npm install in frontend/ first)"

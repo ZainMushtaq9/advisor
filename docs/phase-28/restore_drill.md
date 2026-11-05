@@ -81,11 +81,31 @@ After all five drill sections, the live database still reads companies
 restore-test database ends holding the fresh-backup restore (the
 current state), which is its intended purpose.
 
+## 7. Post-HBL backup (closes the §3 gap during this run)
+
+While this phase ran, the separate HBL extraction coordinator completed
+and the live database gained HBL statements (documents 3→4, statements
+88→118, line items 1316→2116, opinions 3→4). A new backup was therefore
+taken after the load:
+
+- Backup `2026-11-05T0537-PKT`: 7 s, 25 MB. Manifest: alembic
+  20261104_0023, encryption off, documents 4, statements 118, line
+  items 2116, opinions 4.
+- Restore into the restore-test DB + `verify_restore.sh` full gate:
+  PASSED in 6 s combined.
+- Consistency note: the files archive hash is identical to the
+  0529 backup's (`18f659…`) — expected, because the file store did
+  not change (the HBL PDF was already in it before 0529); only
+  database rows changed. The dump hash differs, as it must.
+- The §3 limitation is now closed: a verified recovery point
+  containing HBL statements exists. (Future HBL re-runs in Phases 8+
+  will change derived rows again; take a fresh backup after those land
+  too — that is routine, not a gap.)
+
 ## Conclusion for the acceptance gate
 
-"Backup restore is proven" holds for: plaintext backups (old and new
-manifests), encrypted backups (ephemeral-key round-trip + restore +
-full gate), and the negative controls. What is NOT proven: restore of
-an encrypted backup with a persistent operator key (no such key
-exists yet — operator step), and restore of a post-HBL state (no such
-backup exists yet — take one after the HBL load lands).
+"Backup restore is proven" holds for: plaintext backups (old, new,
+and post-HBL manifests), encrypted backups (ephemeral-key round-trip
++ restore + full gate), and the negative controls. What is NOT proven:
+restore of an encrypted backup with a persistent operator key (no
+such key exists yet — operator step).
