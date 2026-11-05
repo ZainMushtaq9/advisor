@@ -277,6 +277,10 @@ def _no_severe_defects() -> list:
 def test_gate_g1_not_met_when_hbl_blocked() -> None:
     # HBL re-run batch: the chain key is chain_hbl_full now;
     # the gate still reports not_met for a blocked chain.
+    # NOTE (2026-11-05 resolution): a census mismatch no longer
+    # leaves G3 met — the former KNOWN_RECOMPUTATION_EXCEPTIONS
+    # entry for report_figure_census was removed when D-05 was
+    # fixed, so any future mismatch now fails G3 by design.
     scenarios = [
         _scenario_row("chain_hubc_full", "pass"),
         _scenario_row("chain_ogdc_full", "pass"),
@@ -294,7 +298,7 @@ def test_gate_g1_not_met_when_hbl_blocked() -> None:
     )
     assert gate["g1_critical_workflows"]["result"] == "not_met"
     assert gate["g2_defects_resolved"]["result"] == "met"
-    assert gate["g3_no_fabrication"]["result"] == "met"
+    assert gate["g3_no_fabrication"]["result"] == "not_met"
     assert gate["g4_repo_clean"]["result"] == "met"
     assert gate["g5_auditor_signoff"]["result"] == "partial"
 
@@ -309,6 +313,24 @@ def test_gate_g3_not_met_on_unexpected_mismatch() -> None:
         scenarios, recomputations, _all_pass_audits(), _no_severe_defects()
     )
     assert gate["g3_no_fabrication"]["result"] == "not_met"
+
+
+def test_gate_g3_met_evidence_claims_no_exceptions() -> None:
+    # After the 2026-11-05 resolution, a fully matching run must not
+    # carry the old "D-05 omissions / HBL drift" exception wording.
+    scenarios = [
+        _scenario_row("point_in_time", "pass"),
+        _scenario_row("model_failure", "pass"),
+    ]
+    recomputations = [{"check_key": "hubc_gross_margin", "matches": True}]
+    gate = gate_lib.evaluate_gate(
+        scenarios, recomputations, _all_pass_audits(), _no_severe_defects()
+    )
+    assert gate["g3_no_fabrication"]["result"] == "met"
+    evidence = gate["g3_no_fabrication"]["evidence"]
+    assert "omissions" not in evidence
+    assert "expected HBL drift" not in evidence
+    assert "every recomputation matches" in evidence
 
 
 def test_verdict_partially_complete() -> None:
@@ -339,11 +361,13 @@ def test_verdict_failed_on_scenario_fail() -> None:
 
 
 def test_d05_fixed_when_census_and_scored_match(acc_session) -> None:  # type: ignore[no-untyped-def]
+    # Current approved census after the 2026-11-05 clean re-derivation:
+    # 649 = 389 computed + 244 insufficient_inputs + 16 not_applicable.
     _seed_company_security(acc_session, 1, "HUBC", "THE HUB POWER COMPANY LIMITED")
     _seed_company_security(acc_session, 2, "OGDC", "OIL AND GAS DEVELOPMENT COMPANY LIMITED")
     _seed_decision(acc_session, 1, "HUBC", 6)
     _seed_decision(acc_session, 2, "OGDC", 6)
-    _seed_figures(acc_session, 335, 199, 7)
+    _seed_figures(acc_session, 389, 244, 16)
     status, _evidence = defect_lib.resolve_d05_status(acc_session)
     assert status == "fixed"
 
@@ -354,6 +378,19 @@ def test_d05_open_when_stale(acc_session) -> None:  # type: ignore[no-untyped-de
     _seed_decision(acc_session, 1, "HUBC", 5)
     _seed_decision(acc_session, 2, "OGDC", 5)
     _seed_figures(acc_session, 334, 200, 7)
+    status, _evidence = defect_lib.resolve_d05_status(acc_session)
+    assert status == "open"
+
+
+def test_d05_open_when_old_census(acc_session) -> None:  # type: ignore[no-untyped-def]
+    # The superseded Phase 22 census (541 = 335/199/7) must NOT pass
+    # even with scored dimensions matching: it proves the measurement
+    # moved on with the HBL batch instead of pinning an old number.
+    _seed_company_security(acc_session, 1, "HUBC", "THE HUB POWER COMPANY LIMITED")
+    _seed_company_security(acc_session, 2, "OGDC", "OIL AND GAS DEVELOPMENT COMPANY LIMITED")
+    _seed_decision(acc_session, 1, "HUBC", 6)
+    _seed_decision(acc_session, 2, "OGDC", 6)
+    _seed_figures(acc_session, 335, 199, 7)
     status, _evidence = defect_lib.resolve_d05_status(acc_session)
     assert status == "open"
 

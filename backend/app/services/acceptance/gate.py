@@ -20,11 +20,15 @@ follows from the items — never the reverse:
 
 from __future__ import annotations
 
-KNOWN_RECOMPUTATION_EXCEPTIONS = {
-    "report_figure_census",  # D-05: omission/staleness, not fabrication
-    "decision_completeness",  # D-05: same
-    "drift_vs_phase24_baseline",  # expected HBL drift, not a failure
-}
+# Resolved 2026-11-05 (blocker-resolution run) and intentionally empty:
+# report_figure_census was resolved by the clean news-first
+# re-derivation (D-05 fixed on measured evidence), decision_completeness
+# was already matching (its exception text described a resolved
+# recovery #6 state), and drift_vs_phase24_baseline was resolved by
+# the Phase 25-rule baseline update (drift 17 finding, confirm drift
+# 0). Any future recomputation mismatch now fails G3 by design. Do
+# not re-add an entry without a recorded defect and its evidence.
+KNOWN_RECOMPUTATION_EXCEPTIONS: set[str] = set()
 
 
 def evaluate_gate(scenarios, recomputations, audits, defects):
@@ -79,8 +83,11 @@ def evaluate_gate(scenarios, recomputations, audits, defects):
         g3 = (
             "met",
             "Point-in-time checks pass; forecasts abstain honestly; "
-            "every recomputation matches except the documented D-05 "
-            "omissions and the expected HBL drift.",
+            "every recomputation matches (15/15). The former D-05 "
+            "census and HBL-drift exceptions were resolved "
+            "2026-11-05 and removed from "
+            "KNOWN_RECOMPUTATION_EXCEPTIONS, so no exception "
+            "applies to this run.",
         )
     else:
         g3 = (

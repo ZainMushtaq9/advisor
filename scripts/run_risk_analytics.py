@@ -23,6 +23,7 @@ import argparse
 import json
 import os
 import sys
+from datetime import date
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "backend"))
 
@@ -43,7 +44,26 @@ def main() -> int:
     parser.add_argument(
         "--company", default=None, help="Limit to one ticker (e.g. HUBC)."
     )
+    parser.add_argument(
+        "--as-of-date",
+        default=None,
+        help="ISO date (YYYY-MM-DD) for the model-risk section only "
+        "(forecast_abstention_rate, technical_coverage_rate, "
+        "input_drift). Writes NEW versioned rows for that date and "
+        "preserves prior vintages; it never overwrites stored rows. "
+        "Default: 2026-11-04 (the run's analysis date).",
+    )
     args = parser.parse_args()
+    model_as_of = None
+    if args.as_of_date is not None:
+        try:
+            model_as_of = date.fromisoformat(args.as_of_date)
+        except ValueError:
+            print(
+                f"--as-of-date must be an ISO date (YYYY-MM-DD), got {args.as_of_date!r}.",
+                file=sys.stderr,
+            )
+            return 2
     database_url = os.environ.get("DATABASE_URL")
     if not database_url:
         print("DATABASE_URL is not set; refusing to run.", file=sys.stderr)
@@ -55,7 +75,10 @@ def main() -> int:
     session = sessionmaker(bind=engine)()
     try:
         report = runner.run_risk(
-            session, commit=bool(args.commit), company_filter=args.company
+            session,
+            commit=bool(args.commit),
+            company_filter=args.company,
+            model_as_of=model_as_of,
         )
         if args.commit:
             session.commit()

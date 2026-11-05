@@ -200,8 +200,19 @@ def resolve_d05_status(session) -> tuple[str, str]:
     """Measure D-05 against the live database.
 
     Returns (status, evidence): "fixed" only when the report-figure
-    census is exactly 335/199/7 AND HUBC/OGDC scored_dimensions are
-    both 6; otherwise "open" with the measured values.
+    census equals the current approved census (649 = 389 computed +
+    244 insufficient_inputs + 16 not_applicable, measured after the
+    2026-11-05 clean re-derivation) AND HUBC/OGDC scored_dimensions
+    are both 6; otherwise "open" with the measured values.
+
+    History: the Phase 22 claim (541 = 335/199/7) was superseded when
+    the HBL re-run batch added 3 reports (+108 figures). The recovery
+    #6 stale figure (event_brief news:HUBC:earning, event_date) was
+    resolved by recovery #7's news-first re-derivation and confirmed
+    by the 2026-11-05 clean re-derivation (report 14 deleted and
+    recreated as report 26 from current news data, with identical
+    figures and identical md/html export hashes). The target above
+    is that measured post-re-derivation census, not an assertion.
     """
     census = dict(
         session.execute(
@@ -220,9 +231,9 @@ def resolve_d05_status(session) -> tuple[str, str]:
         ).fetchall()
     )
     census_ok = (
-        census.get("computed") == 335
-        and census.get("insufficient_inputs") == 199
-        and census.get("not_applicable") == 7
+        census.get("computed") == 389
+        and census.get("insufficient_inputs") == 244
+        and census.get("not_applicable") == 16
     )
     scored_ok = scored.get("HUBC") == 6 and scored.get("OGDC") == 6
     evidence = (

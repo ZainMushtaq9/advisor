@@ -45,9 +45,9 @@ export default function NewsPage() {
     <div className="pb-10">
       <PageHeader
         title="News & events"
-        description="Seed events derived only from stored rows: three company earnings events and four macro events. Universe-wide live coverage does not exist in this product, and no PSX announcement collection runs."
+        description="Seed events derived only from stored rows: four company earnings events and four macro events. Universe-wide live coverage does not exist in this product, and no PSX announcement collection runs."
         banners={[
-          "Coverage is 3 of 470 companies. An empty result for any other company means no stored event, not no news in the world.",
+          "Coverage is 4 of 470 companies. An empty result for any other company means no stored event, not no news in the world.",
           "No article body is served anywhere; summaries are capped at 280 characters and no sentiment is stored.",
         ]}
       />

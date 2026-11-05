@@ -23,7 +23,7 @@ from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
 from app.config import get_settings
@@ -308,6 +308,48 @@ def test_readiness_reports_unavailable_db_truthfully(client) -> None:  # type: i
     assert body["database"]["reachable"] is False
     assert body["ready"] is False
     assert body["migration_matches"] is False
+
+
+def _seed_alembic_head(api_client, version: str) -> None:  # type: ignore[no-untyped-def]
+    engine = api_client.app.state.engine
+    with engine.begin() as connection:
+        connection.execute(
+            text("CREATE TABLE alembic_version (version_num VARCHAR(32) NOT NULL)")
+        )
+        connection.execute(
+            text("INSERT INTO alembic_version (version_num) VALUES (:v)"),
+            {"v": version},
+        )
+
+
+def test_readiness_matches_current_head(api_client) -> None:  # type: ignore[no-untyped-def]
+    # Regression for the Phase 27 artifact: the endpoint hardcoded
+    # 20261104_0023 and reported ready False against the then-current
+    # head. The live head is now 20261104_0025 (news-intelligence
+    # migration 0025); with the head at 0025 it must report ready.
+    _seed_alembic_head(api_client, "20261104_0025")
+    response = api_client.get("/api/v1/observability/readiness")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["database"]["reachable"] is True
+    assert body["migration_head"] == "20261104_0025"
+    assert body["migration_expected"] == "20261104_0025"
+    assert body["migration_matches"] is True
+    assert body["ready"] is True
+
+
+def test_readiness_detects_stale_head(api_client) -> None:  # type: ignore[no-untyped-def]
+    # The stale-head case must still be detected, not papered over:
+    # a DB at the previous head 0024 is not ready against the 0025
+    # expectation.
+    _seed_alembic_head(api_client, "20261104_0024")
+    response = api_client.get("/api/v1/observability/readiness")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["migration_head"] == "20261104_0024"
+    assert body["migration_expected"] == "20261104_0025"
+    assert body["migration_matches"] is False
+    assert body["ready"] is False
 
 
 @pytest.fixture()
