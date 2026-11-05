@@ -32,9 +32,10 @@ the Phase 28 topic (deployment, operations, backup, disaster recovery).
 
 - **Branch:** `phase-28-deployment`, new branch from
   `phase-27-observability` `544fecc`.
-- **Commits:** `885bcef` (implementation, 21 files) + this run report
-  and the fresh-environment test (second commit; SHA in the report
-  footer after push). **Push verified:** remote SHA equals local tip
+- **Commits:** `885bcef` (implementation, 21 files) +
+  `493f3f0` (this run report, fresh-environment test, start.sh exec
+  fix, post-HBL drill note) + this footer (SHA-record commit).
+  **Push verified:** remote `phase-28-deployment` equals local tip
   (see footer).
 - **Base tips unmoved:** remote `phase-27-observability` still `544fecc`,
   remote `main` still `eb6025b`. No merge to main, no force-push, no
@@ -202,3 +203,11 @@ residual-income model for HBL).
 
 **STOP — Phase 29 not started; awaiting parent verification and the
 next brief.**
+
+## Footer (push verification, parent-checked)
+
+- Branch `phase-28-deployment`: local tip = remote tip =
+  `493f3f0` at push time (implementation `885bcef` + report/test/fix
+  `493f3f0`); this footer commit follows and is pushed the same way.
+- Base `phase-27-observability` unmoved at `544fecc`; `main` unmoved
+  at `eb6025b`. No merge to main, no force-push, no history rewrite.
